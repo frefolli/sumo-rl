@@ -1,5 +1,5 @@
 sumo:
-  seconds: 10000
+  seconds: 80000
   min_green: 5
   delta_time: 5
   use_gui: false
@@ -15,4 +15,4 @@ training:
   episodes: 10
 evaluation:
   runs: 1
-  episodes: 1
+  episodes: 5
