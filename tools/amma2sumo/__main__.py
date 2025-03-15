@@ -11,7 +11,7 @@ import os
 import json
 import shapefile
 import matplotlib.pyplot
-from sumo_rl.models.sumo import TAZ, Flow, Routes, Additions
+from sumo_rl.models.sumo import TAZ, TAZFlow, Routes, Additions
 from sumo_rl.models.commons import Point, Cache, Timer
 
 class JSONReader:
@@ -313,16 +313,16 @@ def transform(timer: Timer, od_matrix_dfs: list[pandas.DataFrame], zones_df: pan
 
   od_matrix_idx = 0
   for od_matrix_df in od_matrix_dfs:
-    flows: list[Flow] = []
+    flows: list[TAZFlow] = []
     flow_idx = 0
     print("vehsPerHour", sum(od_matrix_df['veq_priv']))
     for _, row in od_matrix_df.iterrows():
       orig_ID = 'Z' + str(int(row['orig_urb']))
       dest_ID = 'Z' + str(int(row['dest_urb']))
       if orig_ID in zones_index and dest_ID in zones_index:
-        flows.append(Flow('F' + str(flow_idx), 0, 3600, orig_ID, dest_ID, row['veq_priv']))
+        flows.append(TAZFlow('F' + str(flow_idx), 0, 3600, orig_ID, dest_ID, row['veq_priv']))
         flow_idx += 1
-    routes = Routes([], [], flows)
+    routes = Routes([], [], flows, [])
     od_matrix_idx += 1
     timer.round("Built od_index %s" % od_matrix_idx)
     with open("routes.%s.rou.xml" % od_matrix_idx, "w") as file:

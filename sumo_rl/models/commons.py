@@ -14,11 +14,14 @@ class Point:
   def distance(self, o: Point) -> float:
     return math.sqrt(math.pow(self.x - o.x, 2) + math.pow(self.y - o.y, 2))
 
+  def direction(self, o: Point) -> float:
+    return math.atan2(self.y - o.y, self.x - o.x)
+
   def to_dict(self) -> dict:
     return {'x': self.x, 'y': self.y}
 
   def to_str(self) -> str:
-    return "Point(%s,%s)" % (self.x, self.y)
+    return "%s,%s" % (self.x, self.y)
 
   def to_xml(self) -> str:
     return "%s,%s" % (self.x, self.y)

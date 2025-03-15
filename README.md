@@ -57,3 +57,7 @@ The default observation for each traffic signal agent is a vector:
 - ```min_green``` is a binary variable indicating whether min_green seconds have already passed in the current phase
 - ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
 - ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
+
+## Ideas
+
+Provare a vincolare il numero di auto alla capacita' della rete e in particolare alla capacita' della strada di immissione (e magari di emissione) tramite l'uso dei dead end. Si possono fare flow sui dead end? SI!
