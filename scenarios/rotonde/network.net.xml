@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-03-15 18:47:23 by Eclipse SUMO netedit Version 1.20.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
+
+    <input>
+        <sumocfg-file value="/home/refo/Documents/Github/sumo-rl/scenarios/rotonde/simulation.sumocfg"/>
+        <route-files value="/home/refo/Documents/Github/sumo-rl/scenarios/rotonde/routes.rou.xml"/>
+        <sumo-net-file value="/home/refo/Documents/Github/sumo-rl/scenarios/rotonde/network.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="/home/refo/Documents/Github/sumo-rl/scenarios/rotonde/network.net.xml"/>
+    </output>
+
+    <processing>
+        <offset.disable-normalization value="true"/>
+    </processing>
+
+    <junctions>
+        <no-internal-links value="false"/>
+        <no-turnarounds value="true"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <netedit>
+        <new-network value="false"/>
+    </netedit>
+
+</configuration>
+-->
+
+<net version="1.20" junctionCornerDetail="5" walkingareas="true" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="0.00,0.00" convBoundary="-3.92,-33.71,225.94,141.99" origBoundary="10000000000.00,10000000000.00,-10000000000.00,-10000000000.00" projParameter="!"/>
+
+    <edge id=":J2_0" function="internal">
+        <lane id=":J2_0_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.81" length="5.78" shape="88.55,58.71 87.31,57.55 86.31,56.88 85.16,56.57 83.48,56.52"/>
+    </edge>
+    <edge id=":J2_1" function="internal">
+        <lane id=":J2_1_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="8.78" length="8.78" shape="88.55,58.71 87.11,56.89 86.40,54.95 86.44,52.89 87.22,50.70"/>
+    </edge>
+    <edge id=":J2_2" function="internal">
+        <lane id=":J2_2_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="6.56" length="4.66" shape="90.07,52.16 89.66,53.32 89.64,54.41 90.01,55.45 90.78,56.41"/>
+    </edge>
+    <edge id=":J2_3" function="internal">
+        <lane id=":J2_3_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="10.05" length="8.33" shape="90.07,52.16 88.83,54.04 87.32,55.40 85.54,56.22 83.48,56.52"/>
+    </edge>
+    <edge id=":J2_4" function="internal">
+        <lane id=":J2_4_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="7.78" length="4.85" shape="83.44,53.32 84.60,53.14 85.61,52.65 86.49,51.83 87.22,50.70"/>
+    </edge>
+    <edge id=":J2_5" function="internal">
+        <lane id=":J2_5_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="8.33" shape="83.44,53.32 85.86,53.39 87.53,53.81 88.98,54.75 90.78,56.41"/>
+    </edge>
+    <edge id=":J3_0" function="internal">
+        <lane id=":J3_0_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="6.45" shape="129.42,89.18 128.11,90.59 127.24,91.64 126.73,92.85 126.54,94.69"/>
+    </edge>
+    <edge id=":J3_1" function="internal">
+        <lane id=":J3_1_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="7.83" length="10.38" shape="129.42,89.18 127.24,91.03 125.01,91.71 122.74,91.21 120.42,89.53"/>
+    </edge>
+    <edge id=":J3_2" function="internal">
+        <lane id=":J3_2_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="5.66" length="5.05" shape="122.64,87.23 123.77,88.05 124.88,88.29 125.96,87.96 127.02,87.06"/>
+    </edge>
+    <edge id=":J3_3" function="internal">
+        <lane id=":J3_3_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="8.65" shape="122.64,87.23 124.38,89.14 125.61,91.02 126.33,92.87 126.54,94.69"/>
+    </edge>
+    <edge id=":J3_4" function="internal">
+        <lane id=":J3_4_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="12.56" length="6.01" shape="123.34,94.61 123.18,93.47 122.64,92.24 121.72,90.93 120.42,89.53"/>
+    </edge>
+    <edge id=":J3_5" function="internal">
+        <lane id=":J3_5_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="8.71" shape="123.34,94.61 123.57,92.10 124.18,90.44 125.29,88.98 127.02,87.06"/>
+    </edge>
+    <edge id=":J4_0" function="internal">
+        <lane id=":J4_0_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="11.28" length="5.40" shape="163.66,53.13 162.48,53.28 161.32,53.75 160.18,54.54 159.05,55.65"/>
+    </edge>
+    <edge id=":J4_1" function="internal">
+        <lane id=":J4_1_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="12.20" length="8.17" shape="163.66,53.13 161.77,52.87 160.01,52.13 158.36,50.90 156.83,49.18"/>
+    </edge>
+    <edge id=":J4_2" function="internal">
+        <lane id=":J4_2_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="9.83" length="5.22" shape="159.39,47.27 160.41,48.43 161.46,49.26 162.55,49.76 163.67,49.93"/>
+    </edge>
+    <edge id=":J4_3" function="internal">
+        <lane id=":J4_3_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="8.44" length="9.19" shape="159.39,47.27 160.59,49.41 160.93,51.53 160.42,53.60 159.05,55.65"/>
+    </edge>
+    <edge id=":J4_4" function="internal">
+        <lane id=":J4_4_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="6.25" length="4.76" shape="156.66,53.53 157.36,52.47 157.63,51.39 157.45,50.30 156.83,49.18"/>
+    </edge>
+    <edge id=":J4_5" function="internal">
+        <lane id=":J4_5_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.76" length="8.13" shape="156.66,53.53 158.30,51.95 160.01,50.82 161.80,50.15 163.67,49.93"/>
+    </edge>
+    <edge id=":J5_0" function="internal">
+        <lane id=":J5_0_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="5.15" length="5.68" shape="120.48,0.68 119.30,-0.52 118.19,-0.86 117.16,-0.34 116.19,1.04"/>
+    </edge>
+    <edge id=":J5_1" function="internal">
+        <lane id=":J5_1_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="8.55" length="11.72" shape="120.48,0.68 118.64,-2.43 118.01,-5.20 118.62,-7.62 120.44,-9.70"/>
+    </edge>
+    <edge id=":J5_2" function="internal">
+        <lane id=":J5_2_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="6.60" length="6.67" shape="122.42,-7.19 121.55,-6.11 121.37,-4.76 121.86,-3.13 123.04,-1.24"/>
+    </edge>
+    <edge id=":J5_3" function="internal">
+        <lane id=":J5_3_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="10.46" shape="122.42,-7.19 120.10,-5.23 118.68,-3.58 117.57,-1.69 116.19,1.04"/>
+    </edge>
+    <edge id=":J5_4" function="internal">
+        <lane id=":J5_4_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="11.82" shape="113.34,-0.41 114.86,-3.31 116.27,-5.57 117.99,-7.58 120.44,-9.70"/>
+    </edge>
+    <edge id=":J5_5" function="internal">
+        <lane id=":J5_5_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="7.37" length="12.85" shape="113.34,-0.41 115.52,-3.54 117.86,-4.71 120.37,-3.95 123.04,-1.24"/>
+    </edge>
+
+    <edge id="-E0" from="J2" to="J1" priority="-1">
+        <lane id="-E0_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="87.39" shape="83.48,56.52 -3.90,57.63"/>
+    </edge>
+    <edge id="-E1" from="J3" to="J2" priority="-1">
+        <lane id="-E1_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="44.33" shape="120.42,89.53 88.55,58.71"/>
+    </edge>
+    <edge id="-E2" from="J4" to="J3" priority="-1">
+        <lane id="-E2_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="44.75" shape="159.05,55.65 129.42,89.18"/>
+    </edge>
+    <edge id="-E3" from="J5" to="J4" priority="-1">
+        <lane id="-E3_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="60.62" shape="123.04,-1.24 159.39,47.27"/>
+    </edge>
+    <edge id="-E4" from="J2" to="J5" priority="-1">
+        <lane id="-E4_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="57.40" shape="87.22,50.70 113.34,-0.41"/>
+    </edge>
+    <edge id="-E5" from="J6" to="J4" priority="-1">
+        <lane id="-E5_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="62.28" shape="225.93,53.48 163.66,53.13"/>
+    </edge>
+    <edge id="-E6" from="J7" to="J3" priority="-1">
+        <lane id="-E6_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="47.35" shape="122.18,141.95 123.34,94.61"/>
+    </edge>
+    <edge id="-E7" from="J8" to="J5" priority="-1">
+        <lane id="-E7_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="40.95" shape="154.64,-32.45 122.42,-7.19"/>
+    </edge>
+    <edge id="E0" from="J1" to="J2" priority="-1">
+        <lane id="E0_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="87.39" shape="-3.94,54.43 83.44,53.32"/>
+    </edge>
+    <edge id="E1" from="J2" to="J3" priority="-1">
+        <lane id="E1_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="44.33" shape="90.78,56.41 122.64,87.23"/>
+    </edge>
+    <edge id="E2" from="J3" to="J4" priority="-1">
+        <lane id="E2_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="44.75" shape="127.02,87.06 156.66,53.53"/>
+    </edge>
+    <edge id="E3" from="J4" to="J5" priority="-1">
+        <lane id="E3_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="60.62" shape="156.83,49.18 120.48,0.68"/>
+    </edge>
+    <edge id="E4" from="J5" to="J2" priority="-1">
+        <lane id="E4_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="57.40" shape="116.19,1.04 90.07,52.16"/>
+    </edge>
+    <edge id="E5" from="J4" to="J6" priority="-1">
+        <lane id="E5_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="62.28" shape="163.67,49.93 225.95,50.28"/>
+    </edge>
+    <edge id="E6" from="J3" to="J7" priority="-1">
+        <lane id="E6_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="47.35" shape="126.54,94.69 125.38,142.03"/>
+    </edge>
+    <edge id="E7" from="J5" to="J8" priority="-1">
+        <lane id="E7_0" index="0" allow="tram rail_urban rail rail_electric rail_fast cable_car subway" speed="13.89" length="40.95" shape="120.44,-9.70 152.66,-34.97"/>
+    </edge>
+
+    <tlLogic id="J2" type="static" programID="0" offset="0">
+        <phase duration="27" state="GrrrGG"/>
+        <phase duration="3"  state="Grrryy"/>
+        <phase duration="27" state="GGGrrr"/>
+        <phase duration="3"  state="yyGrrr"/>
+        <phase duration="27" state="rrGGGr"/>
+        <phase duration="3"  state="rryyGr"/>
+    </tlLogic>
+
+    <junction id="J1" type="dead_end" x="-3.92" y="56.03" incLanes="-E0_0" intLanes="" shape="-3.92,56.03 -3.88,59.23 -3.92,56.03"/>
+    <junction id="J2" type="traffic_light" x="86.89" y="54.87" incLanes="-E1_0 E4_0 E0_0" intLanes=":J2_0_0 :J2_1_0 :J2_2_0 :J2_3_0 :J2_4_0 :J2_5_0" shape="87.44,59.86 91.89,55.26 91.37,54.53 91.25,54.15 91.24,53.74 91.32,53.32 91.50,52.88 85.80,49.97 85.14,50.93 84.76,51.27 84.35,51.51 83.90,51.66 83.41,51.72 83.50,58.12 85.13,58.22 85.70,58.42 86.21,58.74 86.76,59.21">
+        <request index="0" response="000000" foes="001000" cont="0"/>
+        <request index="1" response="110000" foes="111000" cont="0"/>
+        <request index="2" response="100000" foes="100000" cont="0"/>
+        <request index="3" response="100011" foes="100011" cont="0"/>
+        <request index="4" response="000000" foes="000010" cont="0"/>
+        <request index="5" response="000000" foes="001110" cont="0"/>
+    </junction>
+    <junction id="J3" type="priority" x="125.01" y="91.75" incLanes="-E2_0 E1_0 -E6_0" intLanes=":J3_0_0 :J3_1_0 :J3_2_0 :J3_3_0 :J3_4_0 :J3_5_0" shape="130.62,90.24 125.82,86.00 125.15,86.51 124.81,86.58 124.46,86.53 124.11,86.37 123.75,86.08 119.30,90.68 120.67,92.18 121.15,92.85 121.49,93.47 121.68,94.05 121.74,94.57 128.14,94.73 128.43,92.85 128.77,92.24 129.24,91.69 129.85,91.06">
+        <request index="0" response="000000" foes="001000" cont="0"/>
+        <request index="1" response="110000" foes="111000" cont="0"/>
+        <request index="2" response="100000" foes="100000" cont="0"/>
+        <request index="3" response="100011" foes="100011" cont="0"/>
+        <request index="4" response="000000" foes="000010" cont="0"/>
+        <request index="5" response="000000" foes="001110" cont="0"/>
+    </junction>
+    <junction id="J4" type="priority" x="160.57" y="51.51" incLanes="-E5_0 -E3_0 E2_0" intLanes=":J4_0_0 :J4_1_0 :J4_2_0 :J4_3_0 :J4_4_0 :J4_5_0" shape="163.65,54.73 163.68,48.33 162.68,48.10 162.18,47.82 161.68,47.43 161.18,46.92 160.67,46.31 155.55,50.14 155.94,50.94 155.98,51.33 155.91,51.71 155.74,52.09 155.46,52.47 160.25,56.71 161.41,55.60 161.98,55.22 162.54,54.94 163.10,54.78">
+        <request index="0" response="000000" foes="001000" cont="0"/>
+        <request index="1" response="110000" foes="111000" cont="0"/>
+        <request index="2" response="100000" foes="100000" cont="0"/>
+        <request index="3" response="100011" foes="100011" cont="0"/>
+        <request index="4" response="000000" foes="000010" cont="0"/>
+        <request index="5" response="000000" foes="001110" cont="0"/>
+    </junction>
+    <junction id="J5" type="priority" x="117.79" y="-5.59" incLanes="E3_0 -E7_0 -E4_0" intLanes=":J5_0_0 :J5_1_0 :J5_2_0 :J5_3_0 :J5_4_0 :J5_5_0" shape="119.20,1.64 124.32,-2.20 123.29,-3.86 123.04,-4.53 122.98,-5.10 123.10,-5.57 123.40,-5.93 119.46,-10.96 117.40,-9.29 115.96,-7.94 114.92,-6.69 114.04,-5.29 113.12,-3.52 111.92,-1.14 117.62,1.77 118.10,1.16 118.36,1.07 118.62,1.12 118.91,1.31">
+        <request index="0" response="001000" foes="001000" cont="0"/>
+        <request index="1" response="111000" foes="111000" cont="0"/>
+        <request index="2" response="000000" foes="100000" cont="0"/>
+        <request index="3" response="000000" foes="100011" cont="0"/>
+        <request index="4" response="000000" foes="000010" cont="0"/>
+        <request index="5" response="001100" foes="001110" cont="0"/>
+    </junction>
+    <junction id="J6" type="dead_end" x="225.94" y="51.88" incLanes="E5_0" intLanes="" shape="225.94,51.88 225.96,48.68 225.94,51.88"/>
+    <junction id="J7" type="dead_end" x="123.78" y="141.99" incLanes="E6_0" intLanes="" shape="123.78,141.99 126.98,142.07 123.78,141.99"/>
+    <junction id="J8" type="dead_end" x="153.65" y="-33.71" incLanes="E7_0" intLanes="" shape="153.65,-33.71 151.68,-36.23 153.65,-33.71"/>
+
+    <connection from="-E1" to="-E0" fromLane="0" toLane="0" via=":J2_0_0" tl="J2" linkIndex="0" dir="r" state="O"/>
+    <connection from="-E1" to="-E4" fromLane="0" toLane="0" via=":J2_1_0" tl="J2" linkIndex="1" dir="l" state="o"/>
+    <connection from="-E2" to="E6" fromLane="0" toLane="0" via=":J3_0_0" dir="s" state="M"/>
+    <connection from="-E2" to="-E1" fromLane="0" toLane="0" via=":J3_1_0" dir="l" state="M"/>
+    <connection from="-E3" to="E5" fromLane="0" toLane="0" via=":J4_2_0" dir="r" state="M"/>
+    <connection from="-E3" to="-E2" fromLane="0" toLane="0" via=":J4_3_0" dir="l" state="M"/>
+    <connection from="-E4" to="E7" fromLane="0" toLane="0" via=":J5_4_0" dir="s" state="M"/>
+    <connection from="-E4" to="-E3" fromLane="0" toLane="0" via=":J5_5_0" dir="l" state="M"/>
+    <connection from="-E5" to="-E2" fromLane="0" toLane="0" via=":J4_0_0" dir="r" state="M"/>
+    <connection from="-E5" to="E3" fromLane="0" toLane="0" via=":J4_1_0" dir="l" state="M"/>
+    <connection from="-E6" to="-E1" fromLane="0" toLane="0" via=":J3_4_0" dir="r" state="M"/>
+    <connection from="-E6" to="E2" fromLane="0" toLane="0" via=":J3_5_0" dir="s" state="M"/>
+    <connection from="-E7" to="-E3" fromLane="0" toLane="0" via=":J5_2_0" dir="r" state="M"/>
+    <connection from="-E7" to="E4" fromLane="0" toLane="0" via=":J5_3_0" dir="s" state="M"/>
+    <connection from="E0" to="-E4" fromLane="0" toLane="0" via=":J2_4_0" tl="J2" linkIndex="4" dir="r" state="O"/>
+    <connection from="E0" to="E1" fromLane="0" toLane="0" via=":J2_5_0" tl="J2" linkIndex="5" dir="l" state="O"/>
+    <connection from="E1" to="E2" fromLane="0" toLane="0" via=":J3_2_0" dir="r" state="M"/>
+    <connection from="E1" to="E6" fromLane="0" toLane="0" via=":J3_3_0" dir="l" state="M"/>
+    <connection from="E2" to="E3" fromLane="0" toLane="0" via=":J4_4_0" dir="r" state="M"/>
+    <connection from="E2" to="E5" fromLane="0" toLane="0" via=":J4_5_0" dir="l" state="M"/>
+    <connection from="E3" to="E4" fromLane="0" toLane="0" via=":J5_0_0" dir="r" state="M"/>
+    <connection from="E3" to="E7" fromLane="0" toLane="0" via=":J5_1_0" dir="l" state="M"/>
+    <connection from="E4" to="E1" fromLane="0" toLane="0" via=":J2_2_0" tl="J2" linkIndex="2" dir="r" state="o"/>
+    <connection from="E4" to="-E0" fromLane="0" toLane="0" via=":J2_3_0" tl="J2" linkIndex="3" dir="l" state="o"/>
+
+    <connection from=":J2_0" to="-E0" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J2_1" to="-E4" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J2_2" to="E1" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J2_3" to="-E0" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J2_4" to="-E4" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J2_5" to="E1" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J3_0" to="E6" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":J3_1" to="-E1" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J3_2" to="E2" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J3_3" to="E6" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J3_4" to="-E1" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J3_5" to="E2" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":J4_0" to="-E2" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J4_1" to="E3" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J4_2" to="E5" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J4_3" to="-E2" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J4_4" to="E3" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J4_5" to="E5" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J5_0" to="E4" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J5_1" to="E7" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":J5_2" to="-E3" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":J5_3" to="E4" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":J5_4" to="E7" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":J5_5" to="-E3" fromLane="0" toLane="0" dir="l" state="M"/>
+
+</net>

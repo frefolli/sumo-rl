@@ -8,7 +8,8 @@ class FixedAgent(Agent):
 
   def __init__(self, id: str,
                      controlled_entities: dict[str, TrafficSignal],
-                     action_space):
+                     action_space,
+                     cycle_time: int = 6):
     """Initialize Fixed agent."""
     super().__init__(id)
     self.controlled_entities = controlled_entities
@@ -16,7 +17,7 @@ class FixedAgent(Agent):
     self.previous_actions = {ID: 0 for ID in self.controlled_entities}
     self.current_actions = self.previous_actions
     self.steps_from_last_action = 0
-    self.cycle_time_steps = 6
+    self.cycle_time_steps = cycle_time
 
   def reset(self):
     self.previous_actions = {ID: 0 for ID in self.controlled_entities}

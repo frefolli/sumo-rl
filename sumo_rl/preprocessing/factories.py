@@ -9,12 +9,12 @@ from sumo_rl.agents.agent import Agent
 from sumo_rl.agents.ql_agent import QLAgent
 from sumo_rl.agents.fixed_agent import FixedAgent
 from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
-from sumo_rl.util.scenario import Scenario
+from sumo_rl.util.config import Config
 
 class AgentFactory(abc.ABC):
-  def __init__(self, env: SumoEnvironment, scenario: Scenario, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False) -> None:
     self.env = env
-    self.scenario = scenario
+    self.config = config
     self.recycle: bool = recycle
   
   @abc.abstractmethod
@@ -28,8 +28,8 @@ class AgentFactory(abc.ABC):
     pass
 
 class FixedAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, scenario: Scenario, recycle: bool = False) -> None:
-    super().__init__(env, scenario, recycle)
+  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False) -> None:
+    super().__init__(env, config, recycle)
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[QLAgent]:
     agents = []
@@ -49,8 +49,8 @@ class FixedAgentFactory(AgentFactory):
     return agent
 
 class QLAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, scenario: Scenario, alpha, gamma, initial_epsilon, min_epsilon, decay, recycle: bool = False) -> None:
-    super().__init__(env, scenario, recycle)
+  def __init__(self, env: SumoEnvironment, config: Config, alpha, gamma, initial_epsilon, min_epsilon, decay, recycle: bool = False) -> None:
+    super().__init__(env, config, recycle)
     self.alpha: float = alpha
     self.gamma: float = gamma
     self.initial_epsilon: float = initial_epsilon
@@ -85,7 +85,7 @@ class QLAgentFactory(AgentFactory):
                                                       min_epsilon=self.min_epsilon,
                                                       decay=self.decay))
     if self.recycle:
-      agent_memory_file = self.scenario.agents_file(None, None, agent_id)
+      agent_memory_file = self.config.agents_file(None, None, agent_id)
       if os.path.exists(agent_memory_file):
         print("recycle agent %s" % agent_memory_file)
         agent.deserialize(agent_memory_file)

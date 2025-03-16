@@ -1,14 +1,13 @@
 """SUMO Environment for Traffic Signal Control."""
+from __future__ import annotations
 
 import os
 import sys
 import numpy
 from pathlib import Path
-from typing import Callable, List, Optional, Tuple, Union
-
+from typing import Optional, Tuple, Union
+import sumo_rl.util.config
 from sumo_rl.environment.datastore import Datastore
-
-
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -73,7 +72,7 @@ class SumoEnvironment(gym.Env):
     def __init__(
         self,
         net_file: str,
-        route_file: str,
+        route_file: str|None = None,
         out_csv_name: Optional[str] = None,
         use_gui: bool = False,
         virtual_display: Tuple[int, int] = (3200, 1800),
@@ -165,6 +164,21 @@ class SumoEnvironment(gym.Env):
         self.rewards = {ts: None for ts in self.ts_ids}
         self.metrics = self.empty_metrics()
 
+    @staticmethod
+    def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction) -> SumoEnvironment:
+      return SumoEnvironment(
+        net_file=config.scenario.network,
+        use_gui=config.sumo.use_gui,
+        num_seconds=config.sumo.seconds,
+        min_green=config.sumo.min_green,
+        delta_time=config.sumo.delta_time,
+        sumo_seed=config.sumo.sumo_seed,
+        observation_fn=observation_fn,
+        reward_fn=reward_fn,
+        fixed_ts=False,
+        additional_sumo_cmd=" ".join(config.sumo.further_cmd_args)
+      )
+
     def _build_traffic_signals(self, conn):
         self.traffic_signals = {
             ts: TrafficSignal(
@@ -183,17 +197,22 @@ class SumoEnvironment(gym.Env):
 
     def _start_simulation(self):
         sumo_cmd = [
-            self._sumo_binary,
-            "-n",
-            self._net,
+          self._sumo_binary,
+          "-n",
+          self._net,
+        ]
+        if self._route is not None:
+          sumo_cmd += [
             "-r",
             self._route,
-            "--max-depart-delay",
-            str(self.max_depart_delay),
-            "--waiting-time-memory",
-            str(self.waiting_time_memory),
-            "--time-to-teleport",
-            str(self.time_to_teleport),
+          ]
+        sumo_cmd += [
+          "--max-depart-delay",
+          str(self.max_depart_delay),
+          "--waiting-time-memory",
+          str(self.waiting_time_memory),
+          "--time-to-teleport",
+          str(self.time_to_teleport),
         ]
         if self.begin_time > 0:
             sumo_cmd.append(f"-b {self.begin_time}")

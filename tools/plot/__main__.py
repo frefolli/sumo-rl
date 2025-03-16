@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 import pandas
 import matplotlib.pyplot
-import sumo_rl.util.scenario
+import sumo_rl.util.config
 import argparse
 import sys
 import enum
@@ -13,17 +13,17 @@ class Datastore:
     TRAINING='training'
     EVALUATION='evaluation'
 
-  def __init__(self, scenario: sumo_rl.util.scenario.Scenario, mode: Datastore.Mode) -> None:
-    self.scenario = scenario
+  def __init__(self, config: sumo_rl.util.config.Config, mode: Datastore.Mode) -> None:
+    self.config = config
     self.mode = mode
     self.runs, self.episodes = self._load_runs_and_episodes()
     self.metrics: dict[int, dict[int, pandas.DataFrame]] = self._load_metrics()
 
   def _load_runs_and_episodes(self):
     if self.mode == Datastore.Mode.EVALUATION:
-      return self.scenario.config.evaluation.runs, self.scenario.config.evaluation.episodes
+      return self.config.evaluation.runs, self.config.evaluation.episodes
     elif self.mode == Datastore.Mode.TRAINING:
-      return self.scenario.config.training.runs, self.scenario.config.training.episodes
+      return self.config.training.runs, self.config.training.episodes
     else:
       raise ValueError(self.mode)
 
@@ -37,17 +37,17 @@ class Datastore:
 
   def metrics_file(self, run, episode) -> str:
     if self.mode == Datastore.Mode.EVALUATION:
-      return self.scenario.evaluation_metrics_file(run, episode)
+      return self.config.evaluation_metrics_file(run, episode)
     elif self.mode == Datastore.Mode.TRAINING:
-      return self.scenario.training_metrics_file(run, episode)
+      return self.config.training_metrics_file(run, episode)
     else:
       raise ValueError(self.mode)
 
   def plots_file(self, label, run, episode) -> str:
     if self.mode == Datastore.Mode.EVALUATION:
-      return self.scenario.evaluation_plots_file(label, run, episode)
+      return self.config.evaluation_plots_file(label, run, episode)
     elif self.mode == Datastore.Mode.TRAINING:
-      return self.scenario.training_plots_file(label, run, episode)
+      return self.config.training_plots_file(label, run, episode)
     else:
       raise ValueError(self.mode)
 
@@ -160,9 +160,9 @@ class Preprocessor:
     return plots
 
   @staticmethod
-  def InitialSet(scenario: sumo_rl.util.scenario.Scenario) -> list[Plot]:
-    training_datastore = Datastore(scenario, Datastore.Mode.TRAINING)
-    evaluation_datastore = Datastore(scenario, Datastore.Mode.EVALUATION)
+  def InitialSet(config: sumo_rl.util.config.Config) -> list[Plot]:
+    training_datastore = Datastore(config, Datastore.Mode.TRAINING)
+    evaluation_datastore = Datastore(config, Datastore.Mode.EVALUATION)
 
     plots = []
     plots += Preprocessor.InitialSubset(training_datastore)
@@ -186,10 +186,10 @@ class Preprocessor:
 
 if __name__ == "__main__":
   cli = argparse.ArgumentParser(sys.argv[0])
-  sumo_rl.util.scenario.Scenario.add_scenario_selection(cli)
+  cli.add_argument('-C', '--config', default='./config.yml', help="Selects YAML config (defaults to ./config.yml)")
   cli_args = cli.parse_args(sys.argv[1:])
-  scenario = sumo_rl.util.scenario.Scenario(cli_args.scenario)
+  config = sumo_rl.util.config.Config.from_yaml_file(cli_args.config)
 
-  plots = Preprocessor.ApplySmoothing(Preprocessor.InitialSet(scenario))
+  plots = Preprocessor.ApplySmoothing(Preprocessor.InitialSet(config))
   for plot in plots:
     plot.plot()

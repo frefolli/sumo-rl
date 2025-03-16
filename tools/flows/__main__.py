@@ -7,14 +7,13 @@ Macchina automatica. No anima
 from typing import Generator
 import xml.etree.ElementTree as ET
 import sumo_rl.models.sumo
+import sumo_rl.models.flows
+import sumo_rl.models.commons
 import argparse
 import sys
 import random
 import os
 
-MIN_GAP = 2.5
-VEHICLE_LENGTH = 5.0
-TAU = 1.0
 random.seed(170701)
 
 def is_reverse_of(A_id: str, B_id: str) -> bool:
@@ -24,94 +23,27 @@ def is_reverse_of(A_id: str, B_id: str) -> bool:
     return True
   return False
 
-class DeadEnd:
-  def __init__(self, id: str) -> None:
-    self.id: str = id
-
-  def __repr__(self) -> str:
-    return self.id
-
-class Lane:
-  def __init__(self, length: float, speed: float) -> None:
-    self.length: float = length
-    self.speed: float = speed
-
-  def flow_capacity(self) -> int:
-    gross_time_headway = (VEHICLE_LENGTH + MIN_GAP) / (self.speed / 3) + TAU
-    lane_capacity = 3600 / gross_time_headway
-    return int(lane_capacity)
-
-  def queue_capacity(self) -> int:
-    lane_capacity = self.length / (VEHICLE_LENGTH + MIN_GAP)
-    return int(lane_capacity)
-
-class Edge:
-  def __init__(self, id: str, from_junction: str, to_junction: str, lanes: list[Lane]) -> None:
-    self.id: str = id
-    self.from_junction: str = from_junction
-    self.to_junction: str = to_junction
-    self.lanes: list[Lane] = lanes
-
-  def flow_capacity(self) -> int:
-    return sum([lane.flow_capacity() for lane in self.lanes])
-
-  def queue_capacity(self) -> int:
-    return sum([lane.queue_capacity() for lane in self.lanes])
-
-  def __repr__(self) -> str:
-    return "%s -> %s" % (self.from_junction, self.to_junction)
-
-FLOW_IDX = 0
-class Flow(sumo_rl.models.sumo.JunctionFlow):
-  @staticmethod
-  def nextID() -> str:
-    global FLOW_IDX
-    id = FLOW_IDX
-    FLOW_IDX += 1
-    return 'JF' + str(id)
-
-  def change_begin(self, new_begin: int):
-    assert new_begin >= 0
-    duration = self.end - self.begin
-    new_end = new_begin + duration
-    self.begin, self.end = new_begin, new_end
-
-  def change_end(self, new_end: int):
-    duration = self.end - self.begin
-    new_begin = new_end - duration
-    assert new_begin >= 0
-    self.begin, self.end = new_begin, new_end
-
-  def change_duration(self, new_duration: int):
-    assert new_duration >= 0
-    new_end = self.begin + new_duration
-    self.end = new_end
-
-  def __repr__(self) -> str:
-    return self.to_xml()
-    return "%s -> %s :: %s" % (self.fromJunction, self.toJunction, self.vehsPerHour)
-
-def acquire_dead_ends(xml_root) -> list[DeadEnd]:
+def acquire_dead_ends(xml_root) -> list[sumo_rl.models.flows.DeadEnd]:
   dead_ends = []
   for child in xml_root:
     if child.tag == 'junction':
       if child.attrib['type'] == 'dead_end':
-        dead_ends.append(DeadEnd(child.attrib['id']))
+        dead_ends.append(sumo_rl.models.flows.DeadEnd(child.attrib['id']))
   return dead_ends
 
-def acquire_edges(xml_root) -> list[Edge]:
+def acquire_edges(xml_root) -> list[sumo_rl.models.flows.Edge]:
   edges = []
   for child in xml_root:
     if child.tag == 'edge':
       if 'function' not in child.attrib:
-        edges.append(Edge(child.attrib['id'], child.attrib['from'], child.attrib['to'], [
-          Lane(float(lane.attrib['length']), float(lane.attrib['speed']))
+        edges.append(sumo_rl.models.flows.Edge(child.attrib['id'], child.attrib['from'], child.attrib['to'], [
+          sumo_rl.models.flows.Lane(float(lane.attrib['length']), float(lane.attrib['speed']))
           for lane in child
           if ('allow' not in lane.attrib or lane.attrib['allow'] in ['all'])
         ]))
   return edges
 
-def compute_flow_capacity_in_vehicles_per_hour(dead_ends: list[DeadEnd], edges: list[Edge]) -> int:
+def compute_flow_capacity_in_vehicles_per_hour(dead_ends: list[sumo_rl.models.flows.DeadEnd], edges: list[sumo_rl.models.flows.Edge]) -> int:
   dead_end_map = {dead_end.id:dead_end for dead_end in dead_ends}
   return sum([
     lane.flow_capacity()
@@ -120,7 +52,7 @@ def compute_flow_capacity_in_vehicles_per_hour(dead_ends: list[DeadEnd], edges: 
     if (edge.from_junction in dead_end_map or edge.to_junction in dead_end_map)
   ])
 
-def compute_queue_capacity_in_vehicles_per_hour(edges: list[Edge]) -> int:
+def compute_queue_capacity_in_vehicles_per_hour(edges: list[sumo_rl.models.flows.Edge]) -> int:
   return sum([lane.queue_capacity() for edge in edges for lane in edge.lanes])
 
 def extract_at_random(pickables: list, amount_to_extract: int) -> tuple[list, list]:
@@ -144,7 +76,7 @@ def extract_all_combs(pickables: list, amount_to_extract: int) -> Generator[tupl
     for (yes, no) in extract_all_combs(pickables[1:], amount_to_extract):
       yield (yes, no + [el])
 
-def assign_flows(traffic_caps: dict[str, int], headings: dict[str, list[tuple[tuple[DeadEnd, DeadEnd], bool]]]):
+def assign_flows(traffic_caps: dict[str, int], headings: dict[str, list[tuple[tuple[sumo_rl.models.flows.DeadEnd, sumo_rl.models.flows.DeadEnd], bool]]]):
   LOW_TRAFFIC_CAP_PER = 0.2
   HIGH_TRAFFIC_CAP_PER = 1.0
   LOW_TRAFFIC_WEIGHT_PER = 0.2
@@ -163,10 +95,10 @@ def assign_flows(traffic_caps: dict[str, int], headings: dict[str, list[tuple[tu
     shares = [weight / sum_of_weights for weight in weights]
 
     for direction, share in zip(directions, shares):
-      flows.append(Flow(Flow.nextID(), 0, 3600, direction[0][0], direction[0][1], share * traffic_cap))
+      flows.append(sumo_rl.models.flows.Flow(sumo_rl.models.flows.Flow.nextID(), 0, 3600, direction[0][0], direction[0][1], share * traffic_cap))
   return flows
 
-def prepare_data_for_flow_design(dead_ends: list[DeadEnd], edges: list[Edge], number_of_busy_directions: int = None, high_traffic_ratio: float = None):
+def prepare_data_for_flow_design(dead_ends: list[sumo_rl.models.flows.DeadEnd], edges: list[sumo_rl.models.flows.Edge], number_of_busy_directions: int = None, high_traffic_ratio: float = None):
   dead_end_map = {dead_end.id:dead_end for dead_end in dead_ends}
   dead_end_edges_map = {}
   for edge in edges:
@@ -208,11 +140,11 @@ def execute_flow_design(dead_end_edges_map, high_traffic_directions, low_traffic
 
   return assign_flows(traffic_caps, headings)
 
-def create_random_flow(dead_ends: list[DeadEnd], edges: list[Edge], number_of_busy_directions: int = None, high_traffic_ratio: float = None) -> list[Flow]:
+def create_random_flow(dead_ends: list[sumo_rl.models.flows.DeadEnd], edges: list[sumo_rl.models.flows.Edge], number_of_busy_directions: int = None, high_traffic_ratio: float = None) -> list[sumo_rl.models.flows.Flow]:
   directions, number_of_busy_directions, dead_end_edges_map = prepare_data_for_flow_design(dead_ends, edges, number_of_busy_directions, high_traffic_ratio)
 
-  high_traffic_directions: list[tuple[DeadEnd, DeadEnd]]
-  low_traffic_directions: list[tuple[DeadEnd, DeadEnd]]
+  high_traffic_directions: list[tuple[sumo_rl.models.flows.DeadEnd, sumo_rl.models.flows.DeadEnd]]
+  low_traffic_directions: list[tuple[sumo_rl.models.flows.DeadEnd, sumo_rl.models.flows.DeadEnd]]
   if number_of_busy_directions == 0:
     high_traffic_directions = []
     low_traffic_directions = directions
@@ -224,7 +156,7 @@ def create_random_flow(dead_ends: list[DeadEnd], edges: list[Edge], number_of_bu
   flows = execute_flow_design(dead_end_edges_map, high_traffic_directions, low_traffic_directions)
   return flows
 
-def create_all_flows(dead_ends: list[DeadEnd], edges: list[Edge], number_of_busy_directions: int = None, high_traffic_ratio: float = None) -> list[Flow]:
+def create_all_flows(dead_ends: list[sumo_rl.models.flows.DeadEnd], edges: list[sumo_rl.models.flows.Edge], number_of_busy_directions: int = None, high_traffic_ratio: float = None) -> list[sumo_rl.models.flows.Flow]:
   directions, number_of_busy_directions, dead_end_edges_map = prepare_data_for_flow_design(dead_ends, edges, number_of_busy_directions, high_traffic_ratio)
 
   flows = []
@@ -237,8 +169,11 @@ if __name__ == "__main__":
   argument_parser.add_argument('-s', '--scenario', default='lisca', help='Input scenario')
   argument_parser.add_argument('-oF', '--output-file', default='/tmp/routes.rou.xml', help='Output file')
   argument_parser.add_argument('-oD', '--output-dir', default='output', help='Output directory')
-  argument_parser.add_argument('-R', '--random', action='store_true', help='Generates a random routes file')
-  argument_parser.add_argument('-C', '--complex', action='store_true', help='Generates a random complex routes file')
+  argument_parser.add_argument('-R', '--random', type=int, default=None, help='Generates an amount of random routes files')
+  argument_parser.add_argument('-C', '--complex', type=int, default=None, help='Generates an amount of random complex routes files')
+  argument_parser.add_argument('-b', '--busyness', type=int, default=1, help='How much busy directions there should be in a routes file')
+  argument_parser.add_argument('-d', '--duration', type=int, default=10000, help='How much a flow configuration should be hold to last')
+  argument_parser.add_argument('-c', '--complexity', type=int, default=5, help='How much flow configurations should be created in a complex routes file')
   argument_parser.add_argument('-A', '--all', action='store_true', help='Generates all routes files for atomic scenarious saving them as scenarios')
   cli_args = argument_parser.parse_args(sys.argv[1:])
 
@@ -250,26 +185,30 @@ if __name__ == "__main__":
   dead_ends = acquire_dead_ends(xml_root)
 
   if cli_args.random:
-    flows = create_random_flow(dead_ends, edges, number_of_busy_directions=1)
-    sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(cli_args.output_file)
+    os.system("rm -rf %s" % (cli_args.output_dir))
+    sumo_rl.models.commons.ensure_dir(cli_args.output_dir)
+    for idx in range(cli_args.random):
+      path = os.path.join(cli_args.output_dir, 'routes.%s.rou.xml' % idx)
+      flows = create_random_flow(dead_ends, edges, number_of_busy_directions=cli_args.busyness)
+      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(path)
   elif cli_args.complex:
-    begin = 0
-    duration = 10000
-    flows = []
-    for _ in range(5):
-      _flows = create_random_flow(dead_ends, edges, number_of_busy_directions=1)
-      for flow in _flows:
-        flow.change_begin(begin)
-      begin += duration
-      flows += _flows
-    sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(cli_args.output_file)
+    os.system("rm -rf %s" % (cli_args.output_dir))
+    sumo_rl.models.commons.ensure_dir(cli_args.output_dir)
+    for idx in range(cli_args.complex):
+      path = os.path.join(cli_args.output_dir, 'routes.%s.rou.xml' % idx)
+      begin = 0
+      flows = []
+      for _ in range(cli_args.complexity):
+        _flows = create_random_flow(dead_ends, edges, number_of_busy_directions=cli_args.busyness)
+        for flow in _flows:
+          flow.change_begin(begin)
+        begin += cli_args.duration
+        flows += _flows
+      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(path)
   elif cli_args.all:
     os.system("rm -rf %s" % (cli_args.output_dir))
-    all_flows = create_all_flows(dead_ends, edges, number_of_busy_directions=1)
+    sumo_rl.models.commons.ensure_dir(cli_args.output_dir)
+    all_flows = create_all_flows(dead_ends, edges, number_of_busy_directions=cli_args.busyness)
     for idx, flows in enumerate(all_flows):
-      directory = "%s-%s" % (cli_args.scenario, idx)
-      os.makedirs("%s/%s" % (cli_args.output_dir, directory))
-      os.system("cp ./skel/* %s/%s" % (cli_args.output, directory))
-      os.system("cp %s %s/%s" % (network_file, cli_args.output_dir, directory))
-      routes_file = "%s/%s/routes.rou.xml" % (cli_args.output_dir, directory)
-      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(routes_file)
+      path = os.path.join(cli_args.output_dir, 'routes.%s.rou.xml' % idx)
+      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(path)

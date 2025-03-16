@@ -1,26 +1,30 @@
 from __future__ import annotations
 import abc
 import json
+import yaml
+import pickle
 """
 Magic of SerDe
 """
 
+## Dict
 class SerdeDict(abc.ABC):
   @abc.abstractmethod
   def to_dict(self) -> dict:
     pass
 
-  @staticmethod
+  @classmethod
   @abc.abstractmethod
-  def from_dict(data: dict) -> SerdeDict:
+  def from_dict(cls, data: dict):
     pass
 
+## JSON
 class SerdeJson(SerdeDict):
   def to_json(self) -> str:
     return json.dumps(self.to_dict())
 
   @classmethod
-  def from_json(cls, data: str) -> SerdeJson:
+  def from_json(cls, data: str):
     return cls.from_dict(json.loads(data))
 
 class SerdeJsonFile(SerdeJson):
@@ -29,10 +33,12 @@ class SerdeJsonFile(SerdeJson):
       file.write(self.to_json())
 
   @classmethod
-  def from_json_file(cls, filepath: str) -> SerdeJsonFile:
+  def from_json_file(cls, filepath: str):
     with open(filepath, mode="r", encoding="utf-8") as file:
-      return cls.from_json(file.read())
+      data = cls.from_json(file.read())
+    return data
 
+## XML
 class SerdeXML(abc.ABC):
   @abc.abstractmethod
   def to_xml(self, indent: int = 0) -> str:
@@ -42,3 +48,35 @@ class SerdeXMLFile(SerdeXML):
   def to_xml_file(self, filepath: str):
     with open(filepath, mode="w", encoding="utf-8") as file:
       file.write(self.to_xml())
+
+## YAML
+class SerdeYaml(SerdeDict):
+  def to_yaml(self) -> str:
+    return yaml.dump(self.to_dict(), Dumper=yaml.Dumper)
+
+  @classmethod
+  def from_yaml(cls, data: str):
+    return cls.from_dict(yaml.load(data, Loader=yaml.Loader))
+
+class SerdeYamlFile(SerdeYaml):
+  def to_yaml_file(self, filepath: str):
+    with open(filepath, mode="w", encoding="utf-8") as file:
+      file.write(self.to_yaml())
+
+  @classmethod
+  def from_yaml_file(cls, filepath: str):
+    with open(filepath, mode="r", encoding="utf-8") as file:
+      data = cls.from_yaml(file.read())
+    return data
+
+## Pickle
+class SerdePickleFile:
+  def to_pickle_file(self, filepath: str):
+    with open(filepath, mode="wb", encoding="utf-8") as file:
+      pickle.dump(self, file)
+
+  @classmethod
+  def from_pickle_file(cls, filepath: str):
+    with open(filepath, mode="rb", encoding="utf-8") as file:
+      data = pickle.load(file)
+    return data

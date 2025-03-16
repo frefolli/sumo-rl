@@ -1,18 +1,6 @@
-sumo:
-  seconds: 10000
-  min_green: 5
-  delta_time: 5
-  use_gui: false
-  sumo_seed: 170701
-agent:
-  alpha: 0.1
-  gamma: 0.99
-  initial_epsilon: 0.05
-  min_epsilon: 0.005
-  decay: 1
-training:
-  runs: 1
-  episodes: 10
-evaluation:
-  runs: 1
-  episodes: 1
+network: network.net.xml
+routes:
+  training:
+    - routes.rou.xml
+  evaluation:
+    - routes.rou.xml

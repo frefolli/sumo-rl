@@ -32,6 +32,11 @@ class Point:
 def indentation(indent: int = 0):
   return "  " * indent
 
+def ensure_dir(dir: str) -> str:
+  if not os.path.exists(dir):
+    os.makedirs(dir)
+  return dir
+
 class Cache:
   def __init__(self):
     self.index: dict[str, typing.Any] = {}
