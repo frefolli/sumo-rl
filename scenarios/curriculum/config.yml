@@ -342,3 +342,5 @@ routes:
   - evaluation/routes.97.rou.xml
   - evaluation/routes.98.rou.xml
   - evaluation/routes.99.rou.xml
+  demo:
+    - routes.rou.xml

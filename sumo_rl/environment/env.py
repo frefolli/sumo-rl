@@ -164,11 +164,14 @@ class SumoEnvironment(gym.Env):
         self.rewards = {ts: None for ts in self.ts_ids}
         self.metrics = self.empty_metrics()
 
+    def set_duration(self, num_seconds: int):
+        self.sim_max_time = self.begin_time + num_seconds
+
     @staticmethod
-    def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction) -> SumoEnvironment:
+    def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False) -> SumoEnvironment:
       return SumoEnvironment(
         net_file=config.scenario.network,
-        use_gui=config.sumo.use_gui,
+        use_gui=use_gui,
         num_seconds=config.sumo.seconds,
         min_green=config.sumo.min_green,
         delta_time=config.sumo.delta_time,

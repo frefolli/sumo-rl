@@ -59,15 +59,29 @@ def reward_fn_by_option(cli_args) -> sumo_rl.rewards.RewardFunction:
   raise ValueError(val)
 
 def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
-    for run in range(config.training.runs):
-      for episode in range(config.training.episodes):
-        for routes_file in config.scenario.training_routes:
-          env.sumo_seed += 1
-          env._route = routes_file
-          print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
-          env.reset()
+  env.set_duration(config.training.seconds)
+  for run in range(config.training.runs):
+    for episode in range(config.training.episodes):
+      for routes_file in config.scenario.training_routes:
+        env.sumo_seed += 1
+        env._route = routes_file
+        print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
+        env.reset()
+        for agent in agents:
+          agent.reset()
+        env.gather_data_from_sumo()
+        env.compute_observations()
+        env.compute_rewards()
+        env.compute_metrics()
+        for agent in agents:
+          if agent.can_observe():
+            agent.observe(env.observations)
+        while not env.done():
+          actions = {}
+          print(env.sim_step, end="\r")
           for agent in agents:
-            agent.reset()
+            actions.update(agent.act())
+          env.step(action=actions)
           env.gather_data_from_sumo()
           env.compute_observations()
           env.compute_rewards()
@@ -75,48 +89,49 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
           for agent in agents:
             if agent.can_observe():
               agent.observe(env.observations)
-          while not env.done():
-            actions = {}
-            print(env.sim_step, end="\r")
-            for agent in agents:
-              actions.update(agent.act())
-            env.step(action=actions)
-            env.gather_data_from_sumo()
-            env.compute_observations()
-            env.compute_rewards()
-            env.compute_metrics()
-            for agent in agents:
-              if agent.can_observe():
-                agent.observe(env.observations)
-              if agent.can_learn():
-                agent.learn(env.rewards)
-          print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
+            if agent.can_learn():
+              agent.learn(env.rewards)
+        print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
 
-          # Serialize Metrics
-          path = config.training_metrics_file(run, episode)
-          pandas.DataFrame(env.metrics).to_csv(path, index=False)
+        # Serialize Metrics
+        path = config.training_metrics_file(run, episode)
+        pandas.DataFrame(env.metrics).to_csv(path, index=False)
 
-          # Serialize Agents
-          for agent in agents:
-            if agent.can_be_serialized():
-              path = config.agents_file(None, None, agent.id)
-              agent.serialize(path)
-      # Serialize Agents
-      for agent in agents:
-        if agent.can_be_serialized():
-          path = config.agents_file(None, None, agent.id)
-          agent.serialize(path)
+        # Serialize Agents
+        for agent in agents:
+          if agent.can_be_serialized():
+            path = config.agents_file(None, None, agent.id)
+            agent.serialize(path)
+    # Serialize Agents
+    for agent in agents:
+      if agent.can_be_serialized():
+        path = config.agents_file(None, None, agent.id)
+        agent.serialize(path)
 
 def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
-    for run in range(config.evaluation.runs):
-      for episode in range(config.evaluation.episodes):
-        for routes_file in config.scenario.evaluation_routes:
-          env.sumo_seed += 1
-          env._route = routes_file
-          print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
-          env.reset()
+  env.set_duration(config.evaluation.seconds)
+  for run in range(config.evaluation.runs):
+    for episode in range(config.evaluation.episodes):
+      for routes_file in config.scenario.evaluation_routes:
+        env.sumo_seed += 1
+        env._route = routes_file
+        print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
+        env.reset()
+        for agent in agents:
+          agent.reset()
+        env.gather_data_from_sumo()
+        env.compute_observations()
+        # env.compute_rewards()
+        env.compute_metrics()
+        for agent in agents:
+          if agent.can_observe():
+            agent.observe(env.observations)
+        while not env.done():
+          actions = {}
+          print(env.sim_step, end="\r")
           for agent in agents:
-            agent.reset()
+            actions.update(agent.act())
+          env.step(action=actions)
           env.gather_data_from_sumo()
           env.compute_observations()
           # env.compute_rewards()
@@ -124,24 +139,42 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
           for agent in agents:
             if agent.can_observe():
               agent.observe(env.observations)
-          while not env.done():
-            actions = {}
-            print(env.sim_step, end="\r")
-            for agent in agents:
-              actions.update(agent.act())
-            env.step(action=actions)
-            env.gather_data_from_sumo()
-            env.compute_observations()
-            # env.compute_rewards()
-            env.compute_metrics()
-            for agent in agents:
-              if agent.can_observe():
-                agent.observe(env.observations)
-          print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
+        print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
 
-          # Serialize Metrics
-          path = config.evaluation_metrics_file(run, episode)
-          pandas.DataFrame(env.metrics).to_csv(path, index=False)
+        # Serialize Metrics
+        path = config.evaluation_metrics_file(run, episode)
+        pandas.DataFrame(env.metrics).to_csv(path, index=False)
+
+def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
+  env.set_duration(config.demo.seconds)
+  routes_file = config.scenario.demo_routes[0]
+  env.sumo_seed += 1
+  env._route = routes_file
+  print("Demo :: Routes(%s)/Seed(%s) :: Starting" % (routes_file, env.sumo_seed))
+  env.reset()
+  for agent in agents:
+    agent.reset()
+  env.gather_data_from_sumo()
+  env.compute_observations()
+  # env.compute_rewards()
+  # env.compute_metrics()
+  for agent in agents:
+    if agent.can_observe():
+      agent.observe(env.observations)
+  while not env.done():
+    actions = {}
+    print(env.sim_step, end="\r")
+    for agent in agents:
+      actions.update(agent.act())
+    env.step(action=actions)
+    env.gather_data_from_sumo()
+    env.compute_observations()
+    # env.compute_rewards()
+    # env.compute_metrics()
+    for agent in agents:
+      if agent.can_observe():
+        agent.observe(env.observations)
+  print("Demo :: Routes(%s)/Seed(%s) :: Ended" % (routes_file, env.sumo_seed))
 
 def show_args(cli_args):
   print("Calling with ", {
@@ -150,8 +183,11 @@ def show_args(cli_args):
     'cli_args.observation': cli_args.observation,
     'cli_args.reward': cli_args.reward,
     'cli_args.recycle': cli_args.recycle,
-    'cli_args.pretend': cli_args.pretend
-  })
+    'cli_args.pretend': cli_args.pretend,
+    'cli_args.do_training': cli_args.do_training,
+    'cli_args.do_evaluation': cli_args.do_evaluation,
+    'cli_args.do_demo': cli_args.do_demo
+    })
 
 def main():
   cli = argparse.ArgumentParser(sys.argv[0])
@@ -162,22 +198,31 @@ def main():
   cli.add_argument('-R', '--reward', choices=['dwt', 'as', 'ql', 'p'], default='dwt', help="Select reward function (defaults to dwt)")
   cli.add_argument('-r', '--recycle', action="store_true", default=False, help="If it has to recycle previously trained agents (by means of serialization)")
   cli.add_argument('-p', '--pretend', action="store_true", default=False, help="Don't actually start training and evaluation simulations")
+  cli.add_argument('-g', '--use-gui', action="store_true", default=False, help="Uses GUI")
+  cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
+  cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
+  cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
   cli_args = cli.parse_args(sys.argv[1:])
   show_args(cli_args)
   config: sumo_rl.util.config.Config = sumo_rl.util.config.Config.from_yaml_file(cli_args.config)
 
-  assert ((not config.sumo.use_gui) or (os.environ.get("LIBSUMO_AS_TRACI") != '1'))
+  assert ((not cli_args.use_gui) or (os.environ.get("LIBSUMO_AS_TRACI") != '1'))
+  assert ((cli_args.use_gui) or (not cli_args.do_demo))
 
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
-  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn)
+  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui)
   agent_factory: sumo_rl.preprocessing.factories.AgentFactory = agent_factory_by_option(cli_args, config, env)
   agents_partition: sumo_rl.preprocessing.partitions.Partition = partition_by_option(cli_args, env)
   agents: list[sumo_rl.agents.Agent] = agent_factory.agent_by_assignments(agents_partition.data)
 
   if not cli_args.pretend:
-    perform_training(config, agents, env)
-    perform_evaluation(config, agents, env)
+    if cli_args.do_training:
+      perform_training(config, agents, env)
+    if cli_args.do_evaluation:
+      perform_evaluation(config, agents, env)
+    if cli_args.do_demo:
+      perform_demo(config, agents, env)
   env.close()
 
 if __name__ == "__main__":

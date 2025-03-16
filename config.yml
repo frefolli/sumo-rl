@@ -2,7 +2,6 @@ sumo:
   seconds: 10000
   min_green: 5
   delta_time: 5
-  use_gui: false
   sumo_seed: 170701
   further_cmd_args:
     - --junction-taz
@@ -16,12 +15,16 @@ agents:
     min_epsilon: 0.005
     decay: 1
 training:
+  seconds: 10000
   runs: 1
-  episodes: 1
+  episodes: 10
 evaluation:
+  seconds: 50000
   runs: 1
   episodes: 1
-scenario: ./scenarios/lisca
+demo:
+  seconds: 50000
+scenario: ./scenarios/breda
 artifacts:
   agents: ./outputs/agents
   metrics: ./outputs/metrics

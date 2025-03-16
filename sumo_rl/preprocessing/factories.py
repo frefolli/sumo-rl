@@ -90,5 +90,5 @@ class QLAgentFactory(AgentFactory):
         print("recycle agent %s" % agent_memory_file)
         agent.deserialize(agent_memory_file)
       else:
-        print("rebuilding agent %s" % agent_memory_file)
+        print("building agent %s" % agent_memory_file)
     return agent

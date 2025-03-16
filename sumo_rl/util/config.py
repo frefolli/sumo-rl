@@ -8,7 +8,6 @@ class SumoConfig(SerdeDict):
     self.seconds: int = data['seconds']
     self.min_green: int = data['min_green']
     self.delta_time: int = data['delta_time']
-    self.use_gui: bool = data['use_gui']
     self.sumo_seed: int = data['sumo_seed']
     self.further_cmd_args: list[str] = data['further_cmd_args']
 
@@ -17,7 +16,6 @@ class SumoConfig(SerdeDict):
       'seconds': self.seconds,
       'min_green': self.min_green,
       'delta_time': self.delta_time,
-      'use_gui': self.use_gui,
       'sumo_seed': self.sumo_seed,
       'further_cmd_args': self.further_cmd_args,
     }
@@ -79,11 +77,13 @@ class TrainingConfig(SerdeDict):
   def __init__(self, data: dict):
     self.runs: int = data['runs']
     self.episodes: int = data['episodes']
+    self.seconds: int = data['seconds']
 
   def to_dict(self) -> dict:
     return {
       'runs': self.runs,
       'episodes': self.episodes,
+      'seconds': self.seconds,
     }
 
   @staticmethod
@@ -94,16 +94,31 @@ class EvaluationConfig(SerdeDict):
   def __init__(self, data: dict):
     self.runs: int = data['runs']
     self.episodes: int = data['episodes']
+    self.seconds: int = data['seconds']
 
   def to_dict(self) -> dict:
     return {
       'runs': self.runs,
       'episodes': self.episodes,
+      'seconds': self.seconds,
     }
 
   @staticmethod
   def from_dict(data: dict) -> EvaluationConfig:
     return EvaluationConfig(data)
+
+class DemoConfig(SerdeDict):
+  def __init__(self, data: dict):
+    self.seconds: int = data['seconds']
+
+  def to_dict(self) -> dict:
+    return {
+      'seconds': self.seconds,
+    }
+
+  @staticmethod
+  def from_dict(data: dict) -> DemoConfig:
+    return DemoConfig(data)
 
 class ScenarioConfig(SerdeYamlFile, SerdeJsonFile):
   def __init__(self, data: dict):
@@ -111,14 +126,17 @@ class ScenarioConfig(SerdeYamlFile, SerdeJsonFile):
     self._network: str = data['network']
     self._training_routes: list[str] = data['routes']['training']
     self._evaluation_routes: list[str] = data['routes']['evaluation']
+    self._demo_routes: list[str] = data['routes']['demo']
     self.network = ""
     self.training_routes = []
     self.evaluation_routes = []
+    self.demo_routes = []
 
   def set_path(self, path: str):
     self.network = ""
     self.training_routes = []
     self.evaluation_routes = []
+    self.demo_routes = []
 
     network = os.path.join(path, self._network)
     if not os.path.exists(network):
@@ -137,11 +155,19 @@ class ScenarioConfig(SerdeYamlFile, SerdeJsonFile):
       if not os.path.exists(network):
         raise ValueError("scenario %s declared %s evaluation route file but %s doesn't exist" % (path, file, qualified))
       evaluation_routes.append(qualified)
+
+    demo_routes = []
+    for file in self._demo_routes:
+      qualified = os.path.join(path, file)
+      if not os.path.exists(network):
+        raise ValueError("scenario %s declared %s demo route file but %s doesn't exist" % (path, file, qualified))
+      demo_routes.append(qualified)
     
     self._path = path
     self.network = network
     self.training_routes = training_routes
     self.evaluation_routes = evaluation_routes
+    self.demo_routes = demo_routes
 
   def get_path(self) -> str:
     if self._path == "":
@@ -154,6 +180,7 @@ class ScenarioConfig(SerdeYamlFile, SerdeJsonFile):
       'routes': {
         'training': self._training_routes,
         'evaluation': self._evaluation_routes,
+        'demo': self._demo_routes,
       },
     }
 
@@ -184,6 +211,7 @@ class Config(SerdeYamlFile, SerdeJsonFile):
     self.agents: AgentsConfig = AgentsConfig.from_dict(data['agents'])
     self.training: TrainingConfig = TrainingConfig.from_dict(data['training'])
     self.evaluation: EvaluationConfig = EvaluationConfig.from_dict(data['evaluation'])
+    self.demo: DemoConfig = DemoConfig.from_dict(data['demo'])
     self.artifacts: ArtifactsConfig = ArtifactsConfig.from_dict(data['artifacts'])
 
     path = data['scenario']
@@ -196,6 +224,7 @@ class Config(SerdeYamlFile, SerdeJsonFile):
       'agents': self.agents.to_dict(),
       'training': self.training.to_dict(),
       'evaluation': self.evaluation.to_dict(),
+      'demo': self.demo.to_dict(),
       'scenario': self.scenario.get_path(),
       'artifacts': self.artifacts.to_dict(),
     }
