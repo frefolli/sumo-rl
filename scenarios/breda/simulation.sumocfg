@@ -6,9 +6,9 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
+        <junction-taz value="true"/>
         <net-file value="network.net.xml"/>
         <route-files value="routes.rou.xml"/>
-        <junction-taz value="true"/>
     </input>
 
 </configuration>
