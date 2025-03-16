@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+  <flow id="JF210" begin="0" fromJunction="J3" toJunction="J5" end="3600" vehsPerHour="1374.0"/>
+  <flow id="JF211" begin="0" fromJunction="J3" toJunction="J6" end="3600" vehsPerHour="343.5"/>
+  <flow id="JF212" begin="0" fromJunction="J3" toJunction="J7" end="3600" vehsPerHour="343.5"/>
+  <flow id="JF213" begin="0" fromJunction="J3" toJunction="J4" end="3600" vehsPerHour="343.5"/>
+  <flow id="JF214" begin="0" fromJunction="J3" toJunction="J0" end="3600" vehsPerHour="343.5"/>
+  <flow id="JF215" begin="0" fromJunction="J4" toJunction="J0" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF216" begin="0" fromJunction="J4" toJunction="J3" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF217" begin="0" fromJunction="J4" toJunction="J5" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF218" begin="0" fromJunction="J4" toJunction="J6" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF219" begin="0" fromJunction="J4" toJunction="J7" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF220" begin="0" fromJunction="J5" toJunction="J0" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF221" begin="0" fromJunction="J5" toJunction="J3" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF222" begin="0" fromJunction="J5" toJunction="J4" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF223" begin="0" fromJunction="J5" toJunction="J6" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF224" begin="0" fromJunction="J5" toJunction="J7" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF225" begin="0" fromJunction="J6" toJunction="J0" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF226" begin="0" fromJunction="J6" toJunction="J3" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF227" begin="0" fromJunction="J6" toJunction="J4" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF228" begin="0" fromJunction="J6" toJunction="J5" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF229" begin="0" fromJunction="J6" toJunction="J7" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF230" begin="0" fromJunction="J7" toJunction="J0" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF231" begin="0" fromJunction="J7" toJunction="J3" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF232" begin="0" fromJunction="J7" toJunction="J4" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF233" begin="0" fromJunction="J7" toJunction="J5" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF234" begin="0" fromJunction="J7" toJunction="J6" end="3600" vehsPerHour="54.96000000000001"/>
+  <flow id="JF235" begin="0" fromJunction="J0" toJunction="J7" end="3600" vehsPerHour="109.92000000000002"/>
+  <flow id="JF236" begin="0" fromJunction="J0" toJunction="J6" end="3600" vehsPerHour="109.92000000000002"/>
+  <flow id="JF237" begin="0" fromJunction="J0" toJunction="J5" end="3600" vehsPerHour="109.92000000000002"/>
+  <flow id="JF238" begin="0" fromJunction="J0" toJunction="J4" end="3600" vehsPerHour="109.92000000000002"/>
+  <flow id="JF239" begin="0" fromJunction="J0" toJunction="J3" end="3600" vehsPerHour="109.92000000000002"/>
+</routes>
