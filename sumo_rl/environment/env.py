@@ -96,6 +96,7 @@ class SumoEnvironment(gym.Env):
         sumo_warnings: bool = True,
         additional_sumo_cmd: Optional[str] = None,
         render_mode: Optional[str] = None,
+        jobs: int = 1,
     ) -> None:
         """Initialize the environment."""
         assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
@@ -132,6 +133,7 @@ class SumoEnvironment(gym.Env):
         self.add_system_info = add_system_info
         self.add_per_agent_info = add_per_agent_info
         self.label = str(SumoEnvironment.CONNECTION_LABEL)
+        self.jobs = jobs
         SumoEnvironment.CONNECTION_LABEL += 1
         self.sumo = None
 
@@ -168,7 +170,7 @@ class SumoEnvironment(gym.Env):
         self.sim_max_time = self.begin_time + num_seconds
 
     @staticmethod
-    def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False) -> SumoEnvironment:
+    def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1) -> SumoEnvironment:
       return SumoEnvironment(
         net_file=config.scenario.network,
         use_gui=use_gui,
@@ -179,7 +181,8 @@ class SumoEnvironment(gym.Env):
         observation_fn=observation_fn,
         reward_fn=reward_fn,
         fixed_ts=False,
-        additional_sumo_cmd=" ".join(config.sumo.further_cmd_args)
+        additional_sumo_cmd=" ".join(config.sumo.further_cmd_args),
+        jobs=jobs
       )
 
     def _build_traffic_signals(self, conn):
@@ -216,6 +219,9 @@ class SumoEnvironment(gym.Env):
           str(self.waiting_time_memory),
           "--time-to-teleport",
           str(self.time_to_teleport),
+        ]
+        sumo_cmd += [
+          "--threads", str(self.jobs)
         ]
         if self.begin_time > 0:
             sumo_cmd.append(f"-b {self.begin_time}")

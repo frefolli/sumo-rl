@@ -16,6 +16,11 @@ if "SUMO_HOME" in os.environ:
 else:
   sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
+def nproc(jobs: int|None):
+  if jobs is None:
+    return os.cpu_count()
+  return jobs
+
 def agent_factory_by_option(cli_args, config: sumo_rl.util.config.Config, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.factories.AgentFactory:
   val = cli_args.agent
   if val == 'fixed':
@@ -199,6 +204,7 @@ def main():
   cli.add_argument('-r', '--recycle', action="store_true", default=False, help="If it has to recycle previously trained agents (by means of serialization)")
   cli.add_argument('-p', '--pretend', action="store_true", default=False, help="Don't actually start training and evaluation simulations")
   cli.add_argument('-g', '--use-gui', action="store_true", default=False, help="Uses GUI")
+  cli.add_argument('-j', '--jobs', type=int, default=1, nargs='?', help="Uses j number of threads")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
@@ -211,7 +217,7 @@ def main():
 
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
-  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui)
+  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs))
   agent_factory: sumo_rl.preprocessing.factories.AgentFactory = agent_factory_by_option(cli_args, config, env)
   agents_partition: sumo_rl.preprocessing.partitions.Partition = partition_by_option(cli_args, env)
   agents: list[sumo_rl.agents.Agent] = agent_factory.agent_by_assignments(agents_partition.data)
