@@ -1,3 +1,4 @@
+from sumo_rl.models.commons import Point
 import sumo_rl.models.sumo
 
 MIN_GAP = 2.5
@@ -26,11 +27,12 @@ class Lane:
     return int(lane_capacity)
 
 class Edge:
-  def __init__(self, id: str, from_junction: str, to_junction: str, lanes: list[Lane]) -> None:
+  def __init__(self, id: str, from_junction: str, to_junction: str, lanes: list[Lane], shape: list[Point]) -> None:
     self.id: str = id
     self.from_junction: str = from_junction
     self.to_junction: str = to_junction
     self.lanes: list[Lane] = lanes
+    self.shape: list[Point] = shape
 
   def flow_capacity(self) -> int:
     return sum([lane.flow_capacity() for lane in self.lanes])

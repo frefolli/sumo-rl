@@ -33,6 +33,8 @@ def agent_factory_by_option(cli_args, config: sumo_rl.util.config.Config, env: s
                                                           config.agents.ql.min_epsilon,
                                                           config.agents.ql.decay,
                                                           recycle=cli_args.recycle)
+  if val == 'dqn':
+    return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config, recycle=cli_args.recycle)
   raise ValueError(val)
 
 def partition_by_option(cli_args, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.partitions.Partition:
@@ -171,6 +173,7 @@ def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents
     print(env.sim_step, end="\r")
     for agent in agents:
       actions.update(agent.act())
+    # print(env.observations, actions)
     env.step(action=actions)
     env.gather_data_from_sumo()
     env.compute_observations()
@@ -197,7 +200,7 @@ def show_args(cli_args):
 def main():
   cli = argparse.ArgumentParser(sys.argv[0])
   cli.add_argument('-C', '--config', default='./config.yml', help="Selects YAML config (defaults to ./config.yml)")
-  cli.add_argument('-A', '--agent', choices=['fixed', 'ql'], default='ql', help="Selects agent type (defaults to ql)")
+  cli.add_argument('-A', '--agent', choices=['fixed', 'ql', 'dqn'], default='ql', help="Selects agent type (defaults to ql)")
   cli.add_argument('-P', '--partition', choices=['mono', 'size', 'space'], default='mono', help="Selects partition type (defaults to mono)")
   cli.add_argument('-O', '--observation', choices=['default'], default='default', help="Select observation function (defaults to default)")
   cli.add_argument('-R', '--reward', choices=['dwt', 'as', 'ql', 'p'], default='dwt', help="Select reward function (defaults to dwt)")

@@ -10,8 +10,7 @@ if "SUMO_HOME" in os.environ:
 else:
     raise ImportError("Please declare the environment variable 'SUMO_HOME'")
 import numpy as np
-from gymnasium import spaces
-
+import gymnasium.spaces
 
 class TrafficSignal:
     """This class represents a Traffic Signal controlling an intersection.
@@ -93,7 +92,7 @@ class TrafficSignal:
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
         self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
-        self.action_space = spaces.Discrete(self.num_green_phases)
+        self.action_space = gymnasium.spaces.Discrete(self.num_green_phases)
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases

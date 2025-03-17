@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 import sumo_rl.models.sumo
 import sumo_rl.models.flows
 import sumo_rl.models.commons
+import matplotlib.pyplot
 import argparse
 import sys
 import random
@@ -31,6 +32,14 @@ def acquire_dead_ends(xml_root) -> list[sumo_rl.models.flows.DeadEnd]:
         dead_ends.append(sumo_rl.models.flows.DeadEnd(child.attrib['id']))
   return dead_ends
 
+def parse_shape(shape_str: str) -> list[sumo_rl.models.commons.Point]:
+  points_str = shape_str.split()
+  shape: list[sumo_rl.models.commons.Point] = []
+  for point_str in points_str:
+    x_str, y_str = point_str.split(',')
+    shape.append(sumo_rl.models.commons.Point(float(x_str), float(y_str)))
+  return shape
+
 def acquire_edges(xml_root) -> list[sumo_rl.models.flows.Edge]:
   edges = []
   for child in xml_root:
@@ -40,7 +49,7 @@ def acquire_edges(xml_root) -> list[sumo_rl.models.flows.Edge]:
           sumo_rl.models.flows.Lane(float(lane.attrib['length']), float(lane.attrib['speed']))
           for lane in child
           if ('allow' not in lane.attrib or lane.attrib['allow'] in ['all'])
-        ]))
+        ], parse_shape(child.attrib['shape'])))
   return edges
 
 def compute_flow_capacity_in_vehicles_per_hour(dead_ends: list[sumo_rl.models.flows.DeadEnd], edges: list[sumo_rl.models.flows.Edge]) -> int:
@@ -177,7 +186,27 @@ def create_all_flows(dead_ends: list[sumo_rl.models.flows.DeadEnd],
     flows.append(execute_flow_design(dead_end_edges_map, high_traffic_directions, low_traffic_directions, duration))
   return flows
 
-if __name__ == "__main__":
+def plot_routes(routes: sumo_rl.models.sumo.Routes, edges: list[sumo_rl.models.flows.Edge], png_path: str):
+  junction_positions: dict[str, sumo_rl.models.commons.Point] = {}
+  for edge in edges:
+    junction_positions[edge.from_junction] = edge.shape[0]
+    junction_positions[edge.to_junction] = edge.shape[-1]
+  print(junction_positions)
+
+  fig = matplotlib.pyplot.figure(figsize=(20,20))
+  for junction_id, pos in junction_positions.items():
+    matplotlib.pyplot.plot(pos.x, pos.y, marker='o', label=junction_id)
+
+  for flow in routes.junction_flows:
+    xi,yi = junction_positions[flow.fromJunction.id].as_tuple()
+    xf, yf = junction_positions[flow.toJunction.id].as_tuple()
+    dx, dy = xf - xi, yf - yi
+    matplotlib.pyplot.annotate("", xytext=(xi, yi), xy=(xf, yf), arrowprops=dict(arrowstyle="->"))
+  matplotlib.pyplot.legend()
+  matplotlib.pyplot.savefig(png_path)
+  matplotlib.pyplot.close()
+
+def main():
   argument_parser = argparse.ArgumentParser(description='flower')
   argument_parser.add_argument('-s', '--scenario', default='lisca', help='Input scenario')
   argument_parser.add_argument('-oF', '--output-file', default='/tmp/routes.rou.xml', help='Output file')
@@ -188,6 +217,7 @@ if __name__ == "__main__":
   argument_parser.add_argument('-d', '--duration', type=int, default=10000, help='How much a flow configuration should be hold to last')
   argument_parser.add_argument('-c', '--complexity', type=int, default=5, help='How much flow configurations should be created in a complex routes file')
   argument_parser.add_argument('-A', '--all', action='store_true', help='Generates all routes files for atomic scenarious saving them as scenarios')
+  argument_parser.add_argument('-o', '--overwrite', action='store_true', help='Don\'t remove output dir/file before writing')
   cli_args = argument_parser.parse_args(sys.argv[1:])
 
   network_file = "scenarios/%s/network.net.xml" % cli_args.scenario
@@ -198,14 +228,18 @@ if __name__ == "__main__":
   dead_ends = acquire_dead_ends(xml_root)
 
   if cli_args.random:
-    os.system("rm -rf %s" % (cli_args.output_dir))
+    if not cli_args.overwrite:
+      os.system("rm -rf %s" % (cli_args.output_dir))
     sumo_rl.models.commons.ensure_dir(cli_args.output_dir)
     for idx in range(cli_args.random):
       path = os.path.join(cli_args.output_dir, 'routes.%s.rou.xml' % idx)
       flows = create_random_flow(dead_ends, edges, duration=cli_args.duration//2, number_of_busy_directions=cli_args.busyness)
-      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(path)
+      routes = sumo_rl.models.sumo.Routes([], [], [], flows)
+      routes.to_xml_file(path)
+      plot_routes(routes, edges, path.replace('.xml', '.png'))
   elif cli_args.complex:
-    os.system("rm -rf %s" % (cli_args.output_dir))
+    if not cli_args.overwrite:
+      os.system("rm -rf %s" % (cli_args.output_dir))
     sumo_rl.models.commons.ensure_dir(cli_args.output_dir)
     for idx in range(cli_args.complex):
       path = os.path.join(cli_args.output_dir, 'routes.%s.rou.xml' % idx)
@@ -217,11 +251,17 @@ if __name__ == "__main__":
           flow.change_begin(begin)
         begin += cli_args.duration
         flows += _flows
-      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(path)
+      routes = sumo_rl.models.sumo.Routes([], [], [], flows)
+      routes.to_xml_file(path)
   elif cli_args.all:
-    os.system("rm -rf %s" % (cli_args.output_dir))
+    if not cli_args.overwrite:
+      os.system("rm -rf %s" % (cli_args.output_dir))
     sumo_rl.models.commons.ensure_dir(cli_args.output_dir)
     all_flows = create_all_flows(dead_ends, edges, duration=cli_args.duration//2, number_of_busy_directions=cli_args.busyness)
     for idx, flows in enumerate(all_flows):
       path = os.path.join(cli_args.output_dir, 'routes.%s.rou.xml' % idx)
-      sumo_rl.models.sumo.Routes([], [], [], flows).to_xml_file(path)
+      routes = sumo_rl.models.sumo.Routes([], [], [], flows)
+      routes.to_xml_file(path)
+
+if __name__ == "__main__":
+  main()

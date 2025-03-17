@@ -26,6 +26,9 @@ class Point:
   def to_xml(self) -> str:
     return "%s,%s" % (self.x, self.y)
 
+  def as_tuple(self) -> tuple[float, float]:
+    return (self.x, self.y)
+
   def __repr__(self) -> str:
     return self.to_str()
 

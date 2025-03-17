@@ -27,13 +27,5 @@ class ObservationFunction(abc.ABC):
         """Subclasses must override this method."""
         pass
 
-    def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
-        """Encode the state of the traffic signal into a hashable object."""
-        phase = int(numpy.where(state[: ts.num_green_phases] == 1)[0])
-        min_green = state[ts.num_green_phases]
-        density_queue = [self.discretize_density(d) for d in state[ts.num_green_phases + 1 :]]
-        # tuples are hashable and can be used as key in python dictionary
-        return tuple([phase, min_green] + density_queue)
-
     def discretize_density(self, density):
         return min(int(density * 10), 9)

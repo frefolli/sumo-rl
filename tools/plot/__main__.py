@@ -32,7 +32,9 @@ class Datastore:
     for run in range(self.runs):
       metrics[run] = {}
       for episode in range(self.episodes):
-        metrics[run][episode] = pandas.read_csv(self.metrics_file(run, episode))
+        df = pandas.read_csv(self.metrics_file(run, episode))
+        df = df.dropna()
+        metrics[run][episode] = df
     return metrics
 
   def metrics_file(self, run, episode) -> str:
@@ -152,11 +154,9 @@ class Preprocessor:
   @staticmethod
   def InitialSubset(datastore: Datastore) -> list[Plot]:
     plots = []
-    plots.append(Plot(datastore, "total_running", lambda df: list(df['total_running']), True, True))
-    plots.append(Plot(datastore, "total_stopped", lambda df: list(df['total_stopped']), True, True))
     plots.append(Plot(datastore, "total_waiting_time", lambda df: list(df['total_waiting_time']), True, True))
     plots.append(Plot(datastore, "mean_waiting_time", lambda df: list(df['mean_waiting_time']), True, True))
-    plots.append(Plot(datastore, "vehicles_number", lambda df: list(df['total_waiting_time'] / df['mean_waiting_time']), True, True))
+    plots.append(Plot(datastore, "mean_speed", lambda df: list(df['mean_speed']), True, True))
     return plots
 
   @staticmethod
