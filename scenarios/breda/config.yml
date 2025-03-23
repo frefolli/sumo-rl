@@ -44,3 +44,12 @@ routes:
     - evaluation/routes.9.rou.xml
   demo:
     - evaluation/routes.9.rou.xml
+layout:
+  main:
+    - A: J0
+      B: J3
+  side:
+    - A: J4
+      B: J5
+    - A: J6
+      B: J7

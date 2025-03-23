@@ -80,3 +80,16 @@ class SerdePickleFile:
     with open(filepath, mode="rb", encoding="utf-8") as file:
       data = pickle.load(file)
     return data
+
+## Generic
+
+class GenericFile(SerdeYamlFile, SerdeJsonFile):
+	def __init__(self, data: dict) -> None:
+		self.data = data
+
+	def to_dict(self) -> dict:
+		return self.data
+
+	@staticmethod
+	def from_dict(data: dict):
+		return GenericFile(data)

@@ -5,6 +5,8 @@ import pickle
 import time
 import os
 import os.path
+import random
+from typing import Generator
 
 class Point:
   def __init__(self, x: float, y: float) -> None:
@@ -84,3 +86,41 @@ class Timer:
 
   def clear(self):
     self.clock = time.time()
+
+def is_reverse_of(A_id: str, B_id: str) -> bool:
+  if A_id == '-' + B_id:
+    return True
+  if '-' + A_id == B_id:
+    return True
+  return False
+
+def parse_shape(shape_str: str) -> list[Point]:
+  points_str = shape_str.split()
+  shape: list[Point] = []
+  for point_str in points_str:
+    x_str, y_str = point_str.split(',')
+    shape.append(Point(float(x_str), float(y_str)))
+  return shape
+
+def extract_at_random(pickables: list, amount_to_extract: int) -> tuple[list, list]:
+  assert amount_to_extract < len(pickables)
+  picked = []
+  for _ in range(amount_to_extract):
+    i = random.randint(0, len(pickables) - 1)
+    picked.append(pickables[i])
+    pickables = pickables[:i] + pickables[i + 1:]
+  return picked, pickables
+
+def extract_all_combs(pickables: list, amount_to_extract: int) -> Generator[tuple[list, list], None, None]:
+  if len(pickables) == 0 or amount_to_extract == 0:
+    yield [], pickables
+  elif len(pickables) == amount_to_extract:
+    yield pickables, []
+  else:
+    el = pickables[0]
+    for (yes, no) in extract_all_combs(pickables[1:], amount_to_extract - 1):
+      yield (yes + [el], no)
+    for (yes, no) in extract_all_combs(pickables[1:], amount_to_extract):
+      yield (yes, no + [el])
+
+

@@ -35,14 +35,14 @@ class Edge(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     header = (
-      indentation(indent) +
-      "<edge id=\"%s\" from=\"%s\" to=\"%s\" priority=\"-1\" spreadType=\"center\" shape=\"%s\">" % (
-        self.id, self.from_junction, self.to_junction, " ".join([p.to_str() for p in self.shape])
-      )
-    )
+        indentation(indent) +
+        "<edge id=\"%s\" from=\"%s\" to=\"%s\" priority=\"-1\" spreadType=\"center\" shape=\"%s\">" % (
+          self.id, self.from_junction, self.to_junction, " ".join([p.to_str() for p in self.shape])
+          )
+        )
     children = [
-      lane.to_xml(indent + 1) for lane in self.lanes
-    ]
+        lane.to_xml(indent + 1) for lane in self.lanes
+        ]
     footer = indentation(indent) + "</edge>"
     return "\n".join([header] + children + [footer])
 
@@ -62,14 +62,14 @@ class InternalEdge(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     header = (
-      indentation(indent) +
-      "<edge id=\"%s\" function=\"internal\">" % (
-        self.id
-      )
-    )
+        indentation(indent) +
+        "<edge id=\"%s\" function=\"internal\">" % (
+          self.id
+          )
+        )
     children = [
-      lane.to_xml(indent + 1) for lane in self.lanes
-    ]
+        lane.to_xml(indent + 1) for lane in self.lanes
+        ]
     footer = indentation(indent) + "</edge>"
     return "\n".join([header] + children + [footer])
 
@@ -91,17 +91,17 @@ class Junction(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     header = (
-      indentation(indent) +
-      "<junction id=\"%s\" type=\"%s\" x=\"%s\" y=\"%s\" incLanes=\"%s\" intLanes=\"%s\" >" % (
-        self.id, self.kind, self.point.x, self.point.y,
-        " ".join(self.incoming_lanes),
-        " ".join(self.into_lanes)
-      )
-    )
+        indentation(indent) +
+        "<junction id=\"%s\" type=\"%s\" x=\"%s\" y=\"%s\" incLanes=\"%s\" intLanes=\"%s\" >" % (
+          self.id, self.kind, self.point.x, self.point.y,
+          " ".join(self.incoming_lanes),
+          " ".join(self.into_lanes)
+          )
+        )
     children = [
-      request.to_xml(indent + 1)
-      for request in self.requests
-    ]
+        request.to_xml(indent + 1)
+        for request in self.requests
+        ]
     footer = indentation(indent) + "</junction>"
     return "\n".join([header] + children + [footer])
 
@@ -119,7 +119,7 @@ class Request(SerdeXML):
         indentation(indent) +
         "<request index=\"%s\" response=\"%s\" foes=\"%s\" cont=\"0\"/>" % (
           self.index, self.response, self.foes
-        ))
+          ))
 
   def __repr__(self) -> str:
     return self.to_xml(0)
@@ -138,11 +138,11 @@ class InternalConnection(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     return (
-      indentation(indent) +
-      '<connection from="%s" to="%s" fromLane="%s" toLane="%s" dir="%s" state="M"/>' % (
-        self.from_edge, self.to_edge, self.from_lane, self.to_lane, self.direction
-      )
-    )
+        indentation(indent) +
+        '<connection from="%s" to="%s" fromLane="%s" toLane="%s" dir="%s" state="M"/>' % (
+          self.from_edge, self.to_edge, self.from_lane, self.to_lane, self.direction
+          )
+        )
 
   def __repr__(self) -> str:
     return self.to_xml(0)
@@ -161,18 +161,18 @@ class ViaConnection(SerdeXML):
   def to_xml(self, indent: int = 0) -> str:
     if self.junction_id is None:
       return (
-        indentation(indent) +
-        '<connection from="%s" to="%s" fromLane="%s" toLane="%s" dir="%s" state="M" linkIndex=\"%s\" via=\"%s\"/>' % (
-          self.from_edge, self.to_edge, self.from_lane, self.to_lane, self.direction, self.index, self.via_junction_lane
-        )
-      )
+          indentation(indent) +
+          '<connection from="%s" to="%s" fromLane="%s" toLane="%s" dir="%s" state="M" linkIndex=\"%s\" via=\"%s\"/>' % (
+            self.from_edge, self.to_edge, self.from_lane, self.to_lane, self.direction, self.index, self.via_junction_lane
+            )
+          )
     else:
       return (
-        indentation(indent) +
-        '<connection from="%s" to="%s" fromLane="%s" toLane="%s" dir="%s" state="M" linkIndex=\"%s\" via=\"%s\" tl=\"%s\"/>' % (
-          self.from_edge, self.to_edge, self.from_lane, self.to_lane, self.direction, self.index, self.via_junction_lane, self.junction_id
-        )
-      )
+          indentation(indent) +
+          '<connection from="%s" to="%s" fromLane="%s" toLane="%s" dir="%s" state="M" linkIndex=\"%s\" via=\"%s\" tl=\"%s\"/>' % (
+            self.from_edge, self.to_edge, self.from_lane, self.to_lane, self.direction, self.index, self.via_junction_lane, self.junction_id
+            )
+          )
 
   def __repr__(self) -> str:
     return self.to_xml(0)
@@ -187,11 +187,11 @@ class TLLogic(SerdeXML):
         indentation(indent) +
         "<tlLogic id=\"%s\" type=\"static\" programID=\"0\" offset=\"0\">" % (
           self.id
-        ))
+          ))
     children = [
-      phase.to_xml(indent + 1)
-      for phase in self.phases
-    ]
+        phase.to_xml(indent + 1)
+        for phase in self.phases
+        ]
     footer = indentation(indent) + "</tlLogic>"
     return "\n".join([header] + children + [footer])
 
@@ -208,7 +208,7 @@ class Phase(SerdeXML):
         indentation(indent) +
         "<phase duration=\"%s\" state=\"%s\"/>" % (
           self.duration, self.state
-        ))
+          ))
 
   def __repr__(self) -> str:
     return self.to_xml(0)
@@ -261,10 +261,10 @@ class Route(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     return (
-      indentation(indent) + "<route id=\"%s\" edges=\"%s\"/>" % (
-        self.id, " ".join(self.edges)
-      )
-    )
+        indentation(indent) + "<route id=\"%s\" edges=\"%s\"/>" % (
+          self.id, " ".join(self.edges)
+          )
+        )
 
   @staticmethod
   def name(route_index: int) -> str:
@@ -281,10 +281,10 @@ class Vehicle(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     return (
-      indentation(indent) + "<vehicle id=\"%s\" depart=\"%s\" route=\"%s\"/>" % (
-        self.id, self.departure_time, self.route_id
-      )
-    )
+        indentation(indent) + "<vehicle id=\"%s\" depart=\"%s\" route=\"%s\"/>" % (
+          self.id, self.departure_time, self.route_id
+          )
+        )
 
   def __repr__(self) -> str:
     return self.to_xml(0)
@@ -294,7 +294,7 @@ class Vehicle(SerdeXML):
     return "vehicle_%s" % vehicle_index
 
 class Routes(SerdeXMLFile):
-  def __init__(self, routes: list[Route], vehicles: list[Vehicle], taz_flows: list[TAZFlow], junction_flows: list[JunctionFlow]) -> None:
+  def __init__(self, routes: list[Route] = [], vehicles: list[Vehicle] = [], taz_flows: list[TAZFlow] = [], junction_flows: list[JunctionFlow] = []) -> None:
     self.routes: list[Route] = routes
     self.vehicles: list[Vehicle] = vehicles
     self.taz_flows: list[TAZFlow] = taz_flows
@@ -330,8 +330,8 @@ class TAZ(SerdeXML):
           self.id,
           " ".join([point.to_xml() for point in self.shape] + [self.shape[0].to_xml()]),
           " ".join(self.edges)
-        )
-    ]
+          )
+        ]
     return "\n".join(lines)
 
 class TAZFlow(SerdeXML):
@@ -346,8 +346,8 @@ class TAZFlow(SerdeXML):
 
   def to_xml(self, indent: int = 0) -> str:
     return indentation(indent) + '<flow id="%s" begin="%s" fromTaz="%s" toTaz="%s" end="%s" vehsPerHour="%s"/>' % (
-      self.id, self.begin, self.fromTaz, self.toTaz, self.end, self.vehsPerHour
-    )
+        self.id, self.begin, self.fromTaz, self.toTaz, self.end, self.vehsPerHour
+        )
 
 class JunctionFlow(SerdeXML):
   def __init__(self, id, begin, end, fromJunction, toJunction, vehsPerHour) -> None:
@@ -357,12 +357,11 @@ class JunctionFlow(SerdeXML):
     self.toJunction = toJunction
     self.end = end
     self.vehsPerHour = vehsPerHour
-    pass
 
   def to_xml(self, indent: int = 0) -> str:
     return indentation(indent) + '<flow id="%s" begin="%s" fromJunction="%s" toJunction="%s" end="%s" vehsPerHour="%s"/>' % (
-      self.id, self.begin, self.fromJunction, self.toJunction, self.end, self.vehsPerHour
-    )
+        self.id, self.begin, self.fromJunction, self.toJunction, self.end, self.vehsPerHour
+        )
 
 class Additions(SerdeXMLFile):
   def __init__(self, tazs: list[TAZ]) -> None:
@@ -370,30 +369,33 @@ class Additions(SerdeXMLFile):
 
   def to_xml(self, indent: int = 0) -> str:
     lines = [
-      indentation(indent) + '<?xml version="1.0" encoding="UTF-8"?>',
-      indentation(indent) + '<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">'
-    ]
+        indentation(indent) + '<?xml version="1.0" encoding="UTF-8"?>',
+        indentation(indent) + '<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">'
+        ]
     for taz in self.tazs:
       lines.append(taz.to_xml(indent + 1))
     lines += [
-      indentation(indent) + '</additional>'
-    ]
+        indentation(indent) + '</additional>'
+        ]
     return "\n".join(lines)
 
 class Simulation(SerdeXMLFile):
-  def __init__(self, network: Network, routes: Routes, additions: Additions) -> None:
+  def __init__(self, network: Network, routes: Routes, additions: Additions|None) -> None:
     self.network: Network = network
     self.routes: Routes = routes
-    self.additions: Additions = additions
+    self.additions: Additions|None = additions
 
   def to_xml(self, indent: int = 0) -> str:
     lines = []
     lines.append(indentation(indent) + '<?xml version="1.0" encoding="UTF-8"?>')
     lines.append(indentation(indent) + '<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">')
     lines.append(indentation(indent) + '    <input>')
+    lines.append(indentation(indent) + '        <junction-taz value="true"/>')
+    lines.append(indentation(indent) + '        <max-depart-delay value="5"/>')
     lines.append(indentation(indent) + '        <net-file value="network.net.xml"/>')
     lines.append(indentation(indent) + '        <route-files value="routes.rou.xml"/>')
-    lines.append(indentation(indent) + '        <addition-files value="additions.add.xml"/>')
+    if self.additions is not None:
+      lines.append(indentation(indent) + '        <addition-files value="additions.add.xml"/>')
     lines.append(indentation(indent) + '    </input>')
     lines.append(indentation(indent) + '</configuration>')
     return "\n".join(lines)
