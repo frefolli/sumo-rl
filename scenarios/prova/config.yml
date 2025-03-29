@@ -1,11 +1,11 @@
 network: network.net.xml
 routes:
   training:
-    - routes.rou.xml
+    - training
   evaluation:
-    - routes.rou.xml
+    - evaluation
   demo:
-    - routes.rou.xml
+    - evaluation/routes.9.rou.xml
 layout:
   main:
     - A: J0

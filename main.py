@@ -35,6 +35,8 @@ def agent_factory_by_option(cli_args, config: sumo_rl.util.config.Config, env: s
                                                           recycle=cli_args.recycle)
   if val == 'dqn':
     return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config, recycle=cli_args.recycle)
+  if val == 'ppo':
+    return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config, recycle=cli_args.recycle)
   raise ValueError(val)
 
 def partition_by_option(cli_args, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.partitions.Partition:
@@ -118,14 +120,26 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
 def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
   env.set_duration(config.evaluation.seconds)
   for run in range(config.evaluation.runs):
-    for episode in range(config.evaluation.episodes):
-      for routes_file in config.scenario.evaluation_routes:
-        env.sumo_seed += 1
-        env._route = routes_file
-        print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
-        env.reset()
+    for episode, routes_file in enumerate(config.scenario.evaluation_routes):
+      env.sumo_seed += 1
+      env._route = routes_file
+      print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
+      env.reset()
+      for agent in agents:
+        agent.reset()
+      env.gather_data_from_sumo()
+      env.compute_observations()
+      # env.compute_rewards()
+      env.compute_metrics()
+      for agent in agents:
+        if agent.can_observe():
+          agent.observe(env.observations)
+      while not env.done():
+        actions = {}
+        print(env.sim_step, end="\r")
         for agent in agents:
-          agent.reset()
+          actions.update(agent.act())
+        env.step(action=actions)
         env.gather_data_from_sumo()
         env.compute_observations()
         # env.compute_rewards()
@@ -133,24 +147,11 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
         for agent in agents:
           if agent.can_observe():
             agent.observe(env.observations)
-        while not env.done():
-          actions = {}
-          print(env.sim_step, end="\r")
-          for agent in agents:
-            actions.update(agent.act())
-          env.step(action=actions)
-          env.gather_data_from_sumo()
-          env.compute_observations()
-          # env.compute_rewards()
-          env.compute_metrics()
-          for agent in agents:
-            if agent.can_observe():
-              agent.observe(env.observations)
-        print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
+      print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
 
-        # Serialize Metrics
-        path = config.evaluation_metrics_file(run, episode)
-        pandas.DataFrame(env.metrics).to_csv(path, index=False)
+      # Serialize Metrics
+      path = config.evaluation_metrics_file(run, episode)
+      pandas.DataFrame(env.metrics).to_csv(path, index=False)
 
 def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
   env.set_duration(config.demo.seconds)
@@ -200,7 +201,7 @@ def show_args(cli_args):
 def main():
   cli = argparse.ArgumentParser(sys.argv[0])
   cli.add_argument('-C', '--config', default='./config.yml', help="Selects YAML config (defaults to ./config.yml)")
-  cli.add_argument('-A', '--agent', choices=['fixed', 'ql', 'dqn'], default='ql', help="Selects agent type (defaults to ql)")
+  cli.add_argument('-A', '--agent', choices=['fixed', 'ql', 'dqn', 'ppo'], default='ql', help="Selects agent type (defaults to ql)")
   cli.add_argument('-P', '--partition', choices=['mono', 'size', 'space'], default='mono', help="Selects partition type (defaults to mono)")
   cli.add_argument('-O', '--observation', choices=['default'], default='default', help="Select observation function (defaults to default)")
   cli.add_argument('-R', '--reward', choices=['dwt', 'as', 'ql', 'p'], default='dwt', help="Select reward function (defaults to dwt)")

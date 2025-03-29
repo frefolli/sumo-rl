@@ -1,47 +1,9 @@
 network: network.net.xml
 routes:
   training:
-    - training/routes.0.rou.xml
-    - training/routes.1.rou.xml
-    - training/routes.2.rou.xml
-    - training/routes.3.rou.xml
-    - training/routes.4.rou.xml
-    - training/routes.5.rou.xml
-    - training/routes.6.rou.xml
-    - training/routes.7.rou.xml
-    - training/routes.8.rou.xml
-    - training/routes.9.rou.xml
-    - training/routes.10.rou.xml
-    - training/routes.11.rou.xml
-    - training/routes.12.rou.xml
-    - training/routes.13.rou.xml
-    - training/routes.14.rou.xml
-    - training/routes.15.rou.xml
-    - training/routes.16.rou.xml
-    - training/routes.17.rou.xml
-    - training/routes.18.rou.xml
-    - training/routes.19.rou.xml
-    - training/routes.20.rou.xml
-    - training/routes.21.rou.xml
-    - training/routes.22.rou.xml
-    - training/routes.23.rou.xml
-    - training/routes.24.rou.xml
-    - training/routes.25.rou.xml
-    - training/routes.26.rou.xml
-    - training/routes.27.rou.xml
-    - training/routes.28.rou.xml
-    - training/routes.29.rou.xml
+    - training
   evaluation:
-    - evaluation/routes.0.rou.xml
-    - evaluation/routes.1.rou.xml
-    - evaluation/routes.2.rou.xml
-    - evaluation/routes.3.rou.xml
-    - evaluation/routes.4.rou.xml
-    - evaluation/routes.5.rou.xml
-    - evaluation/routes.6.rou.xml
-    - evaluation/routes.7.rou.xml
-    - evaluation/routes.8.rou.xml
-    - evaluation/routes.9.rou.xml
+    - evaluation
   demo:
     - evaluation/routes.9.rou.xml
 layout:

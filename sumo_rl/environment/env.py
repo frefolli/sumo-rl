@@ -78,7 +78,7 @@ class SumoEnvironment(gym.Env):
         virtual_display: Tuple[int, int] = (3200, 1800),
         begin_time: int = 0,
         num_seconds: int = 20000,
-        max_depart_delay: int = -1,
+        max_depart_delay: int = 5,
         waiting_time_memory: int = 1000,
         time_to_teleport: int = -1,
         delta_time: int = 5,

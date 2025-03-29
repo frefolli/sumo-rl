@@ -350,18 +350,30 @@ class TAZFlow(SerdeXML):
         )
 
 class JunctionFlow(SerdeXML):
-  def __init__(self, id, begin, end, fromJunction, toJunction, vehsPerHour) -> None:
+  def __init__(self, id: str, begin: int, end: int, fromJunction: str, toJunction: str, vehsPerHour: int, arrivalSpeed: float|None = None) -> None:
     self.id = id
     self.begin = begin
     self.fromJunction = fromJunction
     self.toJunction = toJunction
     self.end = end
     self.vehsPerHour = vehsPerHour
+    self.arrivalSpeed: None|float = arrivalSpeed
 
   def to_xml(self, indent: int = 0) -> str:
-    return indentation(indent) + '<flow id="%s" begin="%s" fromJunction="%s" toJunction="%s" end="%s" vehsPerHour="%s"/>' % (
-        self.id, self.begin, self.fromJunction, self.toJunction, self.end, self.vehsPerHour
-        )
+    attributes: list[str] = [
+      'id="%s"' % self.id,
+      'begin="%s"' % self.begin,
+      'fromJunction="%s"' % self.fromJunction,
+      'toJunction="%s"' % self.toJunction,
+      'end="%s"' % self.end,
+      'vehsPerHour="%s"' % self.vehsPerHour,
+      # Let vehicles to depart from any lane. If not upsert, vehicles spawn only on lane 0
+      'departLane="free"'
+    ]
+    # Usually you would set arrivalSpeed to 0 to produce an artificial queue in ending lanes
+    if self.arrivalSpeed is not None:
+      attributes.append('arrivalSpeed="%s"' % self.arrivalSpeed)
+    return indentation(indent) + '<flow %s/>' % (" ".join(attributes))
 
 class Additions(SerdeXMLFile):
   def __init__(self, tazs: list[TAZ]) -> None:

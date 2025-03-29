@@ -1,0 +1,44 @@
+A:
+  artificialQueue: false
+  description: Low casual traffic
+  duration: 10000
+  reversed: false
+  slotProbability: 0.7
+  slotTime: 60
+  slots: 166
+  symmetric: true
+  title: A
+  trafficLevel: 0.05
+  type: casual
+B:
+  artificialQueue: false
+  dense: true
+  description: Intense stable traffic
+  duration: 10000
+  reversed: false
+  symmetric: true
+  title: B
+  trafficLevels:
+    main->main: 0.5
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.2
+  type: stable
+C:
+  artificialQueue: false
+  dense: true
+  description: Intermediate traffic in main/side branches with frequent interruption
+    from side branches
+  duration: 10000
+  reversed: false
+  slotProbability: 0.7
+  slotTime: 60
+  slots: 166
+  symmetric: true
+  title: C
+  trafficLevels:
+    main->main: 0.2
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: unstable

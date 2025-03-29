@@ -8,6 +8,7 @@ from sumo_rl.environment.traffic_signal import TrafficSignal
 from sumo_rl.agents.agent import Agent
 from sumo_rl.agents.ql_agent import QLAgent
 from sumo_rl.agents.dqn_agent import DQNAgent
+from sumo_rl.agents.ppo_agent import PPOAgent
 from sumo_rl.agents.fixed_agent import FixedAgent
 from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
 from sumo_rl.util.config import Config
@@ -115,6 +116,41 @@ class DQNAgentFactory(AgentFactory):
     action_space = controlled_entities[a_traffic_signal_id].action_space
     state_space = observation_fn.observation_space(controlled_entities[a_traffic_signal_id])
     agent = DQNAgent(id=agent_id,
+                     observation_fn=observation_fn,
+                     reward_fn=reward_fn,
+                     controlled_entities=controlled_entities,
+                     state_space=state_space,
+                     action_space=action_space)
+    if self.recycle:
+      agent_memory_file = self.config.agents_file(None, None, agent_id)
+      if os.path.exists(agent_memory_file):
+        print("recycle agent %s" % agent_memory_file)
+        agent.deserialize(agent_memory_file)
+      else:
+        print("building agent %s" % agent_memory_file)
+    return agent
+
+class PPOAgentFactory(AgentFactory):
+  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False) -> None:
+    super().__init__(env, config, recycle)
+  
+  def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[PPOAgent]:
+    agents = []
+    traffic_signals = self.env.traffic_signals
+    for agent_id, traffic_signal_ids in assignments.items():
+      controlled_entities = {traffic_signal_id: traffic_signals[traffic_signal_id] for traffic_signal_id in traffic_signal_ids}
+      agents.append(self.agent(agent_id, self.env.observation_fn, self.env.reward_fn, controlled_entities))
+    return agents
+
+  def agent(self, agent_id: str,
+                  observation_fn: ObservationFunction,
+                  reward_fn: RewardFunction,
+                  controlled_entities: dict[str, TrafficSignal]) -> PPOAgent:
+    assert len(controlled_entities) > 0
+    a_traffic_signal_id = list(controlled_entities)[0]
+    action_space = controlled_entities[a_traffic_signal_id].action_space
+    state_space = observation_fn.observation_space(controlled_entities[a_traffic_signal_id])
+    agent = PPOAgent(id=agent_id,
                      observation_fn=observation_fn,
                      reward_fn=reward_fn,
                      controlled_entities=controlled_entities,

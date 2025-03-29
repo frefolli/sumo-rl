@@ -17,13 +17,13 @@ agents:
 training:
   seconds: 10000
   runs: 1
-  episodes: 10
+  episodes: 60
 evaluation:
-  seconds: 50000
+  seconds: 10000
   runs: 1
-  episodes: 1
+  episodes: 10
 demo:
-  seconds: 50000
+  seconds: 10000
 scenario: ./scenarios/breda
 artifacts:
   agents: ./outputs/agents

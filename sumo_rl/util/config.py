@@ -3,6 +3,18 @@ from sumo_rl.models.serde import SerdeJsonFile, SerdeYamlFile, SerdeDict
 from sumo_rl.models.commons import ensure_dir
 import os
 
+def get_all_qualified_paths_with_extension(base_dir: str, files: list[str], ext: str = '.rou.xml') -> list[str]:
+  result = []
+  for file in files:
+    path = os.path.join(base_dir, file)
+    if os.path.isdir(path):
+      result += get_all_qualified_paths_with_extension(path, os.listdir(path))
+    else:
+      if path.endswith(ext):
+        result.append(path)
+  return result
+  
+
 class SumoConfig(SerdeDict):
   def __init__(self, data: dict):
     self.seconds: int = data['seconds']
@@ -143,24 +155,21 @@ class ScenarioConfig(SerdeYamlFile, SerdeJsonFile):
       raise ValueError("scenario %s declared %s network file but %s doesn't exist" % (path, self._network, network))
 
     training_routes = []
-    for file in self._training_routes:
-      qualified = os.path.join(path, file)
-      if not os.path.exists(network):
-        raise ValueError("scenario %s declared %s training route file but %s doesn't exist" % (path, file, qualified))
+    for qualified in get_all_qualified_paths_with_extension(path, self._training_routes, ".rou.xml"):
+      if not os.path.exists(qualified):
+        raise ValueError("scenario %s declared a training route file but %s doesn't exist" % (path, qualified))
       training_routes.append(qualified)
 
     evaluation_routes = []
-    for file in self._evaluation_routes:
-      qualified = os.path.join(path, file)
-      if not os.path.exists(network):
-        raise ValueError("scenario %s declared %s evaluation route file but %s doesn't exist" % (path, file, qualified))
+    for qualified in get_all_qualified_paths_with_extension(path, self._evaluation_routes, ".rou.xml"):
+      if not os.path.exists(qualified):
+        raise ValueError("scenario %s declared a evaluation route file but %s doesn't exist" % (path, qualified))
       evaluation_routes.append(qualified)
 
     demo_routes = []
-    for file in self._demo_routes:
-      qualified = os.path.join(path, file)
-      if not os.path.exists(network):
-        raise ValueError("scenario %s declared %s demo route file but %s doesn't exist" % (path, file, qualified))
+    for qualified in get_all_qualified_paths_with_extension(path, self._demo_routes, ".rou.xml"):
+      if not os.path.exists(qualified):
+        raise ValueError("scenario %s declared a demo route file but %s doesn't exist" % (path, qualified))
       demo_routes.append(qualified)
     
     self._path = path

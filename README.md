@@ -57,3 +57,17 @@ The default observation for each traffic signal agent is a vector:
 - ```min_green``` is a binary variable indicating whether min_green seconds have already passed in the current phase
 - ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
 - ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
+
+### Note
+
+I flussi di addestramento sono ottenuti tramite
+
+```
+python -m tools.mengele -s breda -at -n 10 -o scenarios/breda/training
+```
+
+I flussi di valutazione e demo sono ottenuti tramite
+
+```
+python -m tools.flows -s breda -oD scenarios/breda/evaluation -C 10 -b 3 -d 1000 -c 10
+```
