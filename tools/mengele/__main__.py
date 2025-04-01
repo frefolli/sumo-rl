@@ -7,11 +7,70 @@ import random
 import abc
 import typing
 import copy
+import re
 from typing import Generator
 import sumo_rl.models.flows
-from sumo_rl.models.serde import SerdeDict, SerdeYaml, SerdeYamlFile
+from sumo_rl.models.serde import GenericFile, SerdeDict, SerdeYaml, SerdeYamlFile
 import sumo_rl.models.sumo
 #random.seed(170701)
+
+def line_is_table_header(line: str):
+  mo = re.match(r'^\|( [^|]+ \|)+$', line)
+  return mo is not None
+
+def line_is_table_row(line: str):
+  mo = re.match(r'^\|( [^|]+ \|)+$', line)
+  return mo is not None
+
+def line_is_table_separator(line: str):
+  mo = re.match(r'^\|( [-]+ \|)+$', line)
+  return mo is not None
+
+def extract_table_field_names(line: str):
+  mo = re.findall(r' ([^|]+) \|', line)
+  return mo
+
+def extract_table_fields(line: str):
+  mo = re.findall(r' ([^|]+) \|', line)
+  return mo
+
+def read_all_tables_from_md_file(md_file: str) -> list[dict[str, list]]:
+  tables: list[dict[str, list]] = []
+
+  reading_table: bool = False
+  with open(md_file, mode='r', encoding='utf-8') as file:
+    for line_num, line in enumerate(file):
+      line = line.strip()
+      if not reading_table:
+        if line_is_table_header(line):
+          field_names = extract_table_field_names(line)
+          tables.append({field_name:[] for field_name in field_names})
+          reading_table = True
+      else:
+        if line_is_table_separator(line):
+          pass
+        elif line_is_table_row(line):
+          fields = extract_table_fields(line)
+          table_field_names = list(tables[-1].keys())
+          number_of_fields_in_table = len(table_field_names)
+          number_of_fields_in_row = len(fields)
+          if number_of_fields_in_table != number_of_fields_in_row:
+            raise ValueError('Current table expects %s fields but current row (%s) has %s fields' % (
+              number_of_fields_in_table,
+              line_num,
+              number_of_fields_in_row
+            ))
+          for field_num, field_name in enumerate(table_field_names):
+            tables[-1][field_name].append(fields[field_num])
+        else:
+          reading_table = False
+  return tables
+
+def iterrows(table: dict[str, list]) -> Generator[dict, None, None]:
+  keys = list(table.keys())
+  table_length = len(table[keys[0]])
+  for row in range(table_length):
+    yield {key: table[key][row] for key in keys}
 
 def comb(A: list|set, B: list|set) -> Generator[tuple, None, None]:
   for a in A:
@@ -39,9 +98,21 @@ def traffic_level_from_string(value: str|float|int) -> float:
       return TrafficLevel.MEDIUM.value
     elif value.lower() == 'high':
       return TrafficLevel.HIGH.value
-    elif value.lower() == 'veryHigh':
+    elif value.lower() == 'veryhigh':
       return TrafficLevel.VERY_HIGH.value
     elif value.lower() == 'ridiculous':
+      return TrafficLevel.RIDICULOUS.value
+    elif value.lower() == 'zero':
+      return TrafficLevel.NO.value
+    elif value.lower() == 'basso':
+      return TrafficLevel.LOW.value
+    elif value.lower() == 'medio':
+      return TrafficLevel.MEDIUM.value
+    elif value.lower() == 'alto':
+      return TrafficLevel.HIGH.value
+    elif value.lower() == 'molto alto':
+      return TrafficLevel.VERY_HIGH.value
+    elif value.lower() == 'ridicolo':
       return TrafficLevel.RIDICULOUS.value
     else:
       raise ValueError('Expected a traffic level, got "%s"' % value)
@@ -221,6 +292,8 @@ class CasualTrafficGenerator(SlottedTrafficGenerator):
                                   slot_duration=data['slotTime'],
                                   title=data['title'],
                                   description=data['description'],
+                                  symmetric=(data.get('symmetric') == True),
+                                  reversed=(data.get('reversed') == True),
                                   artificial_queue=(data.get('artificialQueue') == True))
 
 class StableTrafficGenerator(TrafficGenerator):
@@ -282,6 +355,8 @@ class StableTrafficGenerator(TrafficGenerator):
                                   title=data['title'],
                                   description=data['description'],
                                   dense=(data.get('dense') == True),
+                                  symmetric=(data.get('symmetric') == True),
+                                  reversed=(data.get('reversed') == True),
                                   artificial_queue=(data.get('artificialQueue') == True))
 
   def to_dict(self) -> dict:
@@ -369,6 +444,8 @@ class UnstableTrafficGenerator(SlottedTrafficGenerator):
                                     dense=(data.get('dense') == True),
                                     title=data['title'],
                                     description=data['description'],
+                                    symmetric=(data.get('symmetric') == True),
+                                    reversed=(data.get('reversed') == True),
                                     artificial_queue=(data.get('artificialQueue') == True))
 
 class TransitionTrafficGenerator(TrafficGenerator):
@@ -490,8 +567,133 @@ class TrafficRegistry(SerdeYamlFile):
   def from_dict(data: dict) -> TrafficRegistry:
     registry = TrafficRegistry()
     for key, variant in data.items():
+      if variant['type'] == 'transition':
+        if isinstance(variant['initial'], str) and variant['initial'] in data:
+          variant['initial'] = data[variant['initial']]
+        if isinstance(variant['ending'], str) and variant['ending'] in data:
+          variant['ending'] = data[variant['ending']]
       registry.set(key, traffic_generator_from_dict(variant))
     return registry
+
+class TrafficTranslator:
+  @staticmethod
+  def is_traffic_level_matrix(prop: str) -> bool:
+    return prop[0] == '<' and prop[-1] == '>'
+
+  @staticmethod
+  def is_time_sequence(prop: str) -> bool:
+    return prop[0] == '>' and prop[-1] == '>'
+
+  @staticmethod
+  def extract_traffic_level_matrix(prop: str) -> AxisTrafficMatrix:
+    mm, ms, sm, ss = list(map(traffic_level_from_string, prop[1:-1].split(',')))
+    return AxisTrafficMatrix(mm, ms, sm, ss)
+
+  @staticmethod
+  def extract_time_sequence(prop: str) -> list:
+    return prop[1:-1].split('>>')
+
+  @staticmethod
+  def translate_md_row(ID: str, desc: str, spec_string: str) -> dict:
+    props = spec_string.strip().split()
+    specs = {
+        'title': ID,
+        'description': desc,
+        'dense': False,
+        'symmetric': False,
+        'reversed': False,
+        'artificialQueue': True,
+    }
+
+    for prop in props:
+      if prop == 'Casuale':
+        specs['type'] = 'casual'
+      elif prop == 'Stabile':
+        specs['type'] = 'stable'
+      elif prop == 'Instabile':
+        specs['type'] = 'unstable'
+      elif prop == 'Transizione':
+        specs['type'] = 'transition'
+      elif prop == 'Simmetrico':
+        specs['symmetric'] = True
+      elif prop == 'Asimmetrico':
+        specs['symmetric'] = False
+      elif prop == 'Denso':
+        specs['dense'] = True
+      elif prop == 'Assiale':
+        specs['dense'] = False
+      elif prop == 'Inverso':
+        specs['reversed'] = True
+      elif prop == 'Diretto':
+        specs['reversed'] = False
+      elif __class__.is_time_sequence(prop):
+        specs['timeSequence'] = __class__.extract_time_sequence(prop)
+      elif __class__.is_traffic_level_matrix(prop):
+        specs['trafficLevels'] = __class__.extract_traffic_level_matrix(prop).to_dict()
+      else:
+        specs['trafficLevel'] = traffic_level_from_string(prop)
+
+
+    duration = 10000
+    slotTime = 60
+    if specs['type'] == 'casual':
+      return {
+        'type': specs['type'],
+        'trafficLevel': specs['trafficLevel'],
+        'duration': duration,
+        'slotTime': slotTime,
+        'title': specs['title'],
+        'description': specs['description'],
+        'artificialQueue': specs['artificialQueue'],
+        'symmetric': specs['symmetric'],
+        'reversed': specs['reversed']
+      }
+    elif specs['type'] == 'stable':
+      return {
+        'type': specs['type'],
+        'trafficLevels': specs['trafficLevels'],
+        'duration': duration,
+        'title': specs['title'],
+        'description': specs['description'],
+        'dense': specs['dense'],
+        'symmetric': specs['symmetric'],
+        'reversed': specs['reversed'],
+        'artificial_queue': specs['artificialQueue']
+      }
+    elif specs['type'] == 'unstable':
+      return {
+        'type': specs['type'],
+        'trafficLevels': specs['trafficLevels'],
+        'duration': duration,
+        'slotTime': slotTime,
+        'title': specs['title'],
+        'description': specs['description'],
+        'dense': specs['dense'],
+        'symmetric': specs['symmetric'],
+        'reversed': specs['reversed'],
+        'artificial_queue': specs['artificialQueue']
+      }
+    elif specs['type'] == 'transition':
+      return {
+        'type': specs['type'],
+        'duration': duration,
+        'title': specs['title'],
+        'description': specs['description'],
+        'initial': specs['timeSequence'][0],
+        'ending': specs['timeSequence'][1]
+      }
+    else:
+      raise ValueError(specs, props)
+
+  @staticmethod
+  def from_md_file_to_yml_file(md_file: str, yml_file: str):
+    tables = read_all_tables_from_md_file(md_file)
+    yml_registry = {}
+    for table in tables:
+      if list(table.keys()) == ['ID', 'Descrizione', 'Inquadramento']:
+        for row in iterrows(table):
+          yml_registry[row['ID']] = __class__.translate_md_row(row['ID'], row['Descrizione'], row['Inquadramento'])
+    GenericFile(yml_registry).to_yaml_file(yml_file)
 
 def generate_traffic(base_dir: str, traffic_generator: TrafficGenerator, number: int, output_dir: str):
   assert number > 0
@@ -509,6 +711,7 @@ def generate_traffic(base_dir: str, traffic_generator: TrafficGenerator, number:
 def main():
   argument_parser = argparse.ArgumentParser(description='flower')
   argument_parser.add_argument('-s', '--scenario', default='breda', help='Input scenario')
+  argument_parser.add_argument('-ir', '--import-registry', default=None, type=str, help='Import traffic registry from md description')
   argument_parser.add_argument('-r', '--traffic-registry', default=None, type=str, help='Resume traffic registry from yml file')
   argument_parser.add_argument('-t', '--traffic', default=None, type=str, help='Registered traffic type to generate')
   argument_parser.add_argument('-lt', '--list-traffic', default=False, action='store_true', help='Lists registered traffic types')
@@ -520,6 +723,10 @@ def main():
   base_dir = "scenarios/%s" % cli_args.scenario
 
   registry: TrafficRegistry
+  if cli_args.import_registry is not None:
+    TrafficTranslator.from_md_file_to_yml_file(cli_args.import_registry, cli_args.dump_registry)
+    return
+
   if cli_args.traffic_registry is not None:
     registry = TrafficRegistry.from_yaml_file(cli_args.traffic_registry)
   else:

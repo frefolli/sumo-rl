@@ -49,6 +49,17 @@ class SerdeXMLFile(SerdeXML):
     with open(filepath, mode="w", encoding="utf-8") as file:
       file.write(self.to_xml())
 
+## D2
+class SerdeD2(abc.ABC):
+  @abc.abstractmethod
+  def to_d2(self, indent: int = 0) -> str:
+    pass
+
+class SerdeD2File(SerdeD2):
+  def to_d2_file(self, filepath: str):
+    with open(filepath, mode="w", encoding="utf-8") as file:
+      file.write(self.to_d2())
+
 ## YAML
 class SerdeYaml(SerdeDict):
   def to_yaml(self) -> str:

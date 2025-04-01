@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import pandas
+from sumo_rl.preprocessing.adiacency_graph import build_adiacency_graph
 import sumo_rl.util.config
 import sumo_rl.preprocessing.factories
 import sumo_rl.preprocessing.partitions
@@ -21,51 +22,110 @@ def nproc(jobs: int|None):
     return os.cpu_count()
   return jobs
 
-def agent_factory_by_option(cli_args, config: sumo_rl.util.config.Config, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.factories.AgentFactory:
-  val = cli_args.agent
-  if val == 'fixed':
-    return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle)
-  if val == 'ql':
-    return sumo_rl.preprocessing.factories.QLAgentFactory(env, config,
-                                                          config.agents.ql.alpha,
-                                                          config.agents.ql.gamma,
-                                                          config.agents.ql.initial_epsilon,
-                                                          config.agents.ql.min_epsilon,
-                                                          config.agents.ql.decay,
-                                                          recycle=cli_args.recycle)
-  if val == 'dqn':
-    return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config, recycle=cli_args.recycle)
-  if val == 'ppo':
-    return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config, recycle=cli_args.recycle)
-  raise ValueError(val)
+def use_selection_of_agent_type():
+  def agent_factory_by_option(cli_args, config: sumo_rl.util.config.Config, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.factories.AgentFactory:
+    val = cli_args.agent
+    if val == 'fixed':
+      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle)
+    if val == 'ql':
+      return sumo_rl.preprocessing.factories.QLAgentFactory(env, config,
+                                                            config.agents.ql.alpha,
+                                                            config.agents.ql.gamma,
+                                                            config.agents.ql.initial_epsilon,
+                                                            config.agents.ql.min_epsilon,
+                                                            config.agents.ql.decay,
+                                                            recycle=cli_args.recycle)
+    if val == 'dqn':
+      return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config, recycle=cli_args.recycle)
+    if val == 'ppo':
+      return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config, recycle=cli_args.recycle)
+    raise ValueError(val)
 
-def partition_by_option(cli_args, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.partitions.Partition:
-  val = cli_args.partition
-  if val == 'mono':
-    return sumo_rl.preprocessing.partitions.MonadicPartition.Build(env)
-  if val == 'size':
-    return sumo_rl.preprocessing.partitions.ActionStateSizePartition.Build(env)
-  if val == 'space':
-    return sumo_rl.preprocessing.partitions.ActionStateSpacePartition.Build(env)
-  raise ValueError(val)
+  options = ['fixed', 'ql', 'dqn', 'ppo']
+  help_text = """
+    Selects the type of Agent to use,
+    - fixed: Fixed Cycle agent,
+    - ql: Q Learning agent,
+    - dqn: Deep Q Learning agent,
+    - ppo: Proximal Policy Optimization agent
+  """
+  return options, help_text, agent_factory_by_option
 
-def observation_fn_by_option(cli_args) -> sumo_rl.observations.ObservationFunction:
-  val = cli_args.observation
-  if val == 'default':
-    return sumo_rl.observations.DefaultObservationFunction()
-  raise ValueError(val)
+def use_selection_of_partition():
+  def partition_by_option(cli_args, env: sumo_rl.environment.env.SumoEnvironment) -> sumo_rl.preprocessing.partitions.Partition:
+    val = cli_args.partition
+    if val == 'mono':
+      return sumo_rl.preprocessing.partitions.MonadicPartition.Build(env)
+    if val == 'size':
+      return sumo_rl.preprocessing.partitions.ActionStateSizePartition.Build(env)
+    if val == 'space':
+      return sumo_rl.preprocessing.partitions.ActionStateSpacePartition.Build(env)
+    raise ValueError(val)
 
-def reward_fn_by_option(cli_args) -> sumo_rl.rewards.RewardFunction:
-  val = cli_args.reward
-  if val == 'dwt':
-    return sumo_rl.rewards.DiffWaitingTimeRewardFunction()
-  if val == 'as':
-    return sumo_rl.rewards.AverageSpeedRewardFunction()
-  if val == 'ql':
-    return sumo_rl.rewards.QueueLengthRewardFunction()
-  if val == 'p':
-    return sumo_rl.rewards.PressureRewardFunction()
-  raise ValueError(val)
+  options = ['mono', 'size', 'space']
+  help_text = """
+    Selects the mechanism for partitioning traffic signals over agents
+    - mono: An agent per traffic signal
+    - size: Traffic signals are grouped by intersection size (in managed lanes)
+    - space: Traffic signals are grouped by observation function space
+  """
+  return options, help_text, partition_by_option
+
+def use_selection_of_observation_fn():
+  def observation_fn_by_option(cli_args) -> sumo_rl.observations.ObservationFunction:
+    val = cli_args.observation
+    if val == 'default':
+      return sumo_rl.observations.DefaultObservationFunction()
+    if val == 'sv':
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
+                                                                  you_observation=sumo_rl.observations.DefaultObservationFunction())
+    if val == 'svp':
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
+                                                                  you_observation=sumo_rl.observations.PhaseObservationFunction())
+    if val == 'svd':
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
+                                                                  you_observation=sumo_rl.observations.DensityObservationFunction())
+    if val == 'svq':
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
+                                                                  you_observation=sumo_rl.observations.QueueObservationFunction())
+    raise ValueError(val)
+
+  options = ['default', 'sv', 'svp', 'svd', 'svq']
+  help_text = """
+    Selects the observation function to use
+    - default: I can see my current phase, if max_green_time has passed, queue lengths and densities of lanes
+    - Shared Views: neighbours are defined by a Vision Graph(NODES = Array(Traffic Light),
+                                                             EDGES = DICT(Traffic Light: SET(Traffic Light))).
+      For now is built seeking for immediately adiancent traffic signals.
+      - sv: I can se the `default` state + the `default` state of neighbour traffic signals
+      - svp: I can se the `default` state + the phase of neighbour traffic signals
+      - svd: I can se the `default` state + the densities of lanes of neighbour traffic signals
+      - svq: I can se the `default` state + the queue lengths of lanes of neighbour traffic signals
+  """
+  return options, help_text, observation_fn_by_option
+
+def use_selection_of_reward_fn():
+  def reward_fn_by_option(cli_args) -> sumo_rl.rewards.RewardFunction:
+    val = cli_args.reward
+    if val == 'dwt':
+      return sumo_rl.rewards.DiffWaitingTimeRewardFunction()
+    if val == 'as':
+      return sumo_rl.rewards.AverageSpeedRewardFunction()
+    if val == 'ql':
+      return sumo_rl.rewards.QueueLengthRewardFunction()
+    if val == 'p':
+      return sumo_rl.rewards.PressureRewardFunction()
+    raise ValueError(val)
+
+  options = ['dwt', 'as', 'ql', 'p']
+  help_text = """
+    Selects the reward function to use
+    - dwt: Diff Waiting Times
+    - as: Average Speeds
+    - ql: Average Queue Lengths
+    - p: Pressure
+  """
+  return options, help_text, reward_fn_by_option
 
 def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
   env.set_duration(config.training.seconds)
@@ -73,7 +133,7 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
     for episode in range(config.training.episodes):
       for routes_file in config.scenario.training_routes:
         env.sumo_seed += 1
-        env._route = routes_file
+        env.set_route_file(routes_file)
         print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
         env.reset()
         for agent in agents:
@@ -199,12 +259,17 @@ def show_args(cli_args):
     })
 
 def main():
-  cli = argparse.ArgumentParser(sys.argv[0])
+  agent_type_options, agent_type_help, agent_factory_by_option = use_selection_of_agent_type()
+  partition_options, partition_help, partition_by_option = use_selection_of_partition()
+  observation_fn_options, observation_fn_help, observation_fn_by_option = use_selection_of_observation_fn()
+  reward_fn_options, reward_fn_help, reward_fn_by_option = use_selection_of_reward_fn()
+
+  cli = argparse.ArgumentParser(sys.argv[0], description="Experiments with SUMO-RL", formatter_class=argparse.RawTextHelpFormatter)
   cli.add_argument('-C', '--config', default='./config.yml', help="Selects YAML config (defaults to ./config.yml)")
-  cli.add_argument('-A', '--agent', choices=['fixed', 'ql', 'dqn', 'ppo'], default='ql', help="Selects agent type (defaults to ql)")
-  cli.add_argument('-P', '--partition', choices=['mono', 'size', 'space'], default='mono', help="Selects partition type (defaults to mono)")
-  cli.add_argument('-O', '--observation', choices=['default'], default='default', help="Select observation function (defaults to default)")
-  cli.add_argument('-R', '--reward', choices=['dwt', 'as', 'ql', 'p'], default='dwt', help="Select reward function (defaults to dwt)")
+  cli.add_argument('-A', '--agent', choices=agent_type_options, default=agent_type_options[0], help=agent_type_help)
+  cli.add_argument('-P', '--partition', choices=partition_options, default=partition_options[0], help=partition_help)
+  cli.add_argument('-O', '--observation', choices=observation_fn_options, default=observation_fn_options[0], help=observation_fn_help)
+  cli.add_argument('-R', '--reward', choices=reward_fn_options, default=reward_fn_options[0], help=reward_fn_help)
   cli.add_argument('-r', '--recycle', action="store_true", default=False, help="If it has to recycle previously trained agents (by means of serialization)")
   cli.add_argument('-p', '--pretend', action="store_true", default=False, help="Don't actually start training and evaluation simulations")
   cli.add_argument('-g', '--use-gui', action="store_true", default=False, help="Uses GUI")
@@ -222,6 +287,9 @@ def main():
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
   env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs))
+  if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction):
+    build_adiacency_graph(env, env.observation_fn.vision_graph)
+    env.observation_fn.vision_graph.to_d2_file('vision-graph.d2')
   agent_factory: sumo_rl.preprocessing.factories.AgentFactory = agent_factory_by_option(cli_args, config, env)
   agents_partition: sumo_rl.preprocessing.partitions.Partition = partition_by_option(cli_args, env)
   agents: list[sumo_rl.agents.Agent] = agent_factory.agent_by_assignments(agents_partition.data)

@@ -60,14 +60,9 @@ The default observation for each traffic signal agent is a vector:
 
 ### Note
 
-I flussi di addestramento sono ottenuti tramite
+I flussi di addestramento e valutazione sono ottenuti tramite
 
 ```
-python -m tools.mengele -s breda -at -n 10 -o scenarios/breda/training
-```
-
-I flussi di valutazione e demo sono ottenuti tramite
-
-```
-python -m tools.flows -s breda -oD scenarios/breda/evaluation -C 10 -b 3 -d 1000 -c 10
+python -m tools.mengele -ir craft.md
+python -m tools.mengele -r /tmp/traffic-registry.yml -at -o traffics -n 2 -s prova
 ```
