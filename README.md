@@ -66,3 +66,5 @@ I flussi di addestramento e valutazione sono ottenuti tramite
 python -m tools.mengele -ir craft.md
 python -m tools.mengele -r /tmp/traffic-registry.yml -at -o traffics -n 2 -s prova
 ```
+
+Esempio di esecuzione: `python -m main -C config.yml -A ql -P mono -O sv -R ql -g -DD`

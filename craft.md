@@ -31,11 +31,11 @@
    - [ ] Q Learning (ql agent)
    - [ ] Deep Q Learning (dqn agent)
    - [ ] Proximal Policy Optimization (ppo agent)
-- [ ] Implementa funzioni di osservazione diverse
+- [x] Implementa funzioni di osservazione diverse
    - [x] Adiacent states
-   - [ ] Adiacent phases
-   - [ ] Adiacent densities
-   - [ ] Adiacent queues
+   - [x] Adiacent phases
+   - [x] Adiacent densities
+   - [x] Adiacent queues
 
 # Note su SUMO:
 
