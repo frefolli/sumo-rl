@@ -84,7 +84,7 @@ Assi principali:
 Assi secondari:
 
 - J4 ←> J5
-- J6 <→ J7
+- J6 <$\rightarrow$ J7
 
 # Generazione di traffico
 
@@ -96,7 +96,7 @@ Assi secondari:
    - Specifiche: SA, AD, DI
 - Unstable: traffico instabile con frequente interruzione dagli assi secondari tramite lottizzazione del tempo gestita da una variabile binomiale (p=0.7).
    - Specifiche: SA, AD, DI
-- Transition: traffico che inizia come C1  e finisce come C2. E' ottenuto tramite una partizione del tempo in $$[0, \frac {N} {2})$$ e $$[\frac {N} {2}, N)$$. Quindi ci saranno le tipologie "C1→C2", "C2→C1" … etc.
+- Transition: traffico che inizia come C1  e finisce come C2. E' ottenuto tramite una partizione del tempo in $$[0, \frac {N} {2})$$ e $$[\frac {N} {2}, N)$$. Quindi ci saranno le tipologie "C1$\rightarrow$C2", "C2→C1" … etc.
 
 ### Sottocategorie
 
@@ -104,11 +104,11 @@ Assi secondari:
    - Simmetrico: una direzione e quella sua opposta possono ricevere lo stesso carico di traffico
    - Asimmetrico: una direzione riceve circa il doppio del carico della sua opposta
 - AD: Indica in quali direzioni generare traffico
-   - Assiale: genera traffico solo lungo gli assi principali e secondari dichiarati. (es Breda: J0<→J3 ma non J0←>J4 … etc)
+   - Assiale: genera traffico solo lungo gli assi principali e secondari dichiarati. (es Breda: J0<$\rightarrow$J3 ma non J0←>J4 … etc)
    - Denso: genera traffico in tutte le direzioni
 - DI: Stabilisce quale dei due versi avra' piu' traffico nel caso Asimmetrico
-   - Diretto: $$X.ID> Y.ID$$ → $$traffic(X) \geq 2 * traffic(Y)$$
-   - Inverso: $$X.ID <Y.ID$$ → $$traffic(X)  \geq 2 * traffic(Y)$$
+   - Diretto: $$X.ID> Y.ID$$ $\rightarrow$ $$traffic(X) \geq 2 * traffic(Y)$$
+   - Inverso: $$X.ID <Y.ID$$ $\rightarrow$ $$traffic(X)  \geq 2 * traffic(Y)$$
 - Livello di traffico: espresso come numero in virgola mobile $$[0.0, 1.0]$$, e' la percentuale di veicoli rispetto alla capacita' ideale della strada da generare come traffico
    - Zero (0.0)
    - Basso (0.05)
@@ -197,12 +197,60 @@ La viabilita' sulle strade principali (interessate dai lavori per la messa a ter
 
 ## Apprendimento per Curriculum
 
-### Interpretazione costruttivista
+### Interpretazione 1
 
+Voglio verificare che se insegno un insieme di situazioni atomiche in cui ci si puo' ritrovare, poi l'agente e' in grado di generalizzare mettendo assieme i pezzi.
 Nell'**addestramento** utilizzo tutte le categorie di esempio ma nelle varieta' Stabili (baseline), Instabili e Casuali (fine-tuning) a rotazione randomica ma comunque in ordine di traffico totale crescente.
 Le Transizioni le uso nella **valutazione**.
 
-### Interpretazione intuizionista
+### Interpretazione 2
 
+Voglio verificare che se insegno all'agente tutta una serie di situazioni e le loro transizioni, poi riesce a reagire a condizioni di stress reggendo il passo della simulazione.
 Nell'**addestramento** utilizzo solo la categoria __Normalita'__ in tutte le varieta' Stabili (baseline), Instabili, Casuali e Transizioni (fine-tuning).
 Le altre categorie (__Sciopero Treni__, __Sciopero TPL__, __Cantiere Tram__) le uso nella **valutazione**.
+
+### Interpretazione costruttivista
+- **Apprendimento**:
+  - **Normale (stabile)** $\rightarrow$ Apprendimento basato su esperienze quotidiane strutturate.
+  - **Cantiere (transizione)** $\rightarrow$ Costruzione attiva della conoscenza attraverso il problem-solving collaborativo.
+  - **Sciopero (instabile)** $\rightarrow$ Situazioni di crisi che favoriscono l’adattamento e la ristrutturazione delle conoscenze.
+
+- **Valutazione**:
+  - **Casuale** $\rightarrow$ Valutazione basata sulla capacità di adattarsi a situazioni impreviste.
+  - **Transizione tra più scenari** $\rightarrow$ Osservazione di come lo studente trasferisce conoscenze tra diversi contesti.
+
+### Interpretazione costruzionista
+- **Apprendimento**:
+  - **Cantiere (stabile e instabile)** $\rightarrow$ Apprendimento attraverso la creazione attiva (programmazione, robotica, arte digitale).
+  - **Normale (transizione)** $\rightarrow$ Apprendimento mediato da strumenti digitali per la costruzione di conoscenza.
+
+- **Valutazione**:
+  - **Casuale** $\rightarrow$ Valutazione attraverso prodotti concreti realizzati dagli studenti.
+  - **Transizione tra più scenari** $\rightarrow$ Esame della capacità di iterare e migliorare i propri progetti.
+
+### Interpretazione intuizionista
+- **Apprendimento**:
+  - **Normale (stabile e transizione)** $\rightarrow$ Sviluppo progressivo di intuizioni matematiche e concettuali.
+  - **Cantiere (instabile)** $\rightarrow$ Rafforzamento delle intuizioni attraverso la manipolazione diretta di materiali o concetti.
+
+- **Valutazione**:
+  - **Casuale** $\rightarrow$ Verifica della capacità di risolvere problemi senza un ragionamento completamente formalizzato.
+  - **Transizione tra più scenari** $\rightarrow$ Osservazione del miglioramento delle intuizioni nel tempo.
+
+### Interpretazione comportamentista
+- **Apprendimento**:
+  - **Normale (stabile)** $\rightarrow$ Apprendimento basato su rinforzi positivi e negativi.
+  - **Cantiere (stabile)** $\rightarrow$ Training ripetitivo per affinare risposte comportamentali desiderate.
+
+- **Valutazione**:
+  - **Instabile** $\rightarrow$ Verifica della risposta automatizzata in situazioni nuove.
+  - **Casuale** $\rightarrow$ Test con stimoli variabili per misurare la generalizzazione dell’apprendimento.
+
+### Interpretazione connettivista
+- **Apprendimento**:
+  - **Normale (transizione)** $\rightarrow$ Apprendimento attraverso la rete e la connessione con fonti multiple.
+  - **Cantiere (instabile)** $\rightarrow$ Interazione dinamica con sistemi digitali e ambienti in evoluzione.
+
+- **Valutazione**:
+  - **Casuale** $\rightarrow$ Valutazione dell’adattabilità in ecosistemi digitali.
+  - **Transizione tra più scenari** $\rightarrow$ Verifica della capacità di trasferire conoscenza tra diverse reti informative.
