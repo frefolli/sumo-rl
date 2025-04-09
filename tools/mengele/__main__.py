@@ -14,6 +14,9 @@ from sumo_rl.models.serde import GenericFile, SerdeDict, SerdeYaml, SerdeYamlFil
 import sumo_rl.models.sumo
 #random.seed(170701)
 
+def random_binomial(p: float) -> bool:
+	return random.random() <= p
+
 def line_is_table_header(line: str):
   mo = re.match(r'^\|(\s+[^|]+\s+\|)+$', line)
   return mo is not None
@@ -255,7 +258,7 @@ class CasualTrafficGenerator(SlottedTrafficGenerator):
     design: dict[tuple[str, str], float] = {}
     for (A, B) in filter(lambda P: P[0].id != P[1].id, comb(network.dead_ends.values(), network.dead_ends.values())):
       if A.id != B.id:
-        if random.binomialvariate(p=self.slot_probability) == 1:
+        if random_binomial(p=self.slot_probability) == 1:
           self.add_traffic_to_design(design, A, B, self.traffic_level)
     return design
 
