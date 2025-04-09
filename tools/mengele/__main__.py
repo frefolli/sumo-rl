@@ -393,7 +393,7 @@ class UnstableTrafficGenerator(SlottedTrafficGenerator):
       self.add_traffic_to_design(design, A, B, self.traffic_levels.main_to_main)
     for (A, B) in filter(lambda P: P[0].id != P[1].id, comb(main_dead_ends, side_dead_ends)):
       self.add_traffic_to_design(design, A, B, self.traffic_levels.main_to_side)
-    if random.binomialvariate(p=self.slot_probability) == 1:
+    if random_binomial(p=self.slot_probability) == 1:
       for (A, B) in filter(lambda P: P[0].id != P[1].id, comb(side_dead_ends, side_dead_ends)):
         self.add_traffic_to_design(design, A, B, self.traffic_levels.side_to_side)
       for (A, B) in filter(lambda P: P[0].id != P[1].id, comb(side_dead_ends, main_dead_ends)):
@@ -404,7 +404,7 @@ class UnstableTrafficGenerator(SlottedTrafficGenerator):
     design: dict[tuple[str, str], float] = {}
     for axis in network.layout.main_axes:
       self.add_traffic_to_design(design, axis.A, axis.B, self.traffic_levels.main_to_main)
-    if random.binomialvariate(p=self.slot_probability) == 1:
+    if random_binomial(p=self.slot_probability) == 1:
       for axis in network.layout.side_axes:
         self.add_traffic_to_design(design, axis.A, axis.B, self.traffic_levels.side_to_side)
     return design
