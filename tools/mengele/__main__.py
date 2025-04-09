@@ -15,7 +15,7 @@ import sumo_rl.models.sumo
 #random.seed(170701)
 
 def random_binomial(p: float) -> bool:
-	return random.random() <= p
+  return random.random() <= p
 
 def line_is_table_header(line: str):
   mo = re.match(r'^\|(\s+[^|]+\s+\|)+$', line)
@@ -714,6 +714,7 @@ def generate_traffic(base_dir: str, traffic_generator: TrafficGenerator, number:
 def main():
   argument_parser = argparse.ArgumentParser(description='flower')
   argument_parser.add_argument('-s', '--scenario', default='breda', help='Input scenario')
+  argument_parser.add_argument('-S', '--seed', default=None, type=int, help='Input seed')
   argument_parser.add_argument('-ir', '--import-registry', default=None, type=str, help='Import traffic registry from md description')
   argument_parser.add_argument('-r', '--traffic-registry', default=None, type=str, help='Resume traffic registry from yml file')
   argument_parser.add_argument('-t', '--traffic', default=None, type=str, help='Registered traffic type to generate')
@@ -724,6 +725,9 @@ def main():
   argument_parser.add_argument('-o', '--output', default='/tmp', type=str, help='Output directory')
   cli_args = argument_parser.parse_args(sys.argv[1:])
   base_dir = "scenarios/%s" % cli_args.scenario
+
+  if cli_args.seed is not None:
+    random.seed(cli_args.seed)
 
   registry: TrafficRegistry
   if cli_args.import_registry is not None:
