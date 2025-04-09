@@ -15,24 +15,24 @@ import sumo_rl.models.sumo
 #random.seed(170701)
 
 def line_is_table_header(line: str):
-  mo = re.match(r'^\|( [^|]+ \|)+$', line)
+  mo = re.match(r'^\|(\s+[^|]+\s+\|)+$', line)
   return mo is not None
 
 def line_is_table_row(line: str):
-  mo = re.match(r'^\|( [^|]+ \|)+$', line)
+  mo = re.match(r'^\|(\s+[^|]+\s+\|)+$', line)
   return mo is not None
 
 def line_is_table_separator(line: str):
-  mo = re.match(r'^\|( [-]+ \|)+$', line)
+  mo = re.match(r'^\|(\s+[-]+\s+\|)+$', line)
   return mo is not None
 
 def extract_table_field_names(line: str):
-  mo = re.findall(r' ([^|]+) \|', line)
-  return mo
+  mo = re.findall(r'\s+([^|]+)\s+\|', line)
+  return [_.strip() for _ in mo]
 
 def extract_table_fields(line: str):
-  mo = re.findall(r' ([^|]+) \|', line)
-  return mo
+  mo = re.findall(r'\s+([^|]+)\s+\|', line)
+  return [_.strip() for _ in mo]
 
 def read_all_tables_from_md_file(md_file: str) -> list[dict[str, list]]:
   tables: list[dict[str, list]] = []
