@@ -129,64 +129,75 @@ def use_selection_of_reward_fn():
 
 def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
   env.set_duration(config.training.seconds)
-  for run in range(config.training.runs):
-    for episode in range(config.training.episodes):
-      for routes_file in config.scenario.training_routes:
-        env.sumo_seed += 1
-        env.set_route_file(routes_file)
-        print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
-        env.reset()
-        for agent in agents:
-          agent.reset()
-        env.gather_data_from_sumo()
-        env.compute_observations()
-        env.compute_rewards()
-        env.compute_metrics()
-        for agent in agents:
-          if agent.can_observe():
-            agent.observe(env.observations)
-        while not env.done():
-          actions = {}
-          print(env.sim_step, end="\r")
-          for agent in agents:
-            actions.update(agent.act())
-          env.step(action=actions)
-          env.gather_data_from_sumo()
-          env.compute_observations()
-          env.compute_rewards()
-          env.compute_metrics()
-          for agent in agents:
-            if agent.can_observe():
-              agent.observe(env.observations)
-            if agent.can_learn():
-              agent.learn(env.rewards)
-        print("Training :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
+  for episode, routes_file in enumerate(config.scenario.evaluation_routes):
+    env.sumo_seed += 1
+    env.set_route_file(routes_file)
+    print("Training :: Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (episode, routes_file, env.sumo_seed))
+    env.reset()
+    for agent in agents:
+      agent.reset()
+    env.gather_data_from_sumo()
+    env.compute_observations()
+    env.compute_rewards()
+    env.compute_metrics()
+    for agent in agents:
+      if agent.can_observe():
+        agent.observe(env.observations)
+    while not env.done():
+      actions = {}
+      print(env.sim_step, end="\r")
+      for agent in agents:
+        actions.update(agent.act())
+      env.step(action=actions)
+      env.gather_data_from_sumo()
+      env.compute_observations()
+      env.compute_rewards()
+      env.compute_metrics()
+      for agent in agents:
+        if agent.can_observe():
+          agent.observe(env.observations)
+        if agent.can_learn():
+          agent.learn(env.rewards)
+    print("Training :: Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (episode, routes_file, env.sumo_seed))
 
-        # Serialize Metrics
-        path = config.training_metrics_file(run, episode)
-        pandas.DataFrame(env.metrics).to_csv(path, index=False)
+    # Serialize Metrics
+    path = config.training_metrics_file(episode)
+    pandas.DataFrame(env.metrics).to_csv(path, index=False)
 
-        # Serialize Agents
-        for agent in agents:
-          if agent.can_be_serialized():
-            path = config.agents_file(None, None, agent.id)
-            agent.serialize(path)
     # Serialize Agents
     for agent in agents:
       if agent.can_be_serialized():
         path = config.agents_file(None, None, agent.id)
         agent.serialize(path)
 
+  # Serialize Agents
+  for agent in agents:
+    if agent.can_be_serialized():
+      path = config.agents_file(None, None, agent.id)
+      agent.serialize(path)
+
 def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
   env.set_duration(config.evaluation.seconds)
-  for run in range(config.evaluation.runs):
-    for episode, routes_file in enumerate(config.scenario.evaluation_routes):
-      env.sumo_seed += 1
-      env._route = routes_file
-      print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (run, episode, routes_file, env.sumo_seed))
-      env.reset()
+  for episode, routes_file in enumerate(config.scenario.evaluation_routes):
+    env.sumo_seed += 1
+    env.set_route_file(routes_file)
+    print("Evaluation :: Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (episode, routes_file, env.sumo_seed))
+    env.reset()
+    for agent in agents:
+      agent.reset()
+    env.gather_data_from_sumo()
+    env.compute_observations()
+    # env.compute_rewards()
+    env.compute_metrics()
+    for agent in agents:
+      if agent.can_observe():
+        agent.observe(env.observations)
+    while not env.done():
+      actions = {}
+      print(env.sim_step, end="\r")
       for agent in agents:
-        agent.reset()
+        actions.update(agent.act())
+      env.step(action=actions)
       env.gather_data_from_sumo()
       env.compute_observations()
       # env.compute_rewards()
@@ -194,30 +205,17 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
       for agent in agents:
         if agent.can_observe():
           agent.observe(env.observations)
-      while not env.done():
-        actions = {}
-        print(env.sim_step, end="\r")
-        for agent in agents:
-          actions.update(agent.act())
-        env.step(action=actions)
-        env.gather_data_from_sumo()
-        env.compute_observations()
-        # env.compute_rewards()
-        env.compute_metrics()
-        for agent in agents:
-          if agent.can_observe():
-            agent.observe(env.observations)
-      print("Evaluation :: Run(%s)/Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (run, episode, routes_file, env.sumo_seed))
+    print("Evaluation :: Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (episode, routes_file, env.sumo_seed))
 
-      # Serialize Metrics
-      path = config.evaluation_metrics_file(run, episode)
-      pandas.DataFrame(env.metrics).to_csv(path, index=False)
+    # Serialize Metrics
+    path = config.evaluation_metrics_file(episode)
+    pandas.DataFrame(env.metrics).to_csv(path, index=False)
 
 def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
   env.set_duration(config.demo.seconds)
   routes_file = config.scenario.demo_routes[0]
   env.sumo_seed += 1
-  env._route = routes_file
+  env.set_route_file(routes_file)
   print("Demo :: Routes(%s)/Seed(%s) :: Starting" % (routes_file, env.sumo_seed))
   env.reset()
   for agent in agents:

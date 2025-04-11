@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+  <flow id="JF252439" begin="0" fromJunction="J0" toJunction="J3" end="10000" vehsPerHour="233.7829497129814" departLane="free"/>
+  <flow id="JF252440" begin="0" fromJunction="J3" toJunction="J0" end="10000" vehsPerHour="235.2157406686094" departLane="free"/>
+  <flow id="JF252441" begin="0" fromJunction="J0" toJunction="J5" end="10000" vehsPerHour="132.38875416427217" departLane="free"/>
+  <flow id="JF252442" begin="0" fromJunction="J0" toJunction="J4" end="10000" vehsPerHour="45.53577333457679" departLane="free"/>
+  <flow id="JF252443" begin="0" fromJunction="J0" toJunction="J6" end="10000" vehsPerHour="132.421478575816" departLane="free"/>
+  <flow id="JF252444" begin="0" fromJunction="J0" toJunction="J7" end="10000" vehsPerHour="107.5376205699445" departLane="free"/>
+  <flow id="JF252445" begin="0" fromJunction="J3" toJunction="J5" end="10000" vehsPerHour="30.20836469278635" departLane="free"/>
+  <flow id="JF252446" begin="0" fromJunction="J3" toJunction="J4" end="10000" vehsPerHour="56.44229135368594" departLane="free"/>
+  <flow id="JF252447" begin="0" fromJunction="J3" toJunction="J6" end="10000" vehsPerHour="61.4274152602049" departLane="free"/>
+  <flow id="JF252448" begin="0" fromJunction="J3" toJunction="J7" end="10000" vehsPerHour="41.39645227259451" departLane="free"/>
+  <flow id="JF252449" begin="0" fromJunction="J5" toJunction="J4" end="10000" vehsPerHour="31.249248704114333" departLane="free"/>
+  <flow id="JF252450" begin="0" fromJunction="J5" toJunction="J6" end="10000" vehsPerHour="32.72680809198763" departLane="free"/>
+  <flow id="JF252451" begin="0" fromJunction="J5" toJunction="J7" end="10000" vehsPerHour="23.95962711489268" departLane="free"/>
+  <flow id="JF252452" begin="0" fromJunction="J4" toJunction="J5" end="10000" vehsPerHour="36.72061179385516" departLane="free"/>
+  <flow id="JF252453" begin="0" fromJunction="J4" toJunction="J6" end="10000" vehsPerHour="61.26287293419146" departLane="free"/>
+  <flow id="JF252454" begin="0" fromJunction="J4" toJunction="J7" end="10000" vehsPerHour="11.98187961142086" departLane="free"/>
+  <flow id="JF252455" begin="0" fromJunction="J6" toJunction="J5" end="10000" vehsPerHour="28.55595977174404" departLane="free"/>
+  <flow id="JF252456" begin="0" fromJunction="J6" toJunction="J4" end="10000" vehsPerHour="26.89460001211163" departLane="free"/>
+  <flow id="JF252457" begin="0" fromJunction="J6" toJunction="J7" end="10000" vehsPerHour="35.401371446893656" departLane="free"/>
+  <flow id="JF252458" begin="0" fromJunction="J7" toJunction="J5" end="10000" vehsPerHour="26.09729294856159" departLane="free"/>
+  <flow id="JF252459" begin="0" fromJunction="J7" toJunction="J4" end="10000" vehsPerHour="7.662584229034126" departLane="free"/>
+  <flow id="JF252460" begin="0" fromJunction="J7" toJunction="J6" end="10000" vehsPerHour="18.503609986831812" departLane="free"/>
+  <flow id="JF252461" begin="0" fromJunction="J5" toJunction="J0" end="10000" vehsPerHour="24.028800261768794" departLane="free"/>
+  <flow id="JF252462" begin="0" fromJunction="J5" toJunction="J3" end="10000" vehsPerHour="9.04684523907666" departLane="free"/>
+  <flow id="JF252463" begin="0" fromJunction="J4" toJunction="J0" end="10000" vehsPerHour="31.96906434236515" departLane="free"/>
+  <flow id="JF252464" begin="0" fromJunction="J4" toJunction="J3" end="10000" vehsPerHour="20.995924790665857" departLane="free"/>
+  <flow id="JF252465" begin="0" fromJunction="J6" toJunction="J0" end="10000" vehsPerHour="26.297780443527405" departLane="free"/>
+  <flow id="JF252466" begin="0" fromJunction="J6" toJunction="J3" end="10000" vehsPerHour="21.874388692473143" departLane="free"/>
+  <flow id="JF252467" begin="0" fromJunction="J7" toJunction="J0" end="10000" vehsPerHour="31.534489794494096" departLane="free"/>
+  <flow id="JF252468" begin="0" fromJunction="J7" toJunction="J3" end="10000" vehsPerHour="2.8820145353059448" departLane="free"/>
+</routes>

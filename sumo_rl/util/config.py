@@ -2,6 +2,7 @@ from __future__ import annotations
 from sumo_rl.models.serde import SerdeJsonFile, SerdeYamlFile, SerdeDict
 from sumo_rl.models.commons import ensure_dir
 import os
+import random
 
 def get_all_qualified_paths_with_extension(base_dir: str, files: list[str], ext: str = '.rou.xml') -> list[str]:
   result = []
@@ -20,7 +21,7 @@ class SumoConfig(SerdeDict):
     self.seconds: int = data['seconds']
     self.min_green: int = data['min_green']
     self.delta_time: int = data['delta_time']
-    self.sumo_seed: int = data['sumo_seed']
+    self.sumo_seed: int = (data.get('sumo_seed') or random.randint(1, 100000))
     self.further_cmd_args: list[str] = data['further_cmd_args']
 
   def to_dict(self) -> dict:
@@ -245,41 +246,38 @@ class Config(SerdeYamlFile, SerdeJsonFile):
   def __repr__(self) -> str:
     return self.to_yaml()
 
-  def agents_dir(self, run: int|None, episode: int|None) -> str:
+  def agents_dir(self, episode: int|None) -> str:
     if episode is None:
-      if run is None:
-        return ensure_dir("%s/final" % (self.artifacts.agents))
-      return ensure_dir("%s/%s/final" % (self.artifacts.agents, run))
-    assert run is not None
-    return ensure_dir("%s/%s/%s" % (self.artifacts.agents, run, episode))
+      return ensure_dir("%s/final" % (self.artifacts.agents))
+    return ensure_dir("%s/%s" % (self.artifacts.agents, episode))
 
-  def agents_file(self, run: int|None, episode: int|None, agent: int) -> str:
-    return "%s/%s.pickle" % (self.agents_dir(run, episode), agent)
+  def agents_file(self, episode: int|None, agent: int) -> str:
+    return "%s/%s.pickle" % (self.agents_dir(episode), agent)
 
-  def training_metrics_dir(self, run: int) -> str:
-    return ensure_dir("%s/training/%s" % (self.artifacts.metrics, run))
+  def training_metrics_dir(self) -> str:
+    return ensure_dir("%s/training" % (self.artifacts.metrics))
 
-  def training_metrics_file(self, run: int, episode: int) -> str:
-    return "%s/%s.csv" % (self.training_metrics_dir(run), episode)
+  def training_metrics_file(self, episode: int) -> str:
+    return "%s/%s.csv" % (self.training_metrics_dir(), episode)
 
-  def evaluation_metrics_dir(self, run: int) -> str:
-    return ensure_dir("%s/evaluation/%s" % (self.artifacts.metrics, run))
+  def evaluation_metrics_dir(self) -> str:
+    return ensure_dir("%s/evaluation" % (self.artifacts.metrics))
 
-  def evaluation_metrics_file(self, run: int, episode: int) -> str:
-    return "%s/%s.csv" % (self.evaluation_metrics_dir(run), episode)
+  def evaluation_metrics_file(self, episode: int) -> str:
+    return "%s/%s.csv" % (self.evaluation_metrics_dir(), episode)
 
-  def training_plots_dir(self, label: str, run: int) -> str:
-    return ensure_dir("%s/training/%s/%s" % (self.artifacts.plots, label, run))
+  def training_plots_dir(self, label: str) -> str:
+    return ensure_dir("%s/training/%s" % (self.artifacts.plots, label))
 
-  def training_plots_file(self, label: str, run: int, episode: int|None) -> str:
+  def training_plots_file(self, label: str, episode: int|None) -> str:
     if episode is None:
-      return "%s/summary.png" % (self.training_plots_dir(label, run))
-    return "%s/%s.png" % (self.training_plots_dir(label, run), episode)
+      return "%s/summary.png" % (self.training_plots_dir(label))
+    return "%s/%s.png" % (self.training_plots_dir(label), episode)
 
-  def evaluation_plots_dir(self, label: str, run: int) -> str:
-    return ensure_dir("%s/evaluation/%s/%s" % (self.artifacts.plots, label, run))
+  def evaluation_plots_dir(self, label: str) -> str:
+    return ensure_dir("%s/evaluation/%s" % (self.artifacts.plots, label))
 
-  def evaluation_plots_file(self, label: str, run: int, episode: int|None) -> str:
+  def evaluation_plots_file(self, label: str, episode: int|None) -> str:
     if episode is None:
-      return "%s/summary.png" % (self.evaluation_plots_dir(label, run))
-    return "%s/%s.png" % (self.evaluation_plots_dir(label, run), episode)
+      return "%s/summary.png" % (self.evaluation_plots_dir(label))
+    return "%s/%s.png" % (self.evaluation_plots_dir(label), episode)

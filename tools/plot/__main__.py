@@ -7,6 +7,7 @@ import sumo_rl.util.config
 import argparse
 import sys
 import enum
+import os
 
 class Datastore:
   class Mode(enum.Enum):
@@ -16,40 +17,40 @@ class Datastore:
   def __init__(self, config: sumo_rl.util.config.Config, mode: Datastore.Mode) -> None:
     self.config = config
     self.mode = mode
-    self.runs, self.episodes = self._load_runs_and_episodes()
-    self.metrics: dict[int, dict[int, pandas.DataFrame]] = self._load_metrics()
+    self.episodes = self._identify_episodes()
+    self.metrics: dict[int, pandas.DataFrame] = self._load_metrics()
 
-  def _load_runs_and_episodes(self):
+  def _identify_episodes(self) -> list[int]:
     if self.mode == Datastore.Mode.EVALUATION:
-      return self.config.evaluation.runs, self.config.evaluation.episodes
+      basedir = self.config.evaluation_metrics_dir()
+      return [int(file.split('.')[0]) for file in os.listdir(basedir)]
     elif self.mode == Datastore.Mode.TRAINING:
-      return self.config.training.runs, self.config.training.episodes
+      basedir = self.config.training_metrics_dir()
+      return [int(file.split('.')[0]) for file in os.listdir(basedir)]
     else:
       raise ValueError(self.mode)
 
-  def _load_metrics(self) -> dict[int, dict[int, pandas.DataFrame]]:
+  def _load_metrics(self) -> dict[int, pandas.DataFrame]:
     metrics = {}
-    for run in range(self.runs):
-      metrics[run] = {}
-      for episode in range(self.episodes):
-        df = pandas.read_csv(self.metrics_file(run, episode))
-        df = df.dropna()
-        metrics[run][episode] = df
+    for episode in self.episodes:
+      df = pandas.read_csv(self.metrics_file(episode))
+      df = df.dropna()
+      metrics[episode] = df
     return metrics
 
-  def metrics_file(self, run, episode) -> str:
+  def metrics_file(self, episode) -> str:
     if self.mode == Datastore.Mode.EVALUATION:
-      return self.config.evaluation_metrics_file(run, episode)
+      return self.config.evaluation_metrics_file(episode)
     elif self.mode == Datastore.Mode.TRAINING:
-      return self.config.training_metrics_file(run, episode)
+      return self.config.training_metrics_file(episode)
     else:
       raise ValueError(self.mode)
 
-  def plots_file(self, label, run, episode) -> str:
+  def plots_file(self, label, episode) -> str:
     if self.mode == Datastore.Mode.EVALUATION:
-      return self.config.evaluation_plots_file(label, run, episode)
+      return self.config.evaluation_plots_file(label, episode)
     elif self.mode == Datastore.Mode.TRAINING:
-      return self.config.training_plots_file(label, run, episode)
+      return self.config.training_plots_file(label, episode)
     else:
       raise ValueError(self.mode)
 
@@ -99,32 +100,30 @@ class Smoother:
 class Plotter:
   @staticmethod
   def Single(datastore: Datastore, label: str, retrieve_data: Retriever):
-    for run in datastore.metrics:
-      for episode in datastore.metrics[run]:
-        df = datastore.metrics[run][episode]
-        _ = matplotlib.pyplot.figure(figsize=(20, 10))
-        Ys = retrieve_data(df)
-        Xs = [_ for _ in range(len(Ys))]
-        matplotlib.pyplot.plot(Xs, Ys, marker='o', label=label)
-        matplotlib.pyplot.title('Metrics for run %s / episode %s' % (run, episode))
-        matplotlib.pyplot.legend()
-        matplotlib.pyplot.savefig(datastore.plots_file(label, run, episode))
-        matplotlib.pyplot.close()
+    for episode in datastore.metrics.keys():
+      df = datastore.metrics[episode]
+      _ = matplotlib.pyplot.figure(figsize=(20, 10))
+      Ys = retrieve_data(df)
+      Xs = [_ for _ in range(len(Ys))]
+      matplotlib.pyplot.plot(Xs, Ys, marker='o', label=label)
+      matplotlib.pyplot.title('Metrics for episode %s' % (episode))
+      matplotlib.pyplot.legend()
+      matplotlib.pyplot.savefig(datastore.plots_file(label, episode))
+      matplotlib.pyplot.close()
   
   @staticmethod
   def Summary(datastore: Datastore, label: str, retrieve_data: typing.Callable):
-    for run in datastore.metrics:
-      _ = matplotlib.pyplot.figure(figsize=(20, 10))
-      Ys = []
-      for episode in datastore.metrics[run]:
-        df = datastore.metrics[run][episode]
-        Ys += retrieve_data(df)
-      Xs = [_ for _ in range(len(Ys))]
-      matplotlib.pyplot.plot(Xs, Ys, marker='o', label=label)
-      matplotlib.pyplot.title('Metrics for run %s' % (run))
-      matplotlib.pyplot.legend()
-      matplotlib.pyplot.savefig(datastore.plots_file(label, run, None))
-      matplotlib.pyplot.close()
+    _ = matplotlib.pyplot.figure(figsize=(20, 10))
+    Ys = []
+    for episode in datastore.metrics.keys():
+      df = datastore.metrics[episode]
+      Ys += retrieve_data(df)
+    Xs = [_ for _ in range(len(Ys))]
+    matplotlib.pyplot.plot(Xs, Ys, marker='o', label=label)
+    matplotlib.pyplot.title('Metrics summary' % ())
+    matplotlib.pyplot.legend()
+    matplotlib.pyplot.savefig(datastore.plots_file(label, None))
+    matplotlib.pyplot.close()
 
 
 Retriever = typing.Callable[[pandas.DataFrame], list]

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+  <flow id="JF15980" begin="0" fromJunction="J0" toJunction="J3" end="10000" vehsPerHour="87.35095789568011" departLane="free"/>
+  <flow id="JF15981" begin="0" fromJunction="J3" toJunction="J0" end="10000" vehsPerHour="9.617723746335491" departLane="free"/>
+  <flow id="JF15982" begin="0" fromJunction="J0" toJunction="J4" end="10000" vehsPerHour="451.29496060595034" departLane="free"/>
+  <flow id="JF15983" begin="0" fromJunction="J0" toJunction="J5" end="10000" vehsPerHour="507.3152432111679" departLane="free"/>
+  <flow id="JF15984" begin="0" fromJunction="J0" toJunction="J7" end="10000" vehsPerHour="181.72023343800234" departLane="free"/>
+  <flow id="JF15985" begin="0" fromJunction="J0" toJunction="J6" end="10000" vehsPerHour="108.1345873293572" departLane="free"/>
+  <flow id="JF15986" begin="0" fromJunction="J3" toJunction="J4" end="10000" vehsPerHour="147.97925948461256" departLane="free"/>
+  <flow id="JF15987" begin="0" fromJunction="J3" toJunction="J5" end="10000" vehsPerHour="342.7483283550936" departLane="free"/>
+  <flow id="JF15988" begin="0" fromJunction="J3" toJunction="J7" end="10000" vehsPerHour="6.743149788242106" departLane="free"/>
+  <flow id="JF15989" begin="0" fromJunction="J3" toJunction="J6" end="10000" vehsPerHour="500.37159657351987" departLane="free"/>
+  <flow id="JF15990" begin="0" fromJunction="J4" toJunction="J5" end="10000" vehsPerHour="32.40085768168991" departLane="free"/>
+  <flow id="JF15991" begin="0" fromJunction="J4" toJunction="J7" end="10000" vehsPerHour="8.666328008926378" departLane="free"/>
+  <flow id="JF15992" begin="0" fromJunction="J4" toJunction="J6" end="10000" vehsPerHour="44.54704777601489" departLane="free"/>
+  <flow id="JF15993" begin="0" fromJunction="J5" toJunction="J4" end="10000" vehsPerHour="22.015345592227728" departLane="free"/>
+  <flow id="JF15994" begin="0" fromJunction="J5" toJunction="J7" end="10000" vehsPerHour="32.35791298559156" departLane="free"/>
+  <flow id="JF15995" begin="0" fromJunction="J5" toJunction="J6" end="10000" vehsPerHour="29.228415972843887" departLane="free"/>
+  <flow id="JF15996" begin="0" fromJunction="J7" toJunction="J4" end="10000" vehsPerHour="3.507890833362488" departLane="free"/>
+  <flow id="JF15997" begin="0" fromJunction="J7" toJunction="J5" end="10000" vehsPerHour="22.273508023324606" departLane="free"/>
+  <flow id="JF15998" begin="0" fromJunction="J7" toJunction="J6" end="10000" vehsPerHour="23.12572548777131" departLane="free"/>
+  <flow id="JF15999" begin="0" fromJunction="J6" toJunction="J4" end="10000" vehsPerHour="1.752073275564265" departLane="free"/>
+  <flow id="JF16000" begin="0" fromJunction="J6" toJunction="J5" end="10000" vehsPerHour="27.03643866233286" departLane="free"/>
+  <flow id="JF16001" begin="0" fromJunction="J6" toJunction="J7" end="10000" vehsPerHour="48.223463663498734" departLane="free"/>
+  <flow id="JF16002" begin="0" fromJunction="J4" toJunction="J0" end="10000" vehsPerHour="3.5004937465602595" departLane="free"/>
+  <flow id="JF16003" begin="0" fromJunction="J4" toJunction="J3" end="10000" vehsPerHour="93.36979614278488" departLane="free"/>
+  <flow id="JF16004" begin="0" fromJunction="J5" toJunction="J0" end="10000" vehsPerHour="41.86893972909354" departLane="free"/>
+  <flow id="JF16005" begin="0" fromJunction="J5" toJunction="J3" end="10000" vehsPerHour="25.015636612169107" departLane="free"/>
+  <flow id="JF16006" begin="0" fromJunction="J7" toJunction="J0" end="10000" vehsPerHour="93.80805909284818" departLane="free"/>
+  <flow id="JF16007" begin="0" fromJunction="J7" toJunction="J3" end="10000" vehsPerHour="51.90487004873484" departLane="free"/>
+  <flow id="JF16008" begin="0" fromJunction="J6" toJunction="J0" end="10000" vehsPerHour="115.29104944956964" departLane="free"/>
+  <flow id="JF16009" begin="0" fromJunction="J6" toJunction="J3" end="10000" vehsPerHour="72.76557040682074" departLane="free"/>
+</routes>

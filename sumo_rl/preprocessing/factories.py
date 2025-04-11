@@ -87,7 +87,7 @@ class QLAgentFactory(AgentFactory):
                                                       min_epsilon=self.min_epsilon,
                                                       decay=self.decay))
     if self.recycle:
-      agent_memory_file = self.config.agents_file(None, None, agent_id)
+      agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
         print("recycle agent %s" % agent_memory_file)
         agent.deserialize(agent_memory_file)
@@ -122,7 +122,7 @@ class DQNAgentFactory(AgentFactory):
                      state_space=state_space,
                      action_space=action_space)
     if self.recycle:
-      agent_memory_file = self.config.agents_file(None, None, agent_id)
+      agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
         print("recycle agent %s" % agent_memory_file)
         agent.deserialize(agent_memory_file)
@@ -157,7 +157,7 @@ class PPOAgentFactory(AgentFactory):
                      state_space=state_space,
                      action_space=action_space)
     if self.recycle:
-      agent_memory_file = self.config.agents_file(None, None, agent_id)
+      agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
         print("recycle agent %s" % agent_memory_file)
         agent.deserialize(agent_memory_file)

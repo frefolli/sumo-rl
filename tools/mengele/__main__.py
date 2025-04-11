@@ -698,18 +698,30 @@ class TrafficTranslator:
           yml_registry[row['ID']] = __class__.translate_md_row(row['ID'], row['Descrizione'], row['Inquadramento'])
     GenericFile(yml_registry).to_yaml_file(yml_file)
 
-def generate_traffic(base_dir: str, traffic_generator: TrafficGenerator, number: int, output_dir: str):
+def summarize_traffic_complexity(traffic: list[sumo_rl.models.flows.Flow]):
+  complexity = 0.0
+  begin, end = min([flow.begin for flow in traffic]), max([flow.end for flow in traffic])
+  duration = end - begin
+  for flow in traffic:
+    complexity += ((flow.end - flow.begin) / duration) * flow.vehsPerHour
+  return complexity
+
+def generate_traffic(base_dir: str, traffic_generator: TrafficGenerator, number: int, output_dir: str) -> list[tuple[str, float]]:
   assert number > 0
   network = sumo_rl.models.flows.Network.Load(base_dir)
 
   os.system('mkdir -p %s' % output_dir)
   os.system('cp %s/network.net.xml %s/network.net.xml' % (base_dir, output_dir))
+  results = []
   for _ in range(number):
     traffic = traffic_generator(network)
     routes = sumo_rl.models.sumo.Routes(junction_flows=traffic)
-    routes.to_xml_file('%s/routes.%s.rou.xml' % (output_dir, _))
-  simulation = sumo_rl.models.sumo.Simulation(network, routes, None)
-  simulation.to_xml_file('%s/simulation.sumocfg' % (output_dir))
+    output_file = '%s/routes.%s.rou.xml' % (output_dir, _)
+    routes.to_xml_file(output_file)
+    results.append((output_file, summarize_traffic_complexity(traffic)))
+  #simulation = sumo_rl.models.sumo.Simulation(network, routes, None)
+  #simulation.to_xml_file('%s/simulation.sumocfg' % (output_dir))
+  return results
 
 def main():
   argument_parser = argparse.ArgumentParser(description='flower')
@@ -750,11 +762,16 @@ def main():
     return
 
   if cli_args.all_traffics:
+    results = []
     for variant in registry.variants():
       output = "%s/%s" % (cli_args.output, variant)
       traffic_generator = registry.get(variant)
       print("Producing %s / %s / %s" % (traffic_generator.id, traffic_generator.title, traffic_generator.description))
-      generate_traffic(base_dir, traffic_generator, cli_args.number, output)
+      results += generate_traffic(base_dir, traffic_generator, cli_args.number, output)
+    results = sorted(results, key = lambda k: k[1])
+    with open("%s/order.yml" % (cli_args.output,), mode='w', encoding='utf-8') as file:
+      for result in results:
+        file.write("- %s # %s\n" % (result[0], result[1]))
   elif cli_args.traffic is not None:
     generate_traffic(base_dir, registry.get(cli_args.traffic), cli_args.number, cli_args.output)
 
