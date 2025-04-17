@@ -1,0 +1,8 @@
+network: network.net.xml
+routes:
+  training:
+    - routes.rou.xml
+  evaluation:
+    - routes.rou.xml
+  demo:
+    - routes.rou.xml

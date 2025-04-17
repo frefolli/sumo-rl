@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+  <flow id="JF13972" begin="0" fromJunction="J0" toJunction="J3" end="10000" vehsPerHour="762.4857853436888"/>
+  <flow id="JF13973" begin="0" fromJunction="J3" toJunction="J0" end="10000" vehsPerHour="1023.2394483454118"/>
+  <flow id="JF13974" begin="0" fromJunction="J0" toJunction="J4" end="10000" vehsPerHour="7.36563888881646"/>
+  <flow id="JF13975" begin="0" fromJunction="J0" toJunction="J2" end="10000" vehsPerHour="106.91324686791317"/>
+  <flow id="JF13976" begin="0" fromJunction="J3" toJunction="J4" end="10000" vehsPerHour="32.070999307239546"/>
+  <flow id="JF13977" begin="0" fromJunction="J3" toJunction="J2" end="10000" vehsPerHour="30.83594015808514"/>
+  <flow id="JF13978" begin="0" fromJunction="J4" toJunction="J2" end="10000" vehsPerHour="414.8729558255381"/>
+  <flow id="JF13979" begin="0" fromJunction="J2" toJunction="J4" end="10000" vehsPerHour="473.11542262635686"/>
+  <flow id="JF13980" begin="0" fromJunction="J4" toJunction="J0" end="10000" vehsPerHour="102.97222965723272"/>
+  <flow id="JF13981" begin="0" fromJunction="J4" toJunction="J3" end="10000" vehsPerHour="28.563963289683056"/>
+  <flow id="JF13982" begin="0" fromJunction="J2" toJunction="J0" end="10000" vehsPerHour="72.67262098891398"/>
+  <flow id="JF13983" begin="0" fromJunction="J2" toJunction="J3" end="10000" vehsPerHour="54.9525229924284"/>
+</routes>

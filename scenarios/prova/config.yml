@@ -1,0 +1,15 @@
+network: network.net.xml
+routes:
+  training:
+    - training
+  evaluation:
+    - evaluation
+  demo:
+    - evaluation/routes.9.rou.xml
+layout:
+  main:
+    - A: J0
+      B: J3
+  side:
+    - A: J2
+      B: J4
