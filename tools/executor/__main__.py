@@ -159,7 +159,6 @@ def experiment_1_training():
       args += archive.config.to_cli()
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
-      exec_cmd('python -m tools.score')
 
 def experiment_2_evaluation():
   archive = Archive()
@@ -184,13 +183,12 @@ def experiment_2_training():
   for _ in range(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DT']
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
-      exec_cmd('python -m tools.score')
 
 def experiment_3_evaluation():
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
@@ -206,7 +204,7 @@ def experiment_3_evaluation():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.score')
     exec_cmd('python -m tools.comparer')
-    exec_cmd('mv scores.csv experiments/2/rounds/%s.csv' % i)
+    exec_cmd('mv scores.csv experiments/3/rounds/%s.csv' % i)
 
 def experiment_3_training():
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
@@ -215,13 +213,12 @@ def experiment_3_training():
   for _ in range(2):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DT']
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
-      exec_cmd('python -m tools.score')
 
 def main():
   experiment_3_training()
