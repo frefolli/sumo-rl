@@ -5,14 +5,20 @@ import sys
 from sumo_rl.models.commons import ensure_dir
 import sumo_rl.models.serde
 
+def spd_say(msg: str):
+  if os.path.exists('/usr/bin/spd-say'):
+    os.system('spd-say -w -l it "%s"' % msg)
+  else:
+    print(msg)
+
 def on_event_succed():
-  os.system('spd-say -w -l it "Il treno regionale veloce 24 77, di Trenitalia Tper, proveniente da Milano Centrale e diretto a Rimini, via Ravenna, delle ore 18 e 22, è in arrivo al binario 11."')
+  spd_say("Il treno regionale veloce 24 77, di Trenitalia Tper, proveniente da Milano Centrale e diretto a Rimini, via Ravenna, delle ore 18 e 22, è in arrivo al binario 11.")
 
 def on_event_fail():
-  os.system('spd-say -w -l it "Il treno regionale veloce 24 77, di Trenitalia Tper, proveniente da Milano Centrale e diretto a Rimini, via Ravenna, previsto in partenza alle ore 18 e 22, oggi non sarà effettuato. Per un guasto, al treno."')
+  spd_say("Il treno regionale veloce 24 77, di Trenitalia Tper, proveniente da Milano Centrale e diretto a Rimini, via Ravenna, previsto in partenza alle ore 18 e 22, oggi non sarà effettuato. Per un guasto, al treno.")
 
 def on_event_S9():
-  os.system('spd-say -w -l it "Il treno suburbano S9, 24 9 62 di Trenord, proveniente da Albairate-Vermezzo e diretto a Saronno, delle ore 12:56, è in arrivo al binario 2, invece che al binario 4. Attenzione! allontanarsi dalla linea gialla! Ferma in tutte le stazione eccetto: Cesano Maderno parco delle groane, Ceriano Laghetto parco delle groane."')
+  spd_say("Il treno suburbano S9, 24 9 62 di Trenord, proveniente da Albairate-Vermezzo e diretto a Saronno, delle ore 12:56, è in arrivo al binario 2, invece che al binario 4. Attenzione! allontanarsi dalla linea gialla! Ferma in tutte le stazione eccetto: Cesano Maderno parco delle groane, Ceriano Laghetto parco delle groane.")
 
 def exec_cmd(cmd: str) -> None:
   print('CMD:', cmd)
@@ -186,8 +192,40 @@ def experiment_2_training():
       exec_cmd('python -m tools.plot2')
       exec_cmd('python -m tools.score')
 
+def experiment_3_evaluation():
+  OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
+  archive = Archive()
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  for i in range(5):
+    for obs in OBSS:
+      archive.switch(Configuration.Patch(archive.config, observation=obs))
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/2/rounds/%s.csv' % i)
+
+def experiment_3_training():
+  OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
+  archive = Archive()
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  for _ in range(2):
+    for obs in OBSS:
+      archive.switch(Configuration.Patch(archive.config, observation=obs))
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+      exec_cmd('python -m tools.score')
+
 def main():
-  experiment_1_evaluation()
+  experiment_3_training()
+  experiment_3_evaluation()
   on_event_succed()
 
 if __name__ == '__main__':
