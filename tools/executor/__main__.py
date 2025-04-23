@@ -27,33 +27,38 @@ def exec_cmd(cmd: str) -> None:
     raise ValueError(cmd)
 
 class Configuration(sumo_rl.models.serde.SerdeYamlFile):
-  def __init__(self, agent: str, partition: str, observation: str, reward: str) -> None:
+  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool) -> None:
     self.agent: str = agent
     self.partition: str = partition
     self.observation: str = observation
     self.reward: str = reward
+    self.self_adaptive: bool = self_adaptive
 
   @staticmethod
   def Default() -> Configuration:
     return Configuration(agent='ql',
                          partition='mono',
                          observation='default',
-                         reward='dwt')
+                         reward='dwt',
+                         self_adaptive=True)
 
   def to_cli(self) -> list[str]:
-    return [
+    args = []
+    args += [
       '-A', self.agent,
       '-P', self.partition,
       '-O', self.observation,
       '-R', self.reward
     ]
+    return args
 
   def hash(self) -> str:
     return '-'.join([
       self.agent,
       self.partition,
       self.observation,
-      self.reward
+      self.reward,
+      ('sa' if self.self_adaptive else 'nsa')
     ])
 
   def to_dict(self) -> dict:
@@ -61,7 +66,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       'agent': self.agent,
       'partition': self.partition,
       'observation': self.observation,
-      'reward': self.reward
+      'reward': self.reward,
+      'self_adaptive': self.self_adaptive
     }
 
   @staticmethod
@@ -69,14 +75,16 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
     return Configuration(agent=data['agent'],
                          partition=data['partition'],
                          observation=data['observation'],
-                         reward=data['reward'])
+                         reward=data['reward'],
+                         self_adaptive=data['self_adaptive'])
 
   @staticmethod
-  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None) -> Configuration:
+  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None) -> Configuration:
     return Configuration(agent=(agent or config.agent),
                          partition=(partition or config.partition),
                          observation=(observation or config.observation),
-                         reward=(reward or config.reward))
+                         reward=(reward or config.reward),
+                         self_adaptive=(self_adaptive or config.self_adaptive))
 
 class Archive:
   def __init__(self) -> None:
@@ -119,21 +127,26 @@ class Archive:
     return dir
 
 def experiment_0():
+  ensure_dir('experiments/0/rounds')
   archive = Archive()
   REWARDS = ['dwt', 'p', 'as', 'ql']
-  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono'))
-  for reward in REWARDS:
-    archive.switch(Configuration.Patch(archive.config, reward=reward))
-    args = ['python', '-m', 'main', '-r', '-DE', '-DT']
-    args += archive.config.to_cli()
-    exec_cmd(' '.join(args))
-    exec_cmd('python -m tools.plot2')
-    exec_cmd('python -m tools.score')
+  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False))
+  for i in range(5):
+    for reward in REWARDS:
+      archive.switch(Configuration.Patch(archive.config, reward=reward))
+      args = ['python', '-m', 'main', '-r', '-DE', '-DT']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/0/rounds/%s.csv' % i)
 
 def experiment_1_evaluation():
+  ensure_dir('experiments/1/rounds')
   archive = Archive()
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in range(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -149,7 +162,7 @@ def experiment_1_evaluation():
 def experiment_1_training():
   archive = Archive()
   AGENTS = ['ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in range(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -161,9 +174,10 @@ def experiment_1_training():
       exec_cmd('python -m tools.plot2')
 
 def experiment_2_evaluation():
+  ensure_dir('experiments/2/rounds')
   archive = Archive()
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in range(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -179,7 +193,7 @@ def experiment_2_evaluation():
 def experiment_2_training():
   archive = Archive()
   AGENTS = ['ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in range(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -191,9 +205,10 @@ def experiment_2_training():
       exec_cmd('python -m tools.plot2')
 
 def experiment_3_evaluation():
+  ensure_dir('experiments/3/rounds')
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
   archive = Archive()
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in range(5):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
@@ -209,7 +224,7 @@ def experiment_3_evaluation():
 def experiment_3_training():
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
   archive = Archive()
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono'))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in range(2):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
@@ -220,9 +235,40 @@ def experiment_3_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
+def experiment_4_evaluation():
+  ensure_dir('experiments/4/rounds')
+  archive = Archive()
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for i in range(5):
+    for sa in [False, True]:
+      archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      if archive.config.self_adaptive:
+        args += ['-sa']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/4/rounds/%s.csv' % i)
+
+def experiment_4_training():
+  archive = Archive()
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for _ in range(2):
+    for sa in [False, True]:
+      archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
+      args = ['python', '-m', 'main', '-r', '-DT', '-sa']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
 def main():
-  experiment_3_training()
-  experiment_3_evaluation()
+  experiment_4_training()
+  experiment_4_evaluation()
   on_event_succed()
 
 if __name__ == '__main__':
