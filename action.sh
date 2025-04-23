@@ -13,7 +13,7 @@
 #SBATCH --mail-user=f.refolli@campus.unimib.it # User to receive email notifications
 
 ### Definitions
-export BASEDIR="$HOME/Projects/sumo-rl"
+export BASEDIR="Projects/sumo-rl"
 
 ### File System Setup
 cd $HOME/$BASEDIR                  # use a folder in home directory
