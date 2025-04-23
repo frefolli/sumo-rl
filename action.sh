@@ -14,6 +14,7 @@
 
 ### Definitions
 export BASEDIR="Projects/sumo-rl"
+export EXP_NUM=4
 
 ### File System Setup
 cd $HOME/$BASEDIR                  # use a folder in home directory
@@ -33,7 +34,14 @@ module load sw/amd/gcc-8.5.0/sumo-1.22.0
 . ./env/bin/activate
 . .env
 python -m tools.executor
-tar cvf 4.tar experiments/4
+
+cd experiments/$EXP_NUM
+cp -r ./archive archive
+tar cvf archive.tar archive && zstd archive.tar && rm archive.tar
+tar cvf rounds.tar rounds && zstd rounds.tar && rm rounds.tar
+rm ./archive -rf
+cd $HOME/$BASEDIR
+tar cvf $EXP_NUM.tar experiments/$EXP_NUM
 
 ### File system cleanup
 
