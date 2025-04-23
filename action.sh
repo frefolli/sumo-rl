@@ -36,12 +36,12 @@ module load sw/amd/gcc-8.5.0/sumo-1.22.0
 python -m tools.executor
 
 cd experiments/$EXP_NUM
-cp -r ./archive archive
+cp -r ../../archive archive
 tar cvf archive.tar archive && zstd archive.tar && rm archive.tar
 tar cvf rounds.tar rounds && zstd rounds.tar && rm rounds.tar
 rm ./archive -rf
 cd $HOME/$BASEDIR
-tar cvf $EXP_NUM.tar experiments/$EXP_NUM
+tar cvf $EXP_NUM.tar experiments/$EXP_NUM && zstd $EXP_NUM.tar && rm $EXP_NUM.tar
 
 ### File system cleanup
 
