@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import pandas
+import numpy
 from sumo_rl.models.commons import Timer
 from sumo_rl.models.serde import GenericFile, SerdeYamlFile
 from sumo_rl.preprocessing.adiacency_graph import build_adiacency_graph
@@ -18,6 +19,62 @@ if "SUMO_HOME" in os.environ:
   sys.path.append(tools)
 else:
   sys.exit("Please declare the environment variable 'SUMO_HOME'")
+
+class SelfAdapter:
+  def __init__(self) -> None:
+    self.monitor = {}
+    self.monitor_step_width: int = 10000
+    self.next_control_step: float|None = None
+    self.end_of_adapting_step: float|None = None
+
+  def read(self, config: sumo_rl.util.config.Config) -> None:
+    self.monitor = GenericFile.from_yaml_file(config.training_metrics_dir() + '/monitor.yml').to_dict()
+    print(self.monitor)
+
+  def reset(self) -> None:
+    self.next_control_step = self.monitor_step_width
+    self.end_of_adapting_step = None
+
+  def ready(self) -> bool:
+    return self.monitor != {} and self.next_control_step is not None and self.end_of_adapting_step is not None
+  
+  def need_to_adapt(self, env: sumo_rl.environment.env.SumoEnvironment) -> str|None:
+    for metric, metric_data in self.monitor.items():
+      mean_value = numpy.mean(env.metrics[metric][-self.monitor_step_width:])
+      diff = abs(mean_value - metric_data['E'])
+      tol = metric_data['sigma'] * 10
+      if diff >= tol:
+        return (metric, diff, tol)
+    return None
+  
+  def need_to_adapt2(self, env: sumo_rl.environment.env.SumoEnvironment) -> str|None:
+    for metric, metric_data in self.monitor.items():
+      mean_value = numpy.mean(env.metrics[metric][-self.monitor_step_width:])
+      diff = abs((mean_value - metric_data['E']) / mean_value)
+      tol = 0.05
+      if diff >= tol:
+        return (metric, diff, tol)
+    return None
+  
+  def update(self, env: sumo_rl.environment.env.SumoEnvironment, agents: list[sumo_rl.agents.Agent]) -> bool:
+    if self.end_of_adapting_step == None:
+      if env.sim_step >= self.next_control_step:
+        reason_to_adapt = self.need_to_adapt2(env)
+        if reason_to_adapt is not None:
+          self.next_control_step = None
+          self.end_of_adapting_step = env.sim_step + self.monitor_step_width * 1
+          print('Trigger adaptive ON', reason_to_adapt, env.sim_step)
+        else:
+          self.next_control_step += self.monitor_step_width
+    else:
+      if env.sim_step <= self.end_of_adapting_step:
+        for agent in agents:
+          if agent.can_learn():
+            agent.learn(env.rewards)
+      else:
+        print('Trigger adaptive OFF', env.sim_step)
+        self.end_of_adapting_step = None
+        self.next_control_step = env.sim_step + self.monitor_step_width * 3
 
 def nproc(jobs: int|None):
   if jobs is None:
@@ -138,10 +195,14 @@ def identify_pattern(routes_file_path: str) -> str|None:
       print(splitted[2])
   return None
 
-def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, save_intermediate_agents: bool = False):
+def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, save_intermediate_agents: bool = False, save_monitoring_features: bool = False):
   timer = Timer()
   env.set_duration(config.training.seconds)
   tracks = {}
+  monitor = {
+    'mean_waiting_time': [],
+    'mean_speed': []
+  }
   for episode, routes_file in enumerate(config.scenario.training_routes):
     env.sumo_seed += 1
     env.set_route_file(routes_file)
@@ -178,6 +239,10 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
     pandas.DataFrame(env.metrics).to_csv(path, index=False)
     tracks[path] = identify_pattern(routes_file)
 
+    if save_monitoring_features:
+      monitor['mean_waiting_time'].append(numpy.mean(env.metrics['mean_waiting_time']))
+      monitor['mean_speed'].append(numpy.mean(env.metrics['mean_speed']))
+
     if save_intermediate_agents:
       # Serialize Agents
       for agent in agents:
@@ -191,12 +256,23 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
       path = config.agents_file(None, agent.id)
       agent.serialize(path)
   GenericFile(tracks).to_yaml_file(config.training_metrics_dir() + '/tracks.yml')
+  if save_monitoring_features:
+    for metric in monitor:
+      monitor[metric] = {'E': numpy.mean(monitor[metric]), 'sigma':  numpy.std(monitor[metric])}
+    GenericFile(monitor).to_yaml_file(config.training_metrics_dir() + '/monitor.yml')
 
-def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
+def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False):
   timer = Timer()
   env.set_duration(config.evaluation.seconds)
   tracks = {}
+  self_adapter = SelfAdapter()
+  if use_monitoring_features:
+    self_adapter.read(config)
+    self_adapter.reset()
+
   for episode, routes_file in enumerate(config.scenario.evaluation_routes):
+    if use_monitoring_features:
+      self_adapter.reset()
     env.sumo_seed += 1
     env.set_route_file(routes_file)
     timer.round("Evaluation :: Episode(%s)/Routes(%s)/Seed(%s) :: Starting" % (episode, routes_file, env.sumo_seed))
@@ -223,6 +299,8 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
       for agent in agents:
         if agent.can_observe():
           agent.observe(env.observations)
+      if use_monitoring_features:
+        self_adapter.update(env, agents)
     timer.round("Evaluation :: Episode(%s)/Routes(%s)/Seed(%s) :: Ended" % (episode, routes_file, env.sumo_seed))
 
     # Serialize Metrics
@@ -231,8 +309,13 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
     tracks[path] = identify_pattern(routes_file)
   GenericFile(tracks).to_yaml_file(config.evaluation_metrics_dir() + '/tracks.yml')
 
-def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
+def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False):
   env.set_duration(config.demo.seconds)
+  self_adapter = SelfAdapter()
+  if use_monitoring_features:
+    self_adapter.read(config)
+    self_adapter.reset()
+
   routes_file = config.scenario.demo_routes[-1]
   env.sumo_seed += 1
   env.set_route_file(routes_file)
@@ -242,8 +325,8 @@ def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents
     agent.reset()
   env.gather_data_from_sumo()
   env.compute_observations()
-  # env.compute_rewards()
-  # env.compute_metrics()
+  env.compute_rewards()
+  env.compute_metrics()
   for agent in agents:
     if agent.can_observe():
       agent.observe(env.observations)
@@ -252,15 +335,16 @@ def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents
     print(env.sim_step, end="\r")
     for agent in agents:
       actions.update(agent.act())
-    # print(env.observations, actions)
     env.step(action=actions)
     env.gather_data_from_sumo()
     env.compute_observations()
-    # env.compute_rewards()
-    # env.compute_metrics()
+    env.compute_rewards()
+    env.compute_metrics()
     for agent in agents:
       if agent.can_observe():
         agent.observe(env.observations)
+      if use_monitoring_features:
+        self_adapter.update(env, agents)
   print("Demo :: Routes(%s)/Seed(%s) :: Ended" % (routes_file, env.sumo_seed))
 
 def show_args(cli_args):
@@ -293,6 +377,7 @@ def main():
   cli.add_argument('-g', '--use-gui', action="store_true", default=False, help="Uses GUI")
   cli.add_argument('-j', '--jobs', type=int, default=1, nargs='?', help="Uses j number of threads")
   cli.add_argument('-pa', '--paranoic', action="store_true", default=False, help="Saves ALL intermediate results. you can never say!")
+  cli.add_argument('-sa', '--self-adaptive', action="store_true", default=False, help="Self adaptive manouver")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
@@ -315,11 +400,11 @@ def main():
 
   if not cli_args.pretend:
     if cli_args.do_training:
-      perform_training(config, agents, env, save_intermediate_agents=cli_args.paranoic)
+      perform_training(config, agents, env, save_intermediate_agents=cli_args.paranoic, save_monitoring_features=cli_args.self_adaptive)
     if cli_args.do_evaluation:
-      perform_evaluation(config, agents, env)
+      perform_evaluation(config, agents, env, use_monitoring_features=cli_args.self_adaptive)
     if cli_args.do_demo:
-      perform_demo(config, agents, env)
+      perform_demo(config, agents, env, use_monitoring_features=cli_args.self_adaptive)
   env.close()
 
 if __name__ == "__main__":
