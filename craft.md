@@ -267,9 +267,10 @@ Risultati: il migliore risulta `ql`, seguito da `ppo`, `fixed`, `dqn`. Si nota u
 ### 3
 
 Obiettivo: valutare l'impatto delle funzioni di osservazione `default`, `sv`, `svp`, `svd` e `svq` sulla qualita' degli agenti addestrati.
-Metodo: esecuzione di training+evaluation (dataset ?) utilizzando la funzione di reward `ql` e l'agente `ql`.
+Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ql`.
+Risultati: i migliori sono `svp` e `default`. Per rasoio di Occam, scelgo `default`.
 
 ### 4
 
 Obiettivo: implementare un sistema "self-adapting" che scatena il riaddestramento quando nota un calo nelle prestazioni.
-Metodo: esecuzione di training+evaluation (dataset ?) utilizzando la funzione di reward `ql` e l'agente `ql`.
+Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ql`.
