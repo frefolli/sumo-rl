@@ -349,16 +349,21 @@ def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents
 
 def show_args(cli_args):
   print("Calling with ", {
-    'cli_args.agent': cli_args.agent,
-    'cli_args.partition': cli_args.partition,
-    'cli_args.observation': cli_args.observation,
-    'cli_args.reward': cli_args.reward,
-    'cli_args.recycle': cli_args.recycle,
-    'cli_args.pretend': cli_args.pretend,
-    'cli_args.do_training': cli_args.do_training,
-    'cli_args.do_evaluation': cli_args.do_evaluation,
-    'cli_args.do_demo': cli_args.do_demo
-    })
+    'config': cli_args.config,
+    'agent': cli_args.agent,
+    'partition': cli_args.partition,
+    'observation': cli_args.observation,
+    'reward': cli_args.reward,
+    'recycle': cli_args.recycle,
+    'pretend': cli_args.pretend,
+    'use_gui': cli_args.use_gui,
+    'jobs': cli_args.jobs,
+    'paranoic': cli_args.paranoic,
+    'self_adaptive': cli_args.self_adaptive,
+    'do_training': cli_args.do_training,
+    'do_evaluation': cli_args.do_evaluation,
+    'do_demo': cli_args.do_demo,
+  })
 
 def main():
   agent_type_options, agent_type_help, agent_factory_by_option = use_selection_of_agent_type()
