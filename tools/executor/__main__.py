@@ -1,9 +1,20 @@
 from __future__ import annotations
-import argparse
 import os
-import sys
+from typing import Generator
 from sumo_rl.models.commons import ensure_dir
 import sumo_rl.models.serde
+
+def use_iterations(min: int, max: int = None) -> Generator[int, None, None]:
+  if max is None:
+    max = min
+    min = 0
+  for i in range(min, max):
+    if i != min:
+      print(':: ITERATION END   ', str(i).ljust(3), '::')
+    print(':: ITERATION BEGIN ', str(i).ljust(3), '::')
+    yield i
+  print(':: ITERATION END   ', str(max - 1).ljust(3), '::')
+  return None
 
 def spd_say(msg: str):
   if os.path.exists('/usr/bin/spd-say'):
@@ -131,7 +142,7 @@ def experiment_0():
   archive = Archive()
   REWARDS = ['dwt', 'p', 'as', 'ql']
   archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False))
-  for i in range(5):
+  for i in use_iterations(5):
     for reward in REWARDS:
       archive.switch(Configuration.Patch(archive.config, reward=reward))
       args = ['python', '-m', 'main', '-r', '-DE', '-DT']
@@ -147,7 +158,7 @@ def experiment_1_evaluation():
   archive = Archive()
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for i in range(5):
+  for i in use_iterations(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
       args = ['python', '-m', 'main', '-r', '-DE']
@@ -163,7 +174,7 @@ def experiment_1_training():
   archive = Archive()
   AGENTS = ['ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for _ in range(2):
+  for _ in use_iterations(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
       args = ['python', '-m', 'main', '-r', '-DT']
@@ -178,7 +189,7 @@ def experiment_2_evaluation():
   archive = Archive()
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for i in range(5):
+  for i in use_iterations(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
       args = ['python', '-m', 'main', '-r', '-DE']
@@ -194,7 +205,7 @@ def experiment_2_training():
   archive = Archive()
   AGENTS = ['ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for _ in range(2):
+  for _ in use_iterations(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
       args = ['python', '-m', 'main', '-r', '-DT']
@@ -209,7 +220,7 @@ def experiment_3_evaluation():
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
   archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for i in range(5):
+  for i in use_iterations(5):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
       args = ['python', '-m', 'main', '-r', '-DE']
@@ -225,7 +236,7 @@ def experiment_3_training():
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
   archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for _ in range(2):
+  for _ in use_iterations(2):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
       args = ['python', '-m', 'main', '-r', '-DT']
@@ -239,7 +250,7 @@ def experiment_4_evaluation():
   ensure_dir('experiments/4/rounds')
   archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for i in range(5):
+  for i in use_iterations(5):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
       args = ['python', '-m', 'main', '-r', '-DE']
@@ -256,7 +267,7 @@ def experiment_4_evaluation():
 def experiment_4_training():
   archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for _ in range(2):
+  for _ in use_iterations(2):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
       args = ['python', '-m', 'main', '-r', '-DT', '-sa']
