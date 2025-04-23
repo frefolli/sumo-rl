@@ -33,7 +33,7 @@ module load sw/amd/gcc-8.5.0/sumo-1.22.0
 . ./env/bin/activate
 . .env
 python -m tools.executor
-tar cvf 3.tar experiments/3
+tar cvf 4.tar experiments/4
 
 ### File system cleanup
 
