@@ -277,9 +277,71 @@ def experiment_4_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
+def experiment_5_evaluation():
+  ensure_dir('experiments/5/rounds')
+  OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
+  archive = Archive()
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for i in use_iterations(5):
+    for obs in OBSS:
+      archive.switch(Configuration.Patch(archive.config, observation=obs))
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/5/rounds/%s.csv' % i)
+
+def experiment_5_training():
+  OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
+  archive = Archive()
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for _ in use_iterations(2):
+    for obs in OBSS:
+      archive.switch(Configuration.Patch(archive.config, observation=obs))
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
+def experiment_6_evaluation():
+  ensure_dir('experiments/6/rounds')
+  archive = Archive()
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for i in use_iterations(5):
+    for sa in [False, True]:
+      archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      if archive.config.self_adaptive:
+        args += ['-sa']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/6/rounds/%s.csv' % i)
+
+def experiment_6_training():
+  archive = Archive()
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for _ in use_iterations(2):
+    for sa in [False, True]:
+      archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
+      args = ['python', '-m', 'main', '-r', '-DT', '-sa']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
 def main():
-  experiment_4_training()
-  experiment_4_evaluation()
+  experiment_5_training()
+  experiment_5_evaluation()
   on_event_succed()
 
 if __name__ == '__main__':

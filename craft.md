@@ -244,6 +244,44 @@ python -m tools.mengele -r traffic-registry.yml -o evaluation \
 mv training evaluation datasets/1
 ```
 
+## Funzioni di osservazione
+
+- default: vedo
+  - la mia fase
+  - se ho tenuto il verde per molto tempo
+  - la lunghezza delle code in ingresso
+  - la densita' delle corsie in ingresso
+- sv: vedo
+  - Il mio `default`
+  - Il `default` dei miei vicini
+- svp: vedo
+  - Il mio `default`
+  - La fase dei miei vicini
+- svd: vedo
+  - Il mio `default`
+  - la densita' delle corsie in ingresso ai miei vicini
+- svq: vedo
+  - Il mio `default`
+  - la lunghezza delle code in ingresso ai miei vicini
+
+## Funzioni di reward
+
+- dwt: Diff Waiting Times
+- as: Average Speeds
+- ql: Average Queue Lengths
+- p: Pressure
+
+## Sistemi self adaptive
+
+### 0
+
+Il training fornisce la baseline delle metriche (`mean_waiting_time`, `mean_speed`) di cui ci si segna media e la deviazione standard.
+Ogni tot secondi (i.e. 10000), calcolo la media degli ultimi tot secondi (i.e. 10000) rispetto alle metriche e verifico se e' necessario un riaddestramento.
+Il riaddestramento e' necessario se la media campionaria si discosta di piu' del 5 percento dalla media consolidata.
+A quel punto gli agenti vengono riaddestrati per tot secondi (i.e. 10000) e quando l'addestramento e' terminato blocco il controllo per tot secondi (i.e. 30000).
+TODO: rimuovi la deviazione standard
+TODO: riduci lo span di media campionaria
+
 ## Esperimenti
 
 ### 0
@@ -274,3 +312,14 @@ Risultati: i migliori sono `svp` e `default`. Per rasoio di Occam, scelgo `defau
 
 Obiettivo: implementare un sistema "self-adapting" che scatena il riaddestramento quando nota un calo nelle prestazioni.
 Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ql`.
+Risultato: l'agente migliora nei momenti giusti, ma secondo me c'e' da lavorare sul controllo per fare in modo di scatenarlo veramente SOLO quandi strettanente necessario
+
+### 5
+
+Obiettivo: valutare l'impatto delle funzioni di osservazione `default`, `sv`, `svp`, `svd` e `svq` sulla qualita' degli agenti addestrati.
+Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ppo`.
+
+### 6
+
+Obiettivo: implementare un sistema "self-adapting" che scatena il riaddestramento quando nota un calo nelle prestazioni.
+Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ppo`.
