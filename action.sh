@@ -15,6 +15,7 @@
 ### Definitions
 export BASEDIR="Projects/sumo-rl"
 export EXP_NUM=5
+set -e # CRASH IF SOMETHING CRASHES
 
 ### File System Setup
 cd $HOME/$BASEDIR                  # use a folder in home directory
@@ -42,6 +43,11 @@ tar cvf rounds.tar rounds && zstd rounds.tar && rm rounds.tar
 rm ./archive -rf
 cd $HOME/$BASEDIR
 tar cvf $EXP_NUM.tar experiments/$EXP_NUM && zstd $EXP_NUM.tar && rm $EXP_NUM.tar
+
+git add experiments/$EXP_NUM/rounds.tar.zst
+git add experiments/$EXP_NUM/archive.tar.zst
+git commit -m "Autocommit for JOB of Experiment $EXP_NUM!"
+git push
 
 ### File system cleanup
 
