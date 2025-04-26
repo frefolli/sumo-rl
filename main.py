@@ -195,7 +195,7 @@ def identify_pattern(routes_file_path: str) -> str|None:
       print(splitted[2])
   return None
 
-def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, save_intermediate_agents: bool = False, save_monitoring_features: bool = False):
+def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, save_intermediate_agents: bool = False, save_monitoring_features: bool = False, log_time: bool = True):
   timer = Timer()
   env.set_duration(config.training.seconds)
   tracks = {}
@@ -219,7 +219,8 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
         agent.observe(env.observations)
     while not env.done():
       actions = {}
-      print(env.sim_step, end="\r")
+      if log_time:
+        print(env.sim_step, end="\r")
       for agent in agents:
         actions.update(agent.act())
       env.step(action=actions)
@@ -261,7 +262,7 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
       monitor[metric] = {'E': numpy.mean(monitor[metric]), 'sigma':  numpy.std(monitor[metric])}
     GenericFile(monitor).to_yaml_file(config.training_metrics_dir() + '/monitor.yml')
 
-def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False):
+def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = True):
   timer = Timer()
   env.set_duration(config.evaluation.seconds)
   tracks = {}
@@ -288,7 +289,8 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
         agent.observe(env.observations)
     while not env.done():
       actions = {}
-      print(env.sim_step, end="\r")
+      if log_time:
+        print(env.sim_step, end="\r")
       for agent in agents:
         actions.update(agent.act())
       env.step(action=actions)
@@ -309,7 +311,7 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
     tracks[path] = identify_pattern(routes_file)
   GenericFile(tracks).to_yaml_file(config.evaluation_metrics_dir() + '/tracks.yml')
 
-def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False):
+def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = True):
   env.set_duration(config.demo.seconds)
   self_adapter = SelfAdapter()
   if use_monitoring_features:
@@ -332,7 +334,8 @@ def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents
       agent.observe(env.observations)
   while not env.done():
     actions = {}
-    print(env.sim_step, end="\r")
+    if log_time:
+      print(env.sim_step, end="\r")
     for agent in agents:
       actions.update(agent.act())
     env.step(action=actions)
@@ -380,6 +383,7 @@ def main():
   cli.add_argument('-r', '--recycle', action="store_true", default=False, help="If it has to recycle previously trained agents (by means of serialization)")
   cli.add_argument('-p', '--pretend', action="store_true", default=False, help="Don't actually start training and evaluation simulations")
   cli.add_argument('-g', '--use-gui', action="store_true", default=False, help="Uses GUI")
+  cli.add_argument('-V', '--verbose', action="store_true", default=False, help="Uses Verbose log (logs time ... etc)")
   cli.add_argument('-j', '--jobs', type=int, default=1, nargs='?', help="Uses j number of threads")
   cli.add_argument('-pa', '--paranoic', action="store_true", default=False, help="Saves ALL intermediate results. you can never say!")
   cli.add_argument('-sa', '--self-adaptive', action="store_true", default=False, help="Self adaptive manouver")

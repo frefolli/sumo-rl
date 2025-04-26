@@ -116,6 +116,7 @@ if __name__ == "__main__":
   datastore = Datastore(config, Datastore.Mode.EVALUATION)
   data = {}
   data['waiting_time'] = datastore.extract_roll('mean_waiting_time')
+  data['accumulated_waiting_time'] = datastore.extract_roll('mean_accumulated_waiting_time')
   data['speed'] = datastore.extract_roll('mean_speed')
   data['arrived'] = datastore.extract_roll('total_arrived')
   data['departed'] = datastore.extract_roll('total_departed')
@@ -123,7 +124,7 @@ if __name__ == "__main__":
   data['departure_rate'] = compute_stricly_positive_differential(data['departed'])
   scores = {}
   labels = [
-    'waiting_time', 'speed', 'arrival_rate', 'departure_rate'
+    'waiting_time', 'accumulated_waiting_time', 'speed', 'arrival_rate', 'departure_rate'
   ]
   for label in labels:
     scores[label] = statistical_analysis(data[label])

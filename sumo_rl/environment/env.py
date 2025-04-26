@@ -325,6 +325,8 @@ class SumoEnvironment(gym.Env):
       "total_teleported": [],
       "total_waiting_time": [],
       "mean_waiting_time": [],
+      "total_accumulated_waiting_time": [],
+      "mean_accumulated_waiting_time": [],
       "mean_speed": [],
       "total_reward": []
     }
@@ -339,6 +341,8 @@ class SumoEnvironment(gym.Env):
     self.metrics["total_teleported"].append(self.num_teleported_vehicles)
     self.metrics["total_waiting_time"].append(numpy.sum([lane['lswt'] for lane in self.datastore.lanes.values()]))
     self.metrics["mean_waiting_time"].append(self.metrics["total_waiting_time"][-1] / self.metrics["total_running"][-1])
+    self.metrics["total_accumulated_waiting_time"].append(numpy.sum([lane['tawt'] for lane in self.datastore.lanes.values()]))
+    self.metrics["mean_accumulated_waiting_time"].append(self.metrics["total_accumulated_waiting_time"][-1] / self.metrics["total_running"][-1])
     self.metrics["mean_speed"].append(numpy.mean([lane['lsms'] for lane in self.datastore.lanes.values()]))
     self.metrics["total_reward"].append(numpy.sum(list(self.rewards.values())))
 

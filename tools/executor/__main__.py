@@ -10,7 +10,7 @@ def use_iterations(min: int, max: int = None) -> Generator[int, None, None]:
     min = 0
   for i in range(min, max):
     if i != min:
-      print(':: ITERATION END   ', str(i).ljust(3), '::')
+      print(':: ITERATION END   ', str(i - 1).ljust(3), '::')
     print(':: ITERATION BEGIN ', str(i).ljust(3), '::')
     yield i
   print(':: ITERATION END   ', str(max - 1).ljust(3), '::')
@@ -114,6 +114,14 @@ class Archive:
   def _write_config(self):
     self.config.to_yaml_file(self.current_config_file())
 
+  def use_dataset(self, id: int):
+    exec_cmd('rm -rf ./scenarios/breda/training')
+    exec_cmd('rm -rf ./scenarios/breda/evaluation')
+    training = os.path.abspath(f'./datasets/{id}/training')
+    evaluation = os.path.abspath(f'./datasets/{id}/evaluation')
+    exec_cmd(f'ln -sf {training} ./scenarios/breda/training')
+    exec_cmd(f'ln -sf {evaluation} ./scenarios/breda/evaluation')
+
   def switch(self, config: Configuration):
     current_config_dir = os.path.abspath(self.config_dir(self.config))
     next_config_dir = os.path.abspath(self.config_dir(config))
@@ -137,25 +145,34 @@ class Archive:
     ensure_dir(dir)
     return dir
 
-def experiment_0():
+def experiment_0_evaluation(archive: Archive):
   ensure_dir('experiments/0/rounds')
-  archive = Archive()
   REWARDS = ['dwt', 'p', 'as', 'ql']
   archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
     for reward in REWARDS:
       archive.switch(Configuration.Patch(archive.config, reward=reward))
-      args = ['python', '-m', 'main', '-r', '-DE', '-DT']
+      args = ['python', '-m', 'main', '-r', '-DE']
       args += archive.config.to_cli()
       exec_cmd(' '.join(args))
-      exec_cmd('python -m tools.plot2')
       exec_cmd('python -m tools.score')
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/0/rounds/%s.csv' % i)
 
-def experiment_1_evaluation():
+def experiment_0_training(archive: Archive):
+  ensure_dir('experiments/0/rounds')
+  REWARDS = ['dwt', 'p', 'as', 'ql']
+  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False))
+  for _ in use_iterations(1):
+    for reward in REWARDS:
+      archive.switch(Configuration.Patch(archive.config, reward=reward))
+      args = ['python', '-m', 'main', '-r', '-DT']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
+def experiment_1_evaluation(archive: Archive):
   ensure_dir('experiments/1/rounds')
-  archive = Archive()
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
@@ -170,8 +187,7 @@ def experiment_1_evaluation():
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/1/rounds/%s.csv' % i)
 
-def experiment_1_training():
-  archive = Archive()
+def experiment_1_training(archive: Archive):
   AGENTS = ['ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in use_iterations(2):
@@ -184,9 +200,8 @@ def experiment_1_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
-def experiment_2_evaluation():
+def experiment_2_evaluation(archive: Archive):
   ensure_dir('experiments/2/rounds')
-  archive = Archive()
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
@@ -201,7 +216,7 @@ def experiment_2_evaluation():
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/2/rounds/%s.csv' % i)
 
-def experiment_2_training():
+def experiment_2_training(archive: Archive):
   archive = Archive()
   AGENTS = ['ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
@@ -215,10 +230,9 @@ def experiment_2_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
-def experiment_3_evaluation():
+def experiment_3_evaluation(archive: Archive):
   ensure_dir('experiments/3/rounds')
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
     for obs in OBSS:
@@ -232,9 +246,8 @@ def experiment_3_evaluation():
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/3/rounds/%s.csv' % i)
 
-def experiment_3_training():
+def experiment_3_training(archive: Archive):
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in use_iterations(2):
     for obs in OBSS:
@@ -246,9 +259,8 @@ def experiment_3_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
-def experiment_4_evaluation():
+def experiment_4_evaluation(archive: Archive):
   ensure_dir('experiments/4/rounds')
-  archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
     for sa in [False, True]:
@@ -264,8 +276,7 @@ def experiment_4_evaluation():
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/4/rounds/%s.csv' % i)
 
-def experiment_4_training():
-  archive = Archive()
+def experiment_4_training(archive: Archive):
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in use_iterations(2):
     for sa in [False, True]:
@@ -277,10 +288,9 @@ def experiment_4_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
-def experiment_5_evaluation():
+def experiment_5_evaluation(archive: Archive):
   ensure_dir('experiments/5/rounds')
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive = Archive()
   archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
     for obs in OBSS:
@@ -294,9 +304,8 @@ def experiment_5_evaluation():
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/5/rounds/%s.csv' % i)
 
-def experiment_5_training():
+def experiment_5_training(archive: Archive):
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive = Archive()
   archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in use_iterations(2):
     for obs in OBSS:
@@ -308,9 +317,8 @@ def experiment_5_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
-def experiment_6_evaluation():
+def experiment_6_evaluation(archive: Archive):
   ensure_dir('experiments/6/rounds')
-  archive = Archive()
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
     for sa in [False, True]:
@@ -326,8 +334,7 @@ def experiment_6_evaluation():
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/6/rounds/%s.csv' % i)
 
-def experiment_6_training():
-  archive = Archive()
+def experiment_6_training(archive: Archive):
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in use_iterations(2):
     for sa in [False, True]:
@@ -339,9 +346,50 @@ def experiment_6_training():
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
+def experiment_0():
+  archive = Archive()
+  archive.use_dataset(0)
+  experiment_0_training(archive)
+  experiment_0_evaluation(archive)
+
+def experiment_1():
+  archive = Archive()
+  archive.use_dataset(0)
+  experiment_1_training(archive)
+  experiment_1_evaluation(archive)
+
+def experiment_2():
+  archive = Archive()
+  archive.use_dataset(1)
+  experiment_2_training(archive)
+  experiment_2_evaluation(archive)
+
+def experiment_3():
+  archive = Archive()
+  archive.use_dataset(1)
+  experiment_3_training(archive)
+  experiment_3_evaluation(archive)
+
+def experiment_4():
+  archive = Archive()
+  archive.use_dataset(1)
+  experiment_4_training(archive)
+  experiment_4_evaluation(archive)
+
+def experiment_5():
+  archive = Archive()
+  archive.use_dataset(1)
+  experiment_5_training(archive)
+  experiment_5_evaluation(archive)
+
+def experiment_6():
+  archive = Archive()
+  archive.use_dataset(1)
+  experiment_6_training(archive)
+  experiment_6_evaluation(archive)
+
 def main():
-  experiment_5_training()
-  experiment_5_evaluation()
+  experiment_0()
   on_event_succed()
 
 if __name__ == '__main__':

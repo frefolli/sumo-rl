@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
   for mode in [Datastore.Mode.TRAINING, Datastore.Mode.EVALUATION]:
     datastore = Datastore(config, mode)
-    for label in ['total_reward', 'mean_waiting_time', 'mean_speed']:
+    for label in ['total_reward', 'mean_waiting_time', 'mean_accumulated_waiting_time', 'mean_speed']:
       for episode in datastore.episodes:
         Ys = datastore.extract(episode, label)
         track = datastore.track(episode)
