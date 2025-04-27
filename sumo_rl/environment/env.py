@@ -278,7 +278,7 @@ class SumoEnvironment(gym.Env):
     self.num_arrived_vehicles = 0
     self.num_departed_vehicles = 0
     self.num_teleported_vehicles = 0
-    self.observations: dict = {ts_id:[] for ts_id in self.ts_ids}
+    self.observations = {ts_id:[] for ts_id in self.ts_ids}
     self.rewards = {ts: 0 for ts in self.ts_ids}
     self.metrics = self.empty_metrics()
 
