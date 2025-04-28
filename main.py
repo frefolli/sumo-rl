@@ -195,7 +195,7 @@ def identify_pattern(routes_file_path: str) -> str|None:
       print(splitted[2])
   return None
 
-def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, save_intermediate_agents: bool = False, save_monitoring_features: bool = False, log_time: bool = True):
+def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, save_intermediate_agents: bool = False, save_monitoring_features: bool = False, log_time: bool = False):
   timer = Timer()
   env.set_duration(config.training.seconds)
   tracks = {}
@@ -262,7 +262,7 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
       monitor[metric] = {'E': numpy.mean(monitor[metric]), 'sigma':  numpy.std(monitor[metric])}
     GenericFile(monitor).to_yaml_file(config.training_metrics_dir() + '/monitor.yml')
 
-def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = True):
+def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = False):
   timer = Timer()
   env.set_duration(config.evaluation.seconds)
   tracks = {}
@@ -311,7 +311,7 @@ def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.
     tracks[path] = identify_pattern(routes_file)
   GenericFile(tracks).to_yaml_file(config.evaluation_metrics_dir() + '/tracks.yml')
 
-def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = True):
+def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = False):
   env.set_duration(config.demo.seconds)
   self_adapter = SelfAdapter()
   if use_monitoring_features:
@@ -409,11 +409,11 @@ def main():
 
   if not cli_args.pretend:
     if cli_args.do_training:
-      perform_training(config, agents, env, save_intermediate_agents=cli_args.paranoic, save_monitoring_features=cli_args.self_adaptive)
+      perform_training(config, agents, env, save_intermediate_agents=cli_args.paranoic, save_monitoring_features=cli_args.self_adaptive, log_time=cli_args.verbose)
     if cli_args.do_evaluation:
-      perform_evaluation(config, agents, env, use_monitoring_features=cli_args.self_adaptive)
+      perform_evaluation(config, agents, env, use_monitoring_features=cli_args.self_adaptive, log_time=cli_args.verbose)
     if cli_args.do_demo:
-      perform_demo(config, agents, env, use_monitoring_features=cli_args.self_adaptive)
+      perform_demo(config, agents, env, use_monitoring_features=cli_args.self_adaptive, log_time=cli_args.verbose)
   env.close()
 
 if __name__ == "__main__":
