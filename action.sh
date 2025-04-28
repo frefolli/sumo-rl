@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1                             # How many tasks
 #SBATCH --cpus-per-task=2                      # How many MPI cores per task
 #SBATCH --mem=2G                               # Job memory request
-#SBATCH --time=01:30:00                        # Time limit hrs:min:sec
+#SBATCH --time=04:00:00                        # Time limit hrs:min:sec
 # OUTPUT FILES
 #SBATCH --output=job_logs/out_%x_%j.log        # Standard output and error log, with job name and id
 # NOTIFICATION EMAILS
