@@ -361,7 +361,7 @@ def experiment_1():
 def experiment_2():
   archive = Archive()
   archive.use_dataset(1)
-  experiment_2_training(archive)
+  #experiment_2_training(archive)
   experiment_2_evaluation(archive)
 
 def experiment_3():
@@ -389,7 +389,7 @@ def experiment_6():
   experiment_6_evaluation(archive)
 
 def main():
-  experiment_1()
+  experiment_2()
   on_event_succed()
 
 if __name__ == '__main__':

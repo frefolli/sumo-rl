@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1                             # How many tasks
 #SBATCH --cpus-per-task=2                      # How many MPI cores per task
 #SBATCH --mem=2G                               # Job memory request
-#SBATCH --time=04:00:00                        # Time limit hrs:min:sec
+#SBATCH --time=07:00:00                        # Time limit hrs:min:sec
 # OUTPUT FILES
 #SBATCH --output=job_logs/out_%x_%j.log        # Standard output and error log, with job name and id
 # NOTIFICATION EMAILS
@@ -14,7 +14,7 @@
 
 ### Definitions
 export BASEDIR="Projects/sumo-rl"
-export EXP_NUM=1
+export EXP_NUM=2
 set -e # CRASH IF SOMETHING CRASHES
 
 ### File System Setup
@@ -35,6 +35,9 @@ module load sw/amd/gcc-8.5.0/sumo-1.22.0
 . ./env/bin/activate
 . .env
 python -m tools.executor
+
+rm -rf experiments/$EXP_NUM/rounds.tar.zst
+rm -rf experiments/$EXP_NUM/archive.tar.zst
 
 cd experiments/$EXP_NUM
 cp -r ../../archive archive
