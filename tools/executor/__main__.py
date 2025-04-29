@@ -389,7 +389,7 @@ def experiment_6():
   experiment_6_evaluation(archive)
 
 def main():
-  experiment_4()
+  experiment_5()
   on_event_succed()
 
 if __name__ == '__main__':
