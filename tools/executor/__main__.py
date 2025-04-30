@@ -335,7 +335,7 @@ def experiment_6_evaluation(archive: Archive):
     exec_cmd('mv scores.csv experiments/6/rounds/%s.csv' % i)
 
 def experiment_6_training(archive: Archive):
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for _ in use_iterations(2):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
@@ -389,7 +389,7 @@ def experiment_6():
   experiment_6_evaluation(archive)
 
 def main():
-  experiment_5()
+  experiment_6()
   on_event_succed()
 
 if __name__ == '__main__':
