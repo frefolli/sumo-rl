@@ -318,8 +318,20 @@ Risultato: l'agente migliora nei momenti giusti, ma secondo me c'e' da lavorare 
 
 Obiettivo: valutare l'impatto delle funzioni di osservazione `default`, `sv`, `svp`, `svd` e `svq` sulla qualita' degli agenti addestrati.
 Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ppo`.
+Risultato: Condividendo la densita' delle code o la fase aumenta le prestazioni dimezzando (circa) i tempi di attesa delle automobili. Siamo comunque lontani dalla qualita' del QL, ma mostra comunque un notevole miglioramento rispetto al Fixed. 
 
 ### 6
 
 Obiettivo: implementare un sistema "self-adapting" che scatena il riaddestramento quando nota un calo nelle prestazioni.
 Metodo: esecuzione di training+evaluation (dataset 1) utilizzando la funzione di reward `ql` e l'agente `ppo`.
+Risultato: L'agente PPO incredibilmente mostra dei peggioramenti notevoli quando viene riaddestrato.
+
+### Prossimi esperimenti
+
+Non necessariamente in quest'ordine:
+ - Confronto del tempo di ciclo fisso per vedere (si dovrebbe osservare una soglia vicino alla quale il semaforo si comporta quasi come una rotonda e il flusso aumenta)
+ - Confronto dei modelli nelle migliori configurazioni in definitiva
+ - Misuramento delle metriche per i singoli flussi e utilizzo della mediana per rilevare discriminazioni tra i flussi
+ - Addestramento di un modello con una coppia Stupido-Intelligente per vedere 
+ - Scambiare tra loro agenti addestrati per vedere se l'addestramento e' modularizzabile
+ - Valutare strategie di trasferimento della conoscenza per adattare un agente ad un semaforo con forma diversa
