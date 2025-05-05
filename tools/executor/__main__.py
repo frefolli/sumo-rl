@@ -420,7 +420,7 @@ def experiment_7():
   experiment_7_evaluation(archive)
 
 def main():
-  experiment_7()
+  experiment_6()
   on_event_succed()
 
 if __name__ == '__main__':
