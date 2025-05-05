@@ -352,14 +352,14 @@ def experiment_7_evaluation(archive: Archive):
   ensure_dir('experiments/7/rounds')
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
-    args = ['python', '-m', 'main', '-r', '-DE']
-    if archive.config.agent not in ['fixed', 'ql', '-de']:
+    args = ['python', '-m', 'main', '-r', '-DE', '-de']
+    if archive.config.agent not in ['fixed', 'ql']:
       args += ['-j', '1']
     args += archive.config.to_cli()
     exec_cmd(' '.join(args))
     exec_cmd('python -m tools.score')
-  exec_cmd('python -m tools.comparer')
-  exec_cmd('mv scores.csv experiments/7/rounds/%s.csv' % i)
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/7/rounds/%s.csv' % i)
 
 def experiment_7_training(archive: Archive):
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
