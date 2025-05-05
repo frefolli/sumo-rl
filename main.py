@@ -362,6 +362,7 @@ def show_args(cli_args):
     'use_gui': cli_args.use_gui,
     'jobs': cli_args.jobs,
     'paranoic': cli_args.paranoic,
+    'depth': cli_args.depth,
     'self_adaptive': cli_args.self_adaptive,
     'do_training': cli_args.do_training,
     'do_evaluation': cli_args.do_evaluation,
@@ -386,6 +387,7 @@ def main():
   cli.add_argument('-V', '--verbose', action="store_true", default=False, help="Uses Verbose log (logs time ... etc)")
   cli.add_argument('-j', '--jobs', type=int, default=1, nargs='?', help="Uses j number of threads")
   cli.add_argument('-pa', '--paranoic', action="store_true", default=False, help="Saves ALL intermediate results. you can never say!")
+  cli.add_argument('-de', '--depth', action="store_true", default=False, help="Computes data for distinct routes in order to evaluate fairness of directions")
   cli.add_argument('-sa', '--self-adaptive', action="store_true", default=False, help="Self adaptive manouver")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
@@ -399,7 +401,7 @@ def main():
 
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
-  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs))
+  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs), cli_args.depth)
   if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction):
     build_adiacency_graph(env, env.observation_fn.vision_graph)
     env.observation_fn.vision_graph.to_d2_file('vision-graph.d2')

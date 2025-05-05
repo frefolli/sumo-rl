@@ -7,6 +7,7 @@ import numpy
 from pathlib import Path
 from typing import Optional, Tuple, Union
 import sumo_rl.util.config
+import sumo_rl.models.flows
 from sumo_rl.environment.datastore import Datastore
 
 if "SUMO_HOME" in os.environ:
@@ -97,6 +98,7 @@ class SumoEnvironment(gym.Env):
     additional_sumo_cmd: Optional[str] = None,
     render_mode: Optional[str] = None,
     jobs: int = 1,
+    advanced_metrics: bool = False
   ) -> None:
     """Initialize the environment."""
     assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
@@ -134,6 +136,7 @@ class SumoEnvironment(gym.Env):
     self.add_per_agent_info = add_per_agent_info
     self.label = str(SumoEnvironment.CONNECTION_LABEL)
     self.jobs = jobs
+    self.advanced_metrics = advanced_metrics
     SumoEnvironment.CONNECTION_LABEL += 1
     self.sumo = None
 
@@ -165,15 +168,17 @@ class SumoEnvironment(gym.Env):
     self.observations: dict = {ts_id:[] for ts_id in self.ts_ids}
     self.rewards = {ts: 0 for ts in self.ts_ids}
     self.metrics = self.empty_metrics()
+    self.flows: dict[str, str]
 
   def set_duration(self, num_seconds: int):
     self.sim_max_time = self.begin_time + num_seconds
 
   def set_route_file(self, route_file: str):
     self._route = route_file
+    self.flows = sumo_rl.models.flows.read_flows_from_routes_file(route_file)
 
   @staticmethod
-  def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1) -> SumoEnvironment:
+  def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1, advanced_metrics: bool = False) -> SumoEnvironment:
     return SumoEnvironment(
       net_file=config.scenario.network,
       use_gui=use_gui,
@@ -185,7 +190,8 @@ class SumoEnvironment(gym.Env):
       reward_fn=reward_fn,
       fixed_ts=False,
       additional_sumo_cmd=" ".join(config.sumo.further_cmd_args),
-      jobs=jobs
+      jobs=jobs,
+      advanced_metrics=advanced_metrics
     )
 
   def _build_traffic_signals(self, conn) -> None:
@@ -305,6 +311,14 @@ class SumoEnvironment(gym.Env):
       awts = [self.datastore.vehicles[vehicle_ID]['awt'] for vehicle_ID in self.datastore.lanes[lane_ID]['vehs']]
       self.datastore.lanes[lane_ID]['tawt'] = numpy.sum(awts)
       self.datastore.lanes[lane_ID]['mawt'] = numpy.mean(awts)
+    if self.advanced_metrics:
+      flows = {}
+      for vehicle_ID in vehicles:
+        flow_id = vehicle_ID.split('.')[0]
+        flow_dir = self.flows.get(flow_id)
+        flows[flow_dir] = (flows.get(flow_dir) or []) + [self.datastore.vehicles[vehicle_ID]['awt']]
+      flows = {flow_dir: float(numpy.mean(flow_data)) for flow_dir, flow_data in flows.items()}
+      self.metrics['awtxdir'].append(flows)
 
   def compute_observations(self):
     for ts_ID, ts in self.traffic_signals.items():
@@ -315,7 +329,7 @@ class SumoEnvironment(gym.Env):
       self.rewards[ts_ID] = self.reward_fn(self.datastore, ts)
 
   def empty_metrics(self) -> dict:
-    return {
+    obj = {
       "step": [],
       "total_running": [],
       "total_backlogged": [],
@@ -328,8 +342,11 @@ class SumoEnvironment(gym.Env):
       "total_accumulated_waiting_time": [],
       "mean_accumulated_waiting_time": [],
       "mean_speed": [],
-      "total_reward": []
+      "total_reward": [],
     }
+    if self.advanced_metrics:
+      obj["awtxdir"] = []
+    return obj
 
   def compute_metrics(self):
     self.metrics["step"].append(self.sim_step)

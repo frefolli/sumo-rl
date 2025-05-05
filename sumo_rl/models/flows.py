@@ -237,3 +237,13 @@ class Network:
   @property
   def queue_capacity(self) -> int:
     return sum([lane.queue_capacity for edge in self.edges for lane in edge.lanes])
+
+def read_flows_from_routes_file(filepath: str) -> dict[str, str]:
+  tree = ET.parse(filepath)
+  root = tree.getroot()
+  result = {}
+  for child in root:
+    assert child.tag == 'flow'
+    (flow_id, flow_dir) = (child.attrib['id'], "%s-%s" % (child.attrib['fromJunction'], child.attrib['toJunction']))
+    result[flow_id] = flow_dir
+  return result
