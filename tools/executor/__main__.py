@@ -321,7 +321,7 @@ def experiment_5_training(archive: Archive):
 
 def experiment_6_evaluation(archive: Archive):
   ensure_dir('experiments/6/rounds')
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
   for i in use_iterations(5):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
