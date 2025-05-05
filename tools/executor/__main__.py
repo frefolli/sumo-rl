@@ -51,7 +51,7 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          partition='mono',
                          observation='default',
                          reward='dwt',
-                         self_adaptive=True)
+                         self_adaptive=False)
 
   def to_cli(self) -> list[str]:
     args = []
@@ -91,11 +91,13 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
 
   @staticmethod
   def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None) -> Configuration:
+    if self_adaptive is None:
+      self_adaptive = config.self_adaptive
     return Configuration(agent=(agent or config.agent),
                          partition=(partition or config.partition),
                          observation=(observation or config.observation),
                          reward=(reward or config.reward),
-                         self_adaptive=(self_adaptive or config.self_adaptive))
+                         self_adaptive=self_adaptive)
 
 class Archive:
   def __init__(self) -> None:
