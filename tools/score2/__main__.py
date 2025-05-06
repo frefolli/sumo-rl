@@ -96,7 +96,8 @@ class Datastore:
 def divide_by_dirs(Ys: numpy.ndarray) -> dict:
   dirs: dict[str, list] = {}
   for idx, record in enumerate(Ys):
-    for key, value in record.items():
+    for key_, value in record.items():
+      key = key_.split('-')[0]
       if key not in dirs:
         dirs[key] = [0.0 for _ in range(idx)]
       dirs[key].append(value)
@@ -106,6 +107,7 @@ def statistical_analysis(Ys: numpy.ndarray) -> dict:
   dirs: dict[str, numpy.ndarray] = divide_by_dirs(Ys)
   return {dir_key: {
     'mean': dir_data.mean(),
+    'median': numpy.median(dir_data),
     'var': dir_data.var(),
     'min': dir_data.min(),
     'max': dir_data.max(),
