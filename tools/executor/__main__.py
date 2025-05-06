@@ -352,7 +352,7 @@ def experiment_7_evaluation(archive: Archive):
   ensure_dir('experiments/7/rounds')
   AGENTS = ['ql', 'fixed', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for i in use_iterations(1):
+  for i in use_iterations(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
       args = ['python', '-m', 'main', '-r', '-DE', '-de']
@@ -368,7 +368,7 @@ def experiment_7_evaluation(archive: Archive):
 def experiment_7_training(archive: Archive):
   AGENTS = ['ql', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for _ in use_iterations(1):
+  for _ in use_iterations(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
       args = ['python', '-m', 'main', '-r', '-DT']
