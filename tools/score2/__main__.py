@@ -129,10 +129,14 @@ if __name__ == "__main__":
 
   datastore = Datastore(config, Datastore.Mode.EVALUATION)
   data = {}
-  data['awtxdir'] = interpret_dicts(datastore.extract_roll('awtxdir'))
+  data['mean_awt_xdir'] = interpret_dicts(datastore.extract_roll('mean_awt_xdir'))
+  data['median_awt_xdir'] = interpret_dicts(datastore.extract_roll('median_awt_xdir'))
+  data['std_awt_xdir'] = interpret_dicts(datastore.extract_roll('std_awt_xdir'))
   scores = {}
   labels = [
-    'awtxdir'
+    'mean_awt_xdir',
+    'median_awt_xdir',
+    'std_awt_xdir'
   ]
   for label in labels:
     scores[label] = statistical_analysis(data[label])

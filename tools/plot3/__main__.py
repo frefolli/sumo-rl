@@ -7,6 +7,7 @@ import matplotlib.pyplot
 from sumo_rl.models.serde import GenericFile
 import sumo_rl.util.color
 import sumo_rl.util.config
+import sumo_rl.models.flows
 import argparse
 import sys
 import enum
@@ -21,7 +22,9 @@ class Datastore:
     self.config = config
     self.mode = mode
     self.episodes = self._identify_episodes()
+    self.route_files = self._identify_route_files()
     self.metrics: dict[int, pandas.DataFrame] = self._load_metrics()
+    self.routes: dict[int, pandas.DataFrame] = self._load_routes()
     self.tracks = self._identify_tracks()
 
   def _identify_all_csvs(self, dir: str) -> list[str]:
@@ -41,6 +44,39 @@ class Datastore:
       df = df.dropna()
       metrics[episode] = df
     return metrics
+
+  def _identify_route_files(self) -> list[str]:
+    routes = []
+    if self.mode == Datastore.Mode.EVALUATION:
+      routes = self.config.scenario.evaluation_routes
+    elif self.mode == Datastore.Mode.TRAINING:
+      routes = self.config.scenario.training_routes
+    else:
+      raise ValueError(self.mode)
+    return routes
+
+  def _load_routes(self) -> dict[int, dict[str, numpy.array]]:
+    result = {}
+    for route_idx, route_file_path in enumerate(self.route_files):
+      flows = sumo_rl.models.flows.read_flows_with_occupancy_from_routes_file(route_file_path)
+      splitted_by_from = {}
+      for flow in flows.values():
+        splitted_by_from[flow['from']] = (splitted_by_from.get(flow['from']) or []) + [flow]
+      vehs_over_time_by_from = {}
+      for from_, flows in splitted_by_from.items():
+        splitted_by_begin = {}
+        for flow in flows:
+          splitted_by_begin[flow['begin']] = (splitted_by_begin.get(flow['begin']) or []) + [flow]
+          assert splitted_by_begin[flow['begin']][0]['end'] == splitted_by_begin[flow['begin']][-1]['end']
+        vehs_over_time = []
+        for begin in sorted(splitted_by_begin.keys()):
+          flows = splitted_by_begin[begin]
+          mean = numpy.mean([flow['vehs'] for flow in flows])
+          head = flows[0]
+          vehs_over_time += [mean for _ in range(head['begin'], head['end'])]
+        vehs_over_time_by_from[from_] = numpy.array(vehs_over_time)
+      result[route_idx] = vehs_over_time_by_from
+    return result
 
   def _identify_tracks(self) -> dict[int, list[str]]:
     track_file = self.metrics_dir() + '/tracks.yml'
@@ -147,6 +183,16 @@ class Accumulator:
       output.append(val)
     return numpy.array(output)
 
+class Normalizer:
+  @staticmethod
+  def Apply(array: numpy.ndarray) -> numpy.ndarray:
+    max_v = numpy.max(array)
+    min_v = numpy.min(array)
+    delta = max_v - min_v
+    result = (array - min_v) / delta
+    assert 1.0 in result
+    return result
+
 class DirectionalSmoother:
   @staticmethod
   def Apply(dirs: dict[str, numpy.ndarray], K: int) -> dict:
@@ -161,6 +207,11 @@ class DirectionalAccumulator:
   @staticmethod
   def Apply(dirs: dict[str, numpy.ndarray]) -> dict:
     return {key:Accumulator.Apply(value) for key,value in dirs.items()}
+
+class DirectionalNormalizer:
+  @staticmethod
+  def Apply(dirs: dict[str, numpy.ndarray]) -> dict:
+    return {key:Normalizer.Apply(value) for key,value in dirs.items()}
 
 class Plotter:
   COLOR_CACHE={}
@@ -197,6 +248,7 @@ class Plotter:
     matplotlib.pyplot.title(title)
     matplotlib.pyplot.legend()
     matplotlib.pyplot.savefig(filepath)
+    print(filepath)
     matplotlib.pyplot.close()
 
 def flatize_record_via_symmetry(record: dict) -> dict:
@@ -228,15 +280,6 @@ def divide_by_dirs(Ys: numpy.ndarray) -> dict:
       dirs[key].append(value)
   return {key:numpy.array(value) for key,value in dirs.items()}
 
-def statistical_analysis(Ys: numpy.ndarray) -> dict:
-  dirs: dict[str, numpy.ndarray] = divide_by_dirs(Ys)
-  return {dir_key: {
-    'mean': dir_data.mean(),
-    'var': dir_data.var(),
-    'min': dir_data.min(),
-    'max': dir_data.max(),
-  } for dir_key, dir_data in dirs.items()}
-
 def interpret_dicts(Ys: numpy.ndarray) -> numpy.ndarray:
   return numpy.array([json.loads(_.replace('\'', '"')) for _ in Ys])
 
@@ -248,7 +291,17 @@ if __name__ == "__main__":
 
   for mode in [Datastore.Mode.EVALUATION]:
     datastore = Datastore(config, mode)
+    for episode in datastore.episodes:
+      label = 'vehs'
+      Ys = datastore.routes[episode]
+      smoothed_Ys = DirectionalSlotter.Apply(Ys, 100)
+      Plotter.Directional(Ys, datastore.plots_file(label, episode), label)
+      Plotter.Directional(smoothed_Ys, datastore.plots_file('smoothed_%s' % label, episode), 'smoothed_%s' % label)
+
+  for mode in [Datastore.Mode.EVALUATION]:
+    datastore = Datastore(config, mode)
     for label in ['awtxdir']:
+    #for label in ['mean_awt_xdir', 'median_awt_xdir', 'std_awt_xdir']:
       for episode in datastore.episodes:
         Ys = divide_by_dirs(interpret_dicts(datastore.extract(episode, label)))
         track = datastore.track(episode)

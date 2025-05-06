@@ -317,8 +317,9 @@ class SumoEnvironment(gym.Env):
         flow_id = vehicle_ID.split('.')[0]
         flow_dir = self.flows.get(flow_id)
         flows[flow_dir] = (flows.get(flow_dir) or []) + [self.datastore.vehicles[vehicle_ID]['awt']]
-      flows = {flow_dir: float(numpy.mean(flow_data)) for flow_dir, flow_data in flows.items()}
-      self.metrics['awtxdir'].append(flows)
+      self.metrics['mean_awt_xdir'].append({flow_dir: float(numpy.mean(flow_data)) for flow_dir, flow_data in flows.items()})
+      self.metrics['median_awt_xdir'].append({flow_dir: float(numpy.median(flow_data)) for flow_dir, flow_data in flows.items()})
+      self.metrics['std_awt_xdir'].append({flow_dir: float(numpy.std(flow_data)) for flow_dir, flow_data in flows.items()})
 
   def compute_observations(self):
     for ts_ID, ts in self.traffic_signals.items():
@@ -345,7 +346,9 @@ class SumoEnvironment(gym.Env):
       "total_reward": [],
     }
     if self.advanced_metrics:
-      obj["awtxdir"] = []
+      obj["mean_awt_xdir"] = []
+      obj["median_awt_xdir"] = []
+      obj["std_awt_xdir"] = []
     return obj
 
   def compute_metrics(self):

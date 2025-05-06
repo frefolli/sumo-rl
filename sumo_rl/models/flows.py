@@ -247,3 +247,18 @@ def read_flows_from_routes_file(filepath: str) -> dict[str, str]:
     (flow_id, flow_dir) = (child.attrib['id'], "%s-%s" % (child.attrib['fromJunction'], child.attrib['toJunction']))
     result[flow_id] = flow_dir
   return result
+
+def read_flows_with_occupancy_from_routes_file(filepath: str) -> dict[str, dict]:
+  tree = ET.parse(filepath)
+  root = tree.getroot()
+  result = {}
+  for child in root:
+    assert child.tag == 'flow'
+    result[child.attrib['id']] = {
+      'from': child.attrib['fromJunction'],
+      'to': child.attrib['toJunction'],
+      'vehs': float(child.attrib['vehsPerHour']),
+      'begin': int(child.attrib['begin']),
+      'end': int(child.attrib['end'])
+    }
+  return result
