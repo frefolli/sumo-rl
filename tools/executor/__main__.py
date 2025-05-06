@@ -350,26 +350,32 @@ def experiment_6_training(archive: Archive):
 
 def experiment_7_evaluation(archive: Archive):
   ensure_dir('experiments/7/rounds')
+  AGENTS = ['ql', 'fixed', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for i in use_iterations(5):
-    args = ['python', '-m', 'main', '-r', '-DE', '-de']
-    if archive.config.agent not in ['fixed', 'ql']:
-      args += ['-j', '1']
-    args += archive.config.to_cli()
-    exec_cmd(' '.join(args))
-    exec_cmd('python -m tools.score')
-    exec_cmd('python -m tools.comparer')
+  for i in use_iterations(1):
+    for agent in AGENTS:
+      archive.switch(Configuration.Patch(archive.config, agent=agent))
+      args = ['python', '-m', 'main', '-r', '-DE', '-de']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot3')
+      exec_cmd('python -m tools.score2')
+    exec_cmd('python -m tools.comparer2')
     exec_cmd('mv scores.csv experiments/7/rounds/%s.csv' % i)
 
 def experiment_7_training(archive: Archive):
+  AGENTS = ['ql', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
-  for _ in use_iterations(2):
-    args = ['python', '-m', 'main', '-r', '-DT']
-    if archive.config.agent not in ['fixed', 'ql']:
-      args += ['-j', '1']
-    args += archive.config.to_cli()
-    exec_cmd(' '.join(args))
-    exec_cmd('python -m tools.plot2')
+  for _ in use_iterations(1):
+    for agent in AGENTS:
+      archive.switch(Configuration.Patch(archive.config, agent=agent))
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
 
 def experiment_0():
   archive = Archive()
@@ -420,7 +426,7 @@ def experiment_7():
   experiment_7_evaluation(archive)
 
 def main():
-  experiment_6()
+  experiment_7()
   on_event_succed()
 
 if __name__ == '__main__':

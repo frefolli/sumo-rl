@@ -300,8 +300,8 @@ if __name__ == "__main__":
 
   for mode in [Datastore.Mode.EVALUATION]:
     datastore = Datastore(config, mode)
-    for label in ['awtxdir']:
-    #for label in ['mean_awt_xdir', 'median_awt_xdir', 'std_awt_xdir']:
+    #for label in ['awtxdir']:
+    for label in ['mean_awt_xdir', 'median_awt_xdir', 'std_awt_xdir']:
       for episode in datastore.episodes:
         Ys = divide_by_dirs(interpret_dicts(datastore.extract(episode, label)))
         track = datastore.track(episode)
