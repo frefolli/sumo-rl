@@ -41,7 +41,7 @@ class Datastore:
     metrics = {}
     for episode in self.episodes:
       df = pandas.read_csv(self.metrics_file(episode))
-      df = df.dropna()
+      df = df.fillna(0)
       metrics[episode] = df
     return metrics
 
@@ -54,6 +54,14 @@ class Datastore:
     else:
       raise ValueError(self.mode)
     return routes
+
+  def get_route_name(self, episode) -> str:
+    if self.mode == Datastore.Mode.EVALUATION:
+      return datastore.route_files[episode].split('/')[4]
+    elif self.mode == Datastore.Mode.TRAINING:
+      return datastore.route_files[episode].split('/')[4]
+    else:
+      raise ValueError(self.mode)
 
   def _load_routes(self) -> dict[int, dict[str, numpy.array]]:
     result = {}
@@ -195,7 +203,10 @@ class Normalizer:
 
 class DirectionalSmoother:
   @staticmethod
-  def Apply(dirs: dict[str, numpy.ndarray], K: int) -> dict:
+  def Asymmetric(dirs: dict[str, numpy.ndarray], K: int) -> dict:
+    return {key:Smoother.Asymmetric(value, K=K) for key,value in dirs.items()}
+  @staticmethod
+  def Symmetric(dirs: dict[str, numpy.ndarray], K: int) -> dict:
     return {key:Smoother.Symmetric(value, K=K) for key,value in dirs.items()}
 
 class DirectionalSlotter:
@@ -271,17 +282,27 @@ def flatize_record_via_head(record: dict) -> dict:
   return {key:numpy.mean(value) for key,value in dirs.items()}
 
 def divide_by_dirs(Ys: numpy.ndarray) -> dict:
-  dirs: dict[str, list] = {}
-  for idx, record in enumerate(Ys):
+  flatized_records = []
+  keys = set({})
+  for record in Ys:
     record = flatize_record_via_head(record)
-    for key, value in record.items():
-      if key not in dirs:
-        dirs[key] = [0.0 for _ in range(idx)]
-      dirs[key].append(value)
+    flatized_records.append(record)
+    keys |= set(record.keys())
+  dirs: dict[str, list] = {key: [] for key in keys}
+  for record in flatized_records:
+    for key in keys:
+      dirs[key].append(record.get(key) or 0.0)
   return {key:numpy.array(value) for key,value in dirs.items()}
 
 def interpret_dicts(Ys: numpy.ndarray) -> numpy.ndarray:
   return numpy.array([json.loads(_.replace('\'', '"')) for _ in Ys])
+
+def normalize_data_by_occupancy(data: dict, occupancy: dict) -> dict:
+  assert sorted(list(data.keys())) == sorted(list(occupancy.keys()))
+  output = {}
+  for key in data.keys():
+    output[key] = data[key][:len(occupancy[key])] / occupancy[key]
+  return output
 
 if __name__ == "__main__":
   cli = argparse.ArgumentParser(sys.argv[0])
@@ -292,19 +313,17 @@ if __name__ == "__main__":
   for mode in [Datastore.Mode.EVALUATION]:
     datastore = Datastore(config, mode)
     for episode in datastore.episodes:
-      label = 'vehs'
-      Ys = datastore.routes[episode]
-      smoothed_Ys = DirectionalSlotter.Apply(Ys, 100)
-      Plotter.Directional(Ys, datastore.plots_file(label, episode), label)
-      Plotter.Directional(smoothed_Ys, datastore.plots_file('smoothed_%s' % label, episode), 'smoothed_%s' % label)
+      vehs = datastore.routes[episode]
+      
+      compatible_vehs = DirectionalSlotter.Apply(vehs, 5)
+      # Plotter.Directional(Ys, datastore.plots_file(label, episode), label)
+      # Plotter.Directional(smoothed_Ys, datastore.plots_file('smoothed_%s' % label, episode), 'smoothed_%s' % label)
 
-  for mode in [Datastore.Mode.EVALUATION]:
-    datastore = Datastore(config, mode)
-    #for label in ['awtxdir']:
-    for label in ['mean_awt_xdir', 'median_awt_xdir', 'std_awt_xdir']:
-      for episode in datastore.episodes:
+      for label in ['mean_awt_xdir', 'median_awt_xdir', 'std_awt_xdir']:
         Ys = divide_by_dirs(interpret_dicts(datastore.extract(episode, label)))
-        track = datastore.track(episode)
-        smoothed_Ys = DirectionalSlotter.Apply(Ys, 100)
-        Plotter.Directional(Ys, datastore.plots_file(label, episode), label)#, track=track
-        Plotter.Directional(smoothed_Ys, datastore.plots_file('smoothed_%s' % label, episode), 'smoothed_%s' % label)#, track=track
+        # track = datastore.track(episode)
+        normalized_Ys = normalize_data_by_occupancy(Ys, compatible_vehs)
+        normalized_slotted_Ys = DirectionalSlotter.Apply(normalized_Ys, 100)
+        # Plotter.Directional(Ys, datastore.plots_file(label, episode), label)#, track=track
+        # Plotter.Directional(smoothed_Ys, datastore.plots_file('smoothed_%s' % label, episode), 'smoothed_%s' % label)#, track=track
+        Plotter.Directional(normalized_slotted_Ys, datastore.plots_file('normalized_slotted_%s' % (label), episode), 'normalized_slotted_%s / %s' % (label, datastore.get_route_name(episode)))#, track=track

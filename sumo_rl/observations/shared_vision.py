@@ -20,9 +20,9 @@ class SharedVisionObservationFunction(ObservationFunction):
 
   def __call__(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
     """Return the sharedVision observation."""
-    observation = self.me_observation(datastore, ts)
+    observation = self.me_observation.cache(datastore, ts)
     for you_id in (self.vision_graph.edges.get(ts.id) or []):
-      observation += self.you_observation(datastore, self.vision_graph.nodes[you_id])
+      observation += self.you_observation.cache(datastore, self.vision_graph.nodes[you_id])
     return observation
 
 

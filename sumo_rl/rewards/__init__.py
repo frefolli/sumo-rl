@@ -4,3 +4,4 @@ from sumo_rl.rewards.diff_waiting_time import DiffWaitingTimeRewardFunction
 from sumo_rl.rewards.pressure import PressureRewardFunction
 from sumo_rl.rewards.queue_length import QueueLengthRewardFunction
 from sumo_rl.rewards.mixed import MixedRewardFunction
+from sumo_rl.rewards.shared_vision import SharedVisionRewardFunction

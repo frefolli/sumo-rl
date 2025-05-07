@@ -174,15 +174,28 @@ def use_selection_of_reward_fn():
       return sumo_rl.rewards.QueueLengthRewardFunction()
     if val == 'p':
       return sumo_rl.rewards.PressureRewardFunction()
+    if val == 'svdwt':
+      return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.DiffWaitingTimeRewardFunction())
+    if val == 'svas':
+      return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.AverageSpeedRewardFunction())
+    if val == 'svql':
+      return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.QueueLengthRewardFunction())
+    if val == 'svp':
+      return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.PressureRewardFunction())
     raise ValueError(val)
 
-  options = ['dwt', 'as', 'ql', 'p']
+  options = ['dwt', 'as', 'ql', 'p', 'svdwt', 'svas', 'svql', 'svp']
   help_text = """
     Selects the reward function to use
     - dwt: Diff Waiting Times
     - as: Average Speeds
     - ql: Average Queue Lengths
     - p: Pressure
+    - Shared Reward: neighbours are defined by a Vision Graph(NODES = Array(Traffic Light)
+      - svdwt: Diff Waiting Times
+      - svas: Average Speeds
+      - svql: Average Queue Lengths
+      - svp: Pressure
   """
   return options, help_text, reward_fn_by_option
 
@@ -402,9 +415,13 @@ def main():
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
   env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs), cli_args.depth)
-  if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction):
-    build_adiacency_graph(env, env.observation_fn.vision_graph)
-    env.observation_fn.vision_graph.to_d2_file('vision-graph.d2')
+  if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction) or isinstance(env.reward_fn, sumo_rl.rewards.SharedVisionRewardFunction):
+    graph = build_adiacency_graph(env, None)
+    if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction):
+      env.observation_fn.vision_graph = graph
+    if isinstance(env.reward_fn, sumo_rl.rewards.SharedVisionRewardFunction):
+      env.reward_fn.vision_graph = graph
+    graph.to_d2_file('vision-graph.d2')
   agent_factory: sumo_rl.preprocessing.factories.AgentFactory = agent_factory_by_option(cli_args, config, env)
   agents_partition: sumo_rl.preprocessing.partitions.Partition = partition_by_option(cli_args, env)
   agents: list[sumo_rl.agents.Agent] = agent_factory.agent_by_assignments(agents_partition.data)

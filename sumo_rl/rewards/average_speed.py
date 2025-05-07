@@ -14,4 +14,4 @@ class AverageSpeedRewardFunction(RewardFunction):
 
     def __call__(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> float:
         """Return the average speed reward"""
-        return numpy.mean([datastore.lanes[lane_ID]['lsms']/datastore.lanes[lane_ID]['ms'] for lane_ID in ts.lanes]) - 0.5
+        return  numpy.mean([datastore.lanes[lane_ID]['lsms']/datastore.lanes[lane_ID]['ms'] for lane_ID in ts.lanes]) - 0.5

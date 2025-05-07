@@ -322,10 +322,12 @@ class SumoEnvironment(gym.Env):
       self.metrics['std_awt_xdir'].append({flow_dir: float(numpy.std(flow_data)) for flow_dir, flow_data in flows.items()})
 
   def compute_observations(self):
+    self.datastore.observation_cache = {}
     for ts_ID, ts in self.traffic_signals.items():
       self.observations[ts_ID] = self.observation_fn(self.datastore, ts)
 
   def compute_rewards(self):
+    self.datastore.reward_cache = {}
     for ts_ID, ts in self.traffic_signals.items():
       self.rewards[ts_ID] = self.reward_fn(self.datastore, ts)
 

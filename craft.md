@@ -270,6 +270,10 @@ mv training evaluation datasets/1
 - as: Average Speeds
 - ql: Average Queue Lengths
 - p: Pressure
+- svdwt: Diff Waiting Times (mia + quella dei vicini)
+- svas: Average Speeds (mia + quella dei vicini)
+- svql: Average Queue Lengths (mia + quella dei vicini)
+- svp: Pressure (mia + quella dei vicini)
 
 ## Sistemi self adaptive
 

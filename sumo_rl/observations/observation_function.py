@@ -14,6 +14,16 @@ class ObservationFunction(abc.ABC):
     """Initialize observation function."""
     self.name = name
 
+  def cache(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal):
+    if self.name not in datastore.observation_cache:
+      datastore.observation_cache[self.name] = {}
+    if ts.id in datastore.observation_cache[self.name]:
+      return datastore.observation_cache[self.name][ts.id]
+    else:
+      observation = self(datastore, ts)
+      datastore.observation_cache[self.name][ts.id] = observation
+      return observation
+
   @abc.abstractmethod
   def __call__(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal):
     """Subclasses must override this method."""
