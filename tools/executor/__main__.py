@@ -363,7 +363,7 @@ def experiment_7_evaluation(archive: Archive):
       exec_cmd('python -m tools.plot3')
       exec_cmd('python -m tools.score2')
     exec_cmd('python -m tools.comparer2')
-    exec_cmd('mv scores.csv experiments/7/rounds/%s.csv' % i)
+    exec_cmd('mv scores.yml experiments/7/rounds/%s.yml' % i)
 
 def experiment_7_training(archive: Archive):
   AGENTS = ['ql', 'ppo']
@@ -422,7 +422,7 @@ def experiment_6():
 def experiment_7():
   archive = Archive()
   archive.use_dataset(1)
-  experiment_7_training(archive)
+  #experiment_7_training(archive)
   experiment_7_evaluation(archive)
 
 def main():
