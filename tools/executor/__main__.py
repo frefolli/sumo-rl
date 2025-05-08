@@ -406,6 +406,35 @@ def experiment_8_training(archive: Archive):
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
+def experiment_9_evaluation(archive: Archive):
+  ensure_dir('experiments/9/rounds')
+  REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for i in use_iterations(5):
+    for rew in REWS:
+      archive.switch(Configuration.Patch(archive.config, reward=rew))
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/9/rounds/%s.csv' % i)
+
+def experiment_9_training(archive: Archive):
+  REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  for _ in use_iterations(2):
+    for rew in REWS:
+      archive.switch(Configuration.Patch(archive.config, reward=rew))
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
 def experiment_0():
   archive = Archive()
   archive.use_dataset(0)
@@ -460,8 +489,14 @@ def experiment_8():
   experiment_8_training(archive)
   experiment_8_evaluation(archive)
 
+def experiment_9():
+  archive = Archive()
+  archive.use_dataset(1)
+  experiment_9_training(archive)
+  experiment_9_evaluation(archive)
+
 def main():
-  experiment_8()
+  experiment_9()
   on_event_succed()
 
 if __name__ == '__main__':
