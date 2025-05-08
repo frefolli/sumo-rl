@@ -449,7 +449,7 @@ def experiment_10_evaluation(archive: Archive):
       Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
       Configuration(agent='ppo', observation='svd', reward='svp', partition='mono', self_adaptive=False, dataset='1'),
   ]
-  for i in use_iterations(5):
+  for i in use_iterations(10):
     for model in models:
       archive.switch(model)
       args = ['python', '-m', 'main', '-r', '-DE']
@@ -482,7 +482,7 @@ def experiment_11_evaluation(archive: Archive):
     Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2'),
     Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2')
   ]
-  for i in use_iterations(5):
+  for i in use_iterations(10):
     for model in models:
       archive.switch(model)
       args = ['python', '-m', 'main', '-r', '-DE']
@@ -570,7 +570,7 @@ def experiment_11():
   experiment_11_evaluation(archive)
 
 def main():
-  experiment_11()
+  experiment_10()
   on_event_succed()
 
 if __name__ == '__main__':
