@@ -447,7 +447,7 @@ def experiment_10_evaluation(archive: Archive):
   models = [
       Configuration(agent='fixed', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
       Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
-      Configuration(agent='ppo', observation='svd', reward='svp', partition='mono', self_adaptive=False, dataset='1'),
+      Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='1'),
   ]
   for i in use_iterations(10):
     for model in models:
@@ -464,7 +464,7 @@ def experiment_10_evaluation(archive: Archive):
 def experiment_10_training(archive: Archive):
   models = [
       Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
-      Configuration(agent='ppo', observation='svd', reward='svp', partition='mono', self_adaptive=False, dataset='1'),
+      Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='1'),
   ]
   for _ in use_iterations(2):
     for model in models:
@@ -480,7 +480,7 @@ def experiment_11_evaluation(archive: Archive):
   ensure_dir('experiments/11/rounds')
   models = [
     Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2'),
-    Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2')
+    Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='2')
   ]
   for i in use_iterations(10):
     for model in models:
@@ -497,7 +497,7 @@ def experiment_11_evaluation(archive: Archive):
 def experiment_11_training(archive: Archive):
   models = [
     Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2'),
-    Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2')
+    Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='2')
   ]
   for _ in use_iterations(1):
     for model in models:
