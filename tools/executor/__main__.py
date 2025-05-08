@@ -53,7 +53,7 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          observation='default',
                          reward='dwt',
                          self_adaptive=False,
-                         dataset=1)
+                         dataset='1')
 
   def to_cli(self) -> list[str]:
     args = []
@@ -499,7 +499,7 @@ def experiment_11_training(archive: Archive):
     Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2'),
     Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2')
   ]
-  for _ in use_iterations(2):
+  for _ in use_iterations(1):
     for model in models:
       archive.switch(model)
       args = ['python', '-m', 'main', '-r', '-DT']
