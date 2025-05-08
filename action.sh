@@ -14,7 +14,7 @@
 
 ### Definitions
 export BASEDIR="Projects/sumo-rl"
-export EXP_NUM=11
+export EXP_NUM=10
 set -e # CRASH IF SOMETHING CRASHES
 
 ### File System Setup
