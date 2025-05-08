@@ -16,6 +16,9 @@ import sumo_rl.models.sumo
 DEFAULT_TOTAL_DURATION = 100000
 DEFAULT_SLOT_DURATION = 360
 
+def shuffle(A: list) -> list:
+  return sorted(A, key = lambda _ : random.random())
+
 def random_binomial(p: float) -> bool:
   return random.random() <= p
 
@@ -515,6 +518,9 @@ class TrafficRegistry(SerdeYamlFile):
   def get(self, ID: str) -> TrafficGenerator:
     return self.registry[ID]
 
+  def gets(self, IDs: list[str]) -> list[TrafficGenerator]:
+    return list(map(lambda ID: self.get(ID), IDs))
+
   def set(self, ID: str, traffic_generator: TrafficGenerator) -> TrafficGenerator:
     self.registry[ID] = traffic_generator
     return self.get(ID)
@@ -526,6 +532,9 @@ class TrafficRegistry(SerdeYamlFile):
 
   def variants(self) -> list[str]:
     return list(self.registry.keys())
+
+  def simple_variants(self) -> list[str]:
+    return list(filter(lambda s: '-' not in s, self.variants()))
 
   @staticmethod
   def Default() -> TrafficRegistry:
@@ -719,6 +728,28 @@ def generate_traffic(base_dir: str, traffic_generator: TrafficGenerator, number:
   #simulation.to_xml_file('%s/simulation.sumocfg' % (output_dir))
   return results
 
+def get_or_leave_integer(splitted: list[str], default_value: int) -> tuple[list[str], int]:
+  try:
+    number = int(splitted[0])
+    splitted = splitted[1:]
+    return splitted, number
+  except:
+    return splitted, default_value
+
+def parse_properties_from_request(registry: TrafficRegistry, string: str) -> tuple[int, int, list[TrafficGenerator]]:
+  splitted = string.strip().split(',')
+  splitted, number = get_or_leave_integer(splitted, 1)
+  splitted, duration = get_or_leave_integer(splitted, DEFAULT_TOTAL_DURATION)
+  phases = []
+  for desc in splitted:
+    if desc == '*':
+      phases += registry.gets(registry.simple_variants())
+    elif desc == '~':
+      phases = shuffle(phases)
+    else:
+      phases += [registry.get(desc)]
+  return number, duration, phases
+
 def main():
   argument_parser = argparse.ArgumentParser(description='flower')
   argument_parser.add_argument('-s', '--scenario', default='breda', help='Input scenario')
@@ -730,7 +761,7 @@ def main():
   argument_parser.add_argument('-at', '--all-traffics', default=False, action='store_true', help='Produces all registered traffic types')
   argument_parser.add_argument('-o', '--output', default='/tmp', type=str, help='Output directory')
   argument_parser.add_argument('-V', '--verbose', default=False, action='store_true', help='Use verbose output')
-  argument_parser.add_argument('traffic', default=None, type=str, nargs='*', help='Registered traffic types to generate as descriptor (comma separated with multeplicity, example: \'17,A,B,C\' or just \'A\')')
+  argument_parser.add_argument('traffic', default=None, type=str, nargs='*', help='Registered traffic types to generate as descriptor (comma separated with multeplicity and duration, example: \'17,12345,A,B,C\' or just \'A\'). With \'*\' you include all non transition types and with \'~\' you shuffle all the previously declared phase of the string.')
   cli_args = argument_parser.parse_args(sys.argv[1:])
   base_dir = "scenarios/%s" % cli_args.scenario
 
@@ -765,21 +796,16 @@ def main():
     traffic_generators = list(map(lambda variant: (registry.get(variant), 1), registry.variants()))
   elif cli_args.traffic is not None:
     for traffic in cli_args.traffic:
-      splitted = traffic.strip().split(',')
-      n = 1
-      try:
-        n = int(splitted[0])
-        splitted = splitted[1:]
-      except:
-        pass
-      traffic_generators += [(TransitionTrafficGenerator(phases=list(map(lambda variant: registry.get(variant), splitted)), total_duration=DEFAULT_TOTAL_DURATION), 1)]
+      number, duration, phases = parse_properties_from_request(registry, traffic)
+      print(traffic)
+      traffic_generators += [(TransitionTrafficGenerator(phases=phases, total_duration=duration), number)]
 
   results: list[sumo_rl.models.flows.Flow] = []
-  for (traffic_generator, n) in traffic_generators:
+  for (traffic_generator, number) in traffic_generators:
     output = "%s/%s" % (cli_args.output, traffic_generator.id)
     relative_output = "%s" % (traffic_generator.id,)
     print("Producing %s / %s / %s" % (traffic_generator.id, traffic_generator.title, traffic_generator.description))
-    results += generate_traffic(base_dir, traffic_generator, n, output, relative_output)
+    results += generate_traffic(base_dir, traffic_generator, number, output, relative_output)
   results = sorted(results, key = lambda k: k[1])
   with open("%s/order.yml" % (cli_args.output,), mode='w', encoding='utf-8') as file:
     for result in results:

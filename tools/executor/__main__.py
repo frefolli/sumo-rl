@@ -38,12 +38,13 @@ def exec_cmd(cmd: str) -> None:
     raise ValueError(cmd)
 
 class Configuration(sumo_rl.models.serde.SerdeYamlFile):
-  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool) -> None:
+  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool, dataset: str) -> None:
     self.agent: str = agent
     self.partition: str = partition
     self.observation: str = observation
     self.reward: str = reward
     self.self_adaptive: bool = self_adaptive
+    self.dataset: str = dataset
 
   @staticmethod
   def Default() -> Configuration:
@@ -51,7 +52,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          partition='mono',
                          observation='default',
                          reward='dwt',
-                         self_adaptive=False)
+                         self_adaptive=False,
+                         dataset=1)
 
   def to_cli(self) -> list[str]:
     args = []
@@ -69,7 +71,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       self.partition,
       self.observation,
       self.reward,
-      ('sa' if self.self_adaptive else 'nsa')
+      ('sa' if self.self_adaptive else 'nsa'),
+      self.dataset
     ])
 
   def to_dict(self) -> dict:
@@ -78,7 +81,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       'partition': self.partition,
       'observation': self.observation,
       'reward': self.reward,
-      'self_adaptive': self.self_adaptive
+      'self_adaptive': self.self_adaptive,
+      'dataset': self.dataset
     }
 
   @staticmethod
@@ -87,17 +91,19 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          partition=data['partition'],
                          observation=data['observation'],
                          reward=data['reward'],
-                         self_adaptive=data['self_adaptive'])
+                         self_adaptive=data['self_adaptive'],
+                         dataset=data['dataset'])
 
   @staticmethod
-  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None) -> Configuration:
+  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None, dataset: str|None = None) -> Configuration:
     if self_adaptive is None:
       self_adaptive = config.self_adaptive
     return Configuration(agent=(agent or config.agent),
                          partition=(partition or config.partition),
                          observation=(observation or config.observation),
                          reward=(reward or config.reward),
-                         self_adaptive=self_adaptive)
+                         self_adaptive=self_adaptive,
+                         dataset=(dataset or config.dataset))
 
 class Archive:
   def __init__(self) -> None:
@@ -132,6 +138,7 @@ class Archive:
     if os.path.exists("outputs"):
       exec_cmd("rm outputs")
     exec_cmd("ln -sf %s outputs" % (next_config_dir,))
+    self.use_dataset(config.dataset)
 
     self.config = config
     self._write_config()
@@ -150,7 +157,7 @@ class Archive:
 def experiment_0_evaluation(archive: Archive):
   ensure_dir('experiments/0/rounds')
   REWARDS = ['dwt', 'p', 'as', 'ql']
-  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False, dataset='0'))
   for i in use_iterations(5):
     for reward in REWARDS:
       archive.switch(Configuration.Patch(archive.config, reward=reward))
@@ -164,7 +171,7 @@ def experiment_0_evaluation(archive: Archive):
 def experiment_0_training(archive: Archive):
   ensure_dir('experiments/0/rounds')
   REWARDS = ['dwt', 'p', 'as', 'ql']
-  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False, dataset='0'))
   for _ in use_iterations(1):
     for reward in REWARDS:
       archive.switch(Configuration.Patch(archive.config, reward=reward))
@@ -176,7 +183,7 @@ def experiment_0_training(archive: Archive):
 def experiment_1_evaluation(archive: Archive):
   ensure_dir('experiments/1/rounds')
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -191,7 +198,7 @@ def experiment_1_evaluation(archive: Archive):
 
 def experiment_1_training(archive: Archive):
   AGENTS = ['ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -205,7 +212,7 @@ def experiment_1_training(archive: Archive):
 def experiment_2_evaluation(archive: Archive):
   ensure_dir('experiments/2/rounds')
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -221,7 +228,7 @@ def experiment_2_evaluation(archive: Archive):
 def experiment_2_training(archive: Archive):
   archive = Archive()
   AGENTS = ['ql', 'dqn', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -235,7 +242,7 @@ def experiment_2_training(archive: Archive):
 def experiment_3_evaluation(archive: Archive):
   ensure_dir('experiments/3/rounds')
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
@@ -250,7 +257,7 @@ def experiment_3_evaluation(archive: Archive):
 
 def experiment_3_training(archive: Archive):
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
@@ -263,7 +270,7 @@ def experiment_3_training(archive: Archive):
 
 def experiment_4_evaluation(archive: Archive):
   ensure_dir('experiments/4/rounds')
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
@@ -279,7 +286,7 @@ def experiment_4_evaluation(archive: Archive):
     exec_cmd('mv scores.csv experiments/4/rounds/%s.csv' % i)
 
 def experiment_4_training(archive: Archive):
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
@@ -293,7 +300,7 @@ def experiment_4_training(archive: Archive):
 def experiment_5_evaluation(archive: Archive):
   ensure_dir('experiments/5/rounds')
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
@@ -308,7 +315,7 @@ def experiment_5_evaluation(archive: Archive):
 
 def experiment_5_training(archive: Archive):
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
-  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
@@ -321,7 +328,7 @@ def experiment_5_training(archive: Archive):
 
 def experiment_6_evaluation(archive: Archive):
   ensure_dir('experiments/6/rounds')
-  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
@@ -337,7 +344,7 @@ def experiment_6_evaluation(archive: Archive):
     exec_cmd('mv scores.csv experiments/6/rounds/%s.csv' % i)
 
 def experiment_6_training(archive: Archive):
-  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
@@ -351,7 +358,7 @@ def experiment_6_training(archive: Archive):
 def experiment_7_evaluation(archive: Archive):
   ensure_dir('experiments/7/rounds')
   AGENTS = ['ql', 'fixed', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -367,7 +374,7 @@ def experiment_7_evaluation(archive: Archive):
 
 def experiment_7_training(archive: Archive):
   AGENTS = ['ql', 'ppo']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
@@ -380,7 +387,7 @@ def experiment_7_training(archive: Archive):
 def experiment_8_evaluation(archive: Archive):
   ensure_dir('experiments/8/rounds')
   REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for rew in REWS:
       archive.switch(Configuration.Patch(archive.config, reward=rew))
@@ -395,7 +402,7 @@ def experiment_8_evaluation(archive: Archive):
 
 def experiment_8_training(archive: Archive):
   REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
-  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for rew in REWS:
       archive.switch(Configuration.Patch(archive.config, reward=rew))
@@ -409,7 +416,7 @@ def experiment_8_training(archive: Archive):
 def experiment_9_evaluation(archive: Archive):
   ensure_dir('experiments/9/rounds')
   REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
-  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
     for rew in REWS:
       archive.switch(Configuration.Patch(archive.config, reward=rew))
@@ -424,7 +431,7 @@ def experiment_9_evaluation(archive: Archive):
 
 def experiment_9_training(archive: Archive):
   REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
-  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False))
+  archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for _ in use_iterations(2):
     for rew in REWS:
       archive.switch(Configuration.Patch(archive.config, reward=rew))
@@ -435,68 +442,135 @@ def experiment_9_training(archive: Archive):
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
+def experiment_10_evaluation(archive: Archive):
+  ensure_dir('experiments/10/rounds')
+  models = [
+      Configuration(agent='fixed', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
+      Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
+      Configuration(agent='ppo', observation='svd', reward='svp', partition='mono', self_adaptive=False, dataset='1'),
+  ]
+  for i in use_iterations(5):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/10/rounds/%s.csv' % i)
+
+def experiment_10_training(archive: Archive):
+  models = [
+      Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'),
+      Configuration(agent='ppo', observation='svd', reward='svp', partition='mono', self_adaptive=False, dataset='1'),
+  ]
+  for _ in use_iterations(2):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
+def experiment_11_evaluation(archive: Archive):
+  ensure_dir('experiments/11/rounds')
+  models = [
+    Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2'),
+    Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2')
+  ]
+  for i in use_iterations(5):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/11/rounds/%s.csv' % i)
+
+def experiment_11_training(archive: Archive):
+  models = [
+    Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2'),
+    Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='2')
+  ]
+  for _ in use_iterations(2):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
 def experiment_0():
   archive = Archive()
-  archive.use_dataset(0)
   experiment_0_training(archive)
   experiment_0_evaluation(archive)
 
 def experiment_1():
   archive = Archive()
-  archive.use_dataset(0)
   experiment_1_training(archive)
   experiment_1_evaluation(archive)
 
 def experiment_2():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_2_training(archive)
   experiment_2_evaluation(archive)
 
 def experiment_3():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_3_training(archive)
   experiment_3_evaluation(archive)
 
 def experiment_4():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_4_training(archive)
   experiment_4_evaluation(archive)
 
 def experiment_5():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_5_training(archive)
   experiment_5_evaluation(archive)
 
 def experiment_6():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_6_training(archive)
   experiment_6_evaluation(archive)
 
 def experiment_7():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_7_training(archive)
   experiment_7_evaluation(archive)
 
 def experiment_8():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_8_training(archive)
   experiment_8_evaluation(archive)
 
 def experiment_9():
   archive = Archive()
-  archive.use_dataset(1)
   experiment_9_training(archive)
   experiment_9_evaluation(archive)
 
+def experiment_10():
+  archive = Archive()
+  experiment_10_training(archive)
+  experiment_10_evaluation(archive)
+
+def experiment_11():
+  archive = Archive()
+  experiment_11_training(archive)
+  experiment_11_evaluation(archive)
+
 def main():
-  experiment_9()
+  experiment_11()
   on_event_succed()
 
 if __name__ == '__main__':

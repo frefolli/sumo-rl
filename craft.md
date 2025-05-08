@@ -244,6 +244,23 @@ python -m tools.mengele -r traffic-registry.yml -o evaluation \
 mv training evaluation datasets/1
 ```
 
+### 2
+
+Prospetto:
+- Training: Frankestein con tutto dentro
+- Evaluation: 80% Normalita' + 10% Anormale + 10% Intenso
+
+Realizzazione:
+```bash
+mkdir -p datasets/2
+rm -rf datasets/2/*
+rm -rf training evaluation
+python -m tools.mengele -r traffic-registry.yml -o training \
+  1,800000,*,*,~
+cp -r ./datasets/1/evaluation evaluation
+mv training evaluation datasets/2
+```
+
 ## Funzioni di osservazione
 
 - default: vedo
