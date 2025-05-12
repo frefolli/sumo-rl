@@ -512,7 +512,7 @@ def experiment_11_training(archive: Archive):
 def experiment_12_evaluation(archive: Archive):
   ensure_dir('experiments/12/rounds')
   models = [
-    Configuration(agent=FIXED_AGENT, observation='ql', reward='ql', partition='mono', self_adaptive=False, dataset='1')
+    Configuration(agent=FIXED_AGENT, observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1')
     for FIXED_AGENT in ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60']
   ]
   for i in use_iterations(10):
