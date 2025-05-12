@@ -86,6 +86,14 @@ def use_selection_of_agent_type():
     val = cli_args.agent
     if val == 'fixed':
       return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle)
+    if val == 'fixed15':
+      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=6)
+    if val == 'fixed30':
+      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=6)
+    if val == 'fixed45':
+      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=9)
+    if val == 'fixed60':
+      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=12)
     if val == 'ql':
       return sumo_rl.preprocessing.factories.QLAgentFactory(env, config,
                                                             config.agents.ql.alpha,
@@ -100,10 +108,14 @@ def use_selection_of_agent_type():
       return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config, recycle=cli_args.recycle)
     raise ValueError(val)
 
-  options = ['fixed', 'ql', 'dqn', 'ppo']
+  options = ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60', 'ql', 'dqn', 'ppo']
   help_text = """
     Selects the type of Agent to use,
     - fixed: Fixed Cycle agent,
+    - fixed15: Fixed Cycle agent with 15s cycle,
+    - fixed30: Fixed Cycle agent with 30s cycle,
+    - fixed45: Fixed Cycle agent with 45s cycle,
+    - fixed60: Fixed Cycle agent with 60s cycle,
     - ql: Q Learning agent,
     - dqn: Deep Q Learning agent,
     - ppo: Proximal Policy Optimization agent

@@ -70,9 +70,9 @@ class DQNAgent(Agent):
       previous_action = self.previous_actions[ID]
       reward = rewards[ID]
       self.model.replay_buffer.add(previous_state, current_state, previous_action, reward, numpy.array([False]), [{}])
-    #if self.model.replay_buffer.full:
-    self.model.train(1, batch_size=1)
-    self.model.replay_buffer.reset()
+    if self.model.replay_buffer.full:
+      self.model.train(1, batch_size=1)
+      self.model.replay_buffer.reset()
 
   def serialize(self, output_filepath: str) -> None:
     """Serialize Agent "memory" into an output file

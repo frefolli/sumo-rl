@@ -509,6 +509,24 @@ def experiment_11_training(archive: Archive):
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.plot2')
 
+def experiment_12_evaluation(archive: Archive):
+  ensure_dir('experiments/12/rounds')
+  models = [
+    Configuration(agent=FIXED_AGENT, observation='ql', reward='ql', partition='mono', self_adaptive=False, dataset='1')
+    for FIXED_AGENT in ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60']
+  ]
+  for i in use_iterations(10):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/12/rounds/%s.csv' % i)
+
 def experiment_0():
   archive = Archive()
   experiment_0_training(archive)
@@ -569,8 +587,12 @@ def experiment_11():
   experiment_11_training(archive)
   experiment_11_evaluation(archive)
 
+def experiment_12():
+  archive = Archive()
+  experiment_12_evaluation(archive)
+
 def main():
-  experiment_11()
+  experiment_12()
   on_event_succed()
 
 if __name__ == '__main__':

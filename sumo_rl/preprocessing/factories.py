@@ -30,8 +30,9 @@ class AgentFactory(abc.ABC):
     pass
 
 class FixedAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False, cycle_time: int = 6) -> None:
     super().__init__(env, config, recycle)
+    self.cycle_time : int = cycle_time
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[Agent]:
     agents = []
@@ -46,8 +47,9 @@ class FixedAgentFactory(AgentFactory):
     a_traffic_signal_id = list(controlled_entities)[0]
     action_space = controlled_entities[a_traffic_signal_id].action_space
     agent = FixedAgent(id=agent_id,
-                   controlled_entities=controlled_entities,
-                   action_space=action_space)
+                       controlled_entities=controlled_entities,
+                       action_space=action_space,
+                       cycle_time=self.cycle_time)
     return agent
 
 class QLAgentFactory(AgentFactory):
