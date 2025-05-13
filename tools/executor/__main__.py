@@ -529,6 +529,26 @@ def experiment_12_evaluation(archive: Archive):
     exec_cmd('python -m tools.comparer')
     exec_cmd('mv scores.csv experiments/12/rounds/%s.csv' % i)
 
+def experiment_13_evaluation(archive: Archive):
+  ensure_dir('experiments/13/rounds')
+  models = [
+    Configuration(agent=FIXED_AGENT, observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1')
+    for FIXED_AGENT in ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60']
+  ]
+  for i in use_iterations(10):
+    seed = random.randint(0, 10000)
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE', '-de', '-S', str(seed)]
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot3')
+      exec_cmd('python -m tools.score2')
+    exec_cmd('python -m tools.comparer2')
+    exec_cmd('mv scores.csv experiments/13/rounds/%s.csv' % i)
+
 def experiment_0():
   archive = Archive()
   experiment_0_training(archive)
@@ -592,6 +612,10 @@ def experiment_11():
 def experiment_12():
   archive = Archive()
   experiment_12_evaluation(archive)
+
+def experiment_13():
+  archive = Archive()
+  experiment_13_evaluation(archive)
 
 def main():
   experiment_12()
