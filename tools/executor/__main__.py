@@ -559,7 +559,7 @@ def experiment_13_evaluation(archive: Archive):
       exec_cmd('python -m tools.plot3')
       exec_cmd('python -m tools.score2')
     exec_cmd('python -m tools.comparer2')
-    exec_cmd('mv scores.csv experiments/13/rounds/%s.csv' % i)
+    exec_cmd('mv scores.yml experiments/13/rounds/%s.yml' % i)
 
 def experiment_0():
   archive = Archive()
