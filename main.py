@@ -417,9 +417,12 @@ def main():
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
+  cli.add_argument('-S', '--seed', type=int, help="Uses SEED as seed")
   cli_args = cli.parse_args(sys.argv[1:])
   show_args(cli_args)
   config: sumo_rl.util.config.Config = sumo_rl.util.config.Config.from_yaml_file(cli_args.config)
+  if cli_args.seed is not None:
+    config.sumo.sumo_seed = cli_args.seed
 
   assert ((not cli_args.use_gui) or (os.environ.get("LIBSUMO_AS_TRACI") != '1'))
   assert ((cli_args.use_gui) or (not cli_args.do_demo))

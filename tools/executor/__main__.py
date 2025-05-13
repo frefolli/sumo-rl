@@ -3,6 +3,7 @@ import os
 from typing import Generator
 from sumo_rl.models.commons import ensure_dir
 import sumo_rl.models.serde
+import random
 
 def use_iterations(min: int, max: int = None) -> Generator[int, None, None]:
   if max is None:
@@ -516,9 +517,10 @@ def experiment_12_evaluation(archive: Archive):
     for FIXED_AGENT in ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60']
   ]
   for i in use_iterations(10):
+    seed = random.randint(0, 10000)
     for model in models:
       archive.switch(model)
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
