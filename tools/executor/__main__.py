@@ -160,9 +160,10 @@ def experiment_0_evaluation(archive: Archive):
   REWARDS = ['dwt', 'p', 'as', 'ql']
   archive.switch(Configuration(agent='ql', observation='default', reward='dwt', partition='mono', self_adaptive=False, dataset='0'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for reward in REWARDS:
       archive.switch(Configuration.Patch(archive.config, reward=reward))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       args += archive.config.to_cli()
       exec_cmd(' '.join(args))
       exec_cmd('python -m tools.score')
@@ -186,9 +187,10 @@ def experiment_1_evaluation(archive: Archive):
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -215,9 +217,10 @@ def experiment_2_evaluation(archive: Archive):
   AGENTS = ['fixed', 'ql', 'dqn', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -245,9 +248,10 @@ def experiment_3_evaluation(archive: Archive):
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -273,9 +277,10 @@ def experiment_4_evaluation(archive: Archive):
   ensure_dir('experiments/4/rounds')
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       if archive.config.self_adaptive:
@@ -303,9 +308,10 @@ def experiment_5_evaluation(archive: Archive):
   OBSS = ['default', 'sv', 'svp', 'svd', 'svq']
   archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for obs in OBSS:
       archive.switch(Configuration.Patch(archive.config, observation=obs))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -331,9 +337,10 @@ def experiment_6_evaluation(archive: Archive):
   ensure_dir('experiments/6/rounds')
   archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for sa in [False, True]:
       archive.switch(Configuration.Patch(archive.config, self_adaptive=sa))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       if archive.config.self_adaptive:
@@ -361,9 +368,10 @@ def experiment_7_evaluation(archive: Archive):
   AGENTS = ['ql', 'fixed', 'ppo']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for agent in AGENTS:
       archive.switch(Configuration.Patch(archive.config, agent=agent))
-      args = ['python', '-m', 'main', '-r', '-DE', '-de']
+      args = ['python', '-m', 'main', '-r', '-DE', '-de', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -390,9 +398,10 @@ def experiment_8_evaluation(archive: Archive):
   REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
   archive.switch(Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for rew in REWS:
       archive.switch(Configuration.Patch(archive.config, reward=rew))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -419,9 +428,10 @@ def experiment_9_evaluation(archive: Archive):
   REWS = ['ql', 'svdwt', 'svp', 'svas', 'svql']
   archive.switch(Configuration(agent='ppo', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='1'))
   for i in use_iterations(5):
+    seed = random.randint(0, 10000)
     for rew in REWS:
       archive.switch(Configuration.Patch(archive.config, reward=rew))
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -451,9 +461,10 @@ def experiment_10_evaluation(archive: Archive):
       Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='1'),
   ]
   for i in use_iterations(10):
+    seed = random.randint(0, 10000)
     for model in models:
       archive.switch(model)
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
@@ -484,9 +495,10 @@ def experiment_11_evaluation(archive: Archive):
     Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='2')
   ]
   for i in use_iterations(10):
+    seed = random.randint(0, 10000)
     for model in models:
       archive.switch(model)
-      args = ['python', '-m', 'main', '-r', '-DE']
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
       if archive.config.agent not in ['fixed', 'ql']:
         args += ['-j', '1']
       args += archive.config.to_cli()
