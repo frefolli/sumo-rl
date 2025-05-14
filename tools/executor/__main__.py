@@ -746,10 +746,12 @@ def experiment_13():
 # Esperimento con code artificiali e Frankestein
 def experiment_14():
   archive = Archive()
+  experiment_14_training(archive)
   experiment_14_evaluation(archive)
 
 def experiment_15():
   archive = Archive()
+  experiment_15_training(archive)
   experiment_15_evaluation(archive)
 
 # Esperimento con fixed di dimensione diversa e code artificiali
