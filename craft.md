@@ -202,7 +202,7 @@ La viabilita' sulle strade principali (interessate dai lavori per la messa a ter
 
 Prospetto:
 - Training: Normalita'
-- Evaluation: 80% Normalita' + 10% Anormale + 10% Intenso
+- Evaluation: 80£ Normalita' + 10% Anormale + 10% Intenso
 
 Realizzazione:
 ```bash
@@ -224,7 +224,7 @@ mv training evaluation datasets/0
 
 Prospetto:
 - Training: Normalita'
-- Evaluation: 80% Normalita' + 10% Anormale + 10% Intenso
+- Evaluation: 80£ Normalita' + 10% Anormale + 10% Intenso
 
 Realizzazione:
 ```bash
@@ -248,7 +248,7 @@ mv training evaluation datasets/1
 
 Prospetto:
 - Training: Frankestein con tutto dentro
-- Evaluation: 80% Normalita' + 10% Anormale + 10% Intenso
+- Evaluation: 80£ Normalita' + 10% Anormale + 10% Intenso
 
 Realizzazione:
 ```bash
@@ -259,6 +259,47 @@ python -m tools.mengele -r traffic-registry.yml -o training \
   1,800000,*,*,~
 cp -r ./datasets/1/evaluation evaluation
 mv training evaluation datasets/2
+```
+
+### 3
+
+Prospetto:
+- Training: Normalita'
+- Evaluation: 80£ Normalita' + 10% Anormale + 10% Intenso
+
+Realizzazione:
+```bash
+mkdir -p datasets/3
+rm -rf datasets/3/*
+rm -rf training evaluation
+python -m tools.mengele -r traffic-registry.yml -o training \
+  1,£,N1,N2,N1,N3,N1 \
+  1,£,N1,N4,N1,N5,N1 \
+  1,£,N1,ST2,N1,ST3,N1 \
+  1,£,N1,CT4,N1,CT5,N1
+python -m tools.mengele -r traffic-registry.yml -o evaluation \
+  1,£,N1,N2,N1,N3,N1 \
+  1,£,N1,N4,N1,N5,N1 \
+  1,£,N1,STPL2,N1,STPL3,N1 \
+  1,£,N1,CT2,N1,CT3,N1
+mv training evaluation datasets/3
+```
+
+### 4
+
+Prospetto:
+- Training: Frankestein con tutto dentro
+- Evaluation: 80£ Normalita' + 10% Anormale + 10% Intenso
+
+Realizzazione:
+```bash
+mkdir -p datasets/4
+rm -rf datasets/4/*
+rm -rf training evaluation
+python -m tools.mengele -r traffic-registry.yml -o training \
+  1,800000,£,*,*,~
+cp -r ./datasets/3/evaluation evaluation
+mv training evaluation datasets/4
 ```
 
 ## Funzioni di osservazione

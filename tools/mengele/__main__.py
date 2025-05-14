@@ -736,19 +736,22 @@ def get_or_leave_integer(splitted: list[str], default_value: int) -> tuple[list[
   except:
     return splitted, default_value
 
-def parse_properties_from_request(registry: TrafficRegistry, string: str) -> tuple[int, int, list[TrafficGenerator]]:
+def parse_properties_from_request(registry: TrafficRegistry, string: str) -> tuple[int, int, list[TrafficGenerator], bool]:
   splitted = string.strip().split(',')
   splitted, number = get_or_leave_integer(splitted, 1)
   splitted, duration = get_or_leave_integer(splitted, DEFAULT_TOTAL_DURATION)
+  artificial_queue = False
   phases = []
   for desc in splitted:
-    if desc == '*':
+    if desc == '£':
+      artificial_queue = True
+    elif desc == '*':
       phases += registry.gets(registry.simple_variants())
     elif desc == '~':
       phases = shuffle(phases)
     else:
       phases += [registry.get(desc)]
-  return number, duration, phases
+  return number, duration, phases, artificial_queue
 
 def main():
   argument_parser = argparse.ArgumentParser(description='flower')
@@ -796,9 +799,9 @@ def main():
     traffic_generators = list(map(lambda variant: (registry.get(variant), 1), registry.variants()))
   elif cli_args.traffic is not None:
     for traffic in cli_args.traffic:
-      number, duration, phases = parse_properties_from_request(registry, traffic)
+      number, duration, phases, artificial_queue = parse_properties_from_request(registry, traffic)
       print(traffic)
-      traffic_generators += [(TransitionTrafficGenerator(phases=phases, total_duration=duration), number)]
+      traffic_generators += [(TransitionTrafficGenerator(phases=phases, total_duration=duration, artificial_queue=artificial_queue), number)]
 
   results: list[sumo_rl.models.flows.Flow] = []
   for (traffic_generator, number) in traffic_generators:

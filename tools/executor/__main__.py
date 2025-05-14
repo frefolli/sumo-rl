@@ -561,56 +561,169 @@ def experiment_13_evaluation(archive: Archive):
     exec_cmd('python -m tools.comparer2')
     exec_cmd('mv scores.yml experiments/13/rounds/%s.yml' % i)
 
+def experiment_14_evaluation(archive: Archive):
+  ensure_dir('experiments/14/rounds')
+  models = [
+      Configuration(agent='fixed', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='3'),
+      Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='3'),
+      Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='3'),
+  ]
+  for i in use_iterations(14):
+    seed = random.randint(0, 14000)
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/14/rounds/%s.csv' % i)
+
+def experiment_14_training(archive: Archive):
+  models = [
+      Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='3'),
+      Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='3'),
+  ]
+  for _ in use_iterations(2):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
+def experiment_15_evaluation(archive: Archive):
+  ensure_dir('experiments/15/rounds')
+  models = [
+    Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='4'),
+    Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='4')
+  ]
+  for i in use_iterations(10):
+    seed = random.randint(0, 10000)
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/15/rounds/%s.csv' % i)
+
+def experiment_15_training(archive: Archive):
+  models = [
+    Configuration(agent='ql', observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='4'),
+    Configuration(agent='ppo', observation='svd', reward='svql', partition='mono', self_adaptive=False, dataset='4')
+  ]
+  for _ in use_iterations(1):
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DT']
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot2')
+
+def experiment_16_evaluation(archive: Archive):
+  ensure_dir('experiments/16/rounds')
+  models = [
+    Configuration(agent=FIXED_AGENT, observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='3')
+    for FIXED_AGENT in ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60']
+  ]
+  for i in use_iterations(10):
+    seed = random.randint(0, 10000)
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.score')
+    exec_cmd('python -m tools.comparer')
+    exec_cmd('mv scores.csv experiments/16/rounds/%s.csv' % i)
+
+def experiment_17_evaluation(archive: Archive):
+  ensure_dir('experiments/17/rounds')
+  models = [
+    Configuration(agent=FIXED_AGENT, observation='default', reward='ql', partition='mono', self_adaptive=False, dataset='3')
+    for FIXED_AGENT in ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60']
+  ]
+  for i in use_iterations(10):
+    seed = random.randint(0, 10000)
+    for model in models:
+      archive.switch(model)
+      args = ['python', '-m', 'main', '-r', '-DE', '-de', '-S', str(seed)]
+      if archive.config.agent not in ['fixed', 'ql']:
+        args += ['-j', '1']
+      args += archive.config.to_cli()
+      exec_cmd(' '.join(args))
+      exec_cmd('python -m tools.plot3')
+      exec_cmd('python -m tools.score2')
+    exec_cmd('python -m tools.comparer2')
+    exec_cmd('mv scores.yml experiments/17/rounds/%s.yml' % i)
+
+# Selezione della funzione di reward
 def experiment_0():
   archive = Archive()
   experiment_0_training(archive)
   experiment_0_evaluation(archive)
 
+# Esperimento con dataset 0
 def experiment_1():
   archive = Archive()
   experiment_1_training(archive)
   experiment_1_evaluation(archive)
 
+# Esperimento con dataset 1
 def experiment_2():
   archive = Archive()
   experiment_2_training(archive)
   experiment_2_evaluation(archive)
 
+# TODO: Segnare cosa era
 def experiment_3():
   archive = Archive()
   experiment_3_training(archive)
   experiment_3_evaluation(archive)
-
+# TODO: Segnare cosa era
 def experiment_4():
   archive = Archive()
   experiment_4_training(archive)
   experiment_4_evaluation(archive)
-
+# TODO: Segnare cosa era
 def experiment_5():
   archive = Archive()
   experiment_5_training(archive)
   experiment_5_evaluation(archive)
-
+# TODO: Segnare cosa era
 def experiment_6():
   archive = Archive()
   experiment_6_training(archive)
   experiment_6_evaluation(archive)
-
+# TODO: Segnare cosa era
 def experiment_7():
   archive = Archive()
   experiment_7_training(archive)
   experiment_7_evaluation(archive)
-
+# TODO: Segnare cosa era
 def experiment_8():
   archive = Archive()
   experiment_8_training(archive)
   experiment_8_evaluation(archive)
-
+# TODO: Segnare cosa era
 def experiment_9():
   archive = Archive()
   experiment_9_training(archive)
   experiment_9_evaluation(archive)
 
+# Esperimento con Frankestein
 def experiment_10():
   archive = Archive()
   experiment_10_training(archive)
@@ -621,6 +734,7 @@ def experiment_11():
   experiment_11_training(archive)
   experiment_11_evaluation(archive)
 
+# Esperimento con fixed di dimensione diversa
 def experiment_12():
   archive = Archive()
   experiment_12_evaluation(archive)
@@ -629,8 +743,26 @@ def experiment_13():
   archive = Archive()
   experiment_13_evaluation(archive)
 
+# Esperimento con code artificiali e Frankestein
+def experiment_14():
+  archive = Archive()
+  experiment_14_evaluation(archive)
+
+def experiment_15():
+  archive = Archive()
+  experiment_15_evaluation(archive)
+
+# Esperimento con fixed di dimensione diversa e code artificiali
+def experiment_16():
+  archive = Archive()
+  experiment_16_evaluation(archive)
+
+def experiment_17():
+  archive = Archive()
+  experiment_17_evaluation(archive)
+
 def main():
-  experiment_13()
+  experiment_14()
   on_event_succed()
 
 if __name__ == '__main__':
