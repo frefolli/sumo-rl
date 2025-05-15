@@ -1,0 +1,423 @@
+CT1:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale/festivo in ore di morbida nei giorni col cantiere
+    del tram
+  duration: 100000
+  reversed: false
+  slotTime: 360
+  symmetric: true
+  title: CT1
+  trafficLevels:
+    main->main: 0.05
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: unstable
+CT1-CT2:
+  description: Traffico feriale mattiniero andante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT1
+  - CT2
+  title: CT1-CT2
+  type: transition
+CT1-CT3:
+  description: Traffico feriale serale andante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT1
+  - CT3
+  title: CT1-CT3
+  type: transition
+CT1-CT4:
+  description: Traffico festivo mattiniero andante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT1
+  - CT4
+  title: CT1-CT4
+  type: transition
+CT1-CT5:
+  description: Traffico festivo serale andante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT1
+  - CT5
+  title: CT1-CT5
+  type: transition
+CT2:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro <- periferia) nei giorni col
+    cantiere del tram
+  duration: 100000
+  reversed: false
+  symmetric: false
+  title: CT2
+  trafficLevels:
+    main->main: 0.05
+    main->side: 0.2
+    side->main: 0.2
+    side->side: 0.05
+  type: stable
+CT2-CT1:
+  description: Traffico feriale mattiniero calante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT2
+  - CT1
+  title: CT2-CT1
+  type: transition
+CT3:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro -> periferia) nei giorni col
+    cantiere del tram
+  duration: 100000
+  reversed: true
+  symmetric: false
+  title: CT3
+  trafficLevels:
+    main->main: 0.05
+    main->side: 0.2
+    side->main: 0.2
+    side->side: 0.05
+  type: stable
+CT3-CT1:
+  description: Traffico feriale serale calante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT3
+  - CT1
+  title: CT3-CT1
+  type: transition
+CT4:
+  artificial_queue: true
+  dense: true
+  description: Traffico festivo in ore di punta (centro <- periferia) nei giorni col
+    cantiere del tram
+  duration: 100000
+  reversed: false
+  slotTime: 360
+  symmetric: false
+  title: CT4
+  trafficLevels:
+    main->main: 0.05
+    main->side: 0.2
+    side->main: 0.2
+    side->side: 0.05
+  type: unstable
+CT4-CT1:
+  description: Traffico festivo mattiniero calante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT4
+  - CT1
+  title: CT4-CT1
+  type: transition
+CT5:
+  artificial_queue: true
+  dense: true
+  description: Traffico festivo in ore di punta (centro -> periferia) nei giorni col
+    cantiere del tram
+  duration: 100000
+  reversed: true
+  slotTime: 360
+  symmetric: false
+  title: CT5
+  trafficLevels:
+    main->main: 0.05
+    main->side: 0.2
+    side->main: 0.2
+    side->side: 0.05
+  type: unstable
+CT5-CT1:
+  description: Traffico festivo serale calante nei giorni col cantiere del tram
+  duration: 100000
+  phases:
+  - CT5
+  - CT1
+  title: CT5-CT1
+  type: transition
+N1:
+  artificialQueue: true
+  description: Traffico feriale/festivo in ore di morbida
+  duration: 100000
+  reversed: false
+  slotTime: 360
+  symmetric: true
+  title: N1
+  trafficLevel: 0.05
+  type: casual
+N1-N2:
+  description: Traffico feriale mattiniero andante
+  duration: 100000
+  phases:
+  - N1
+  - N2
+  title: N1-N2
+  type: transition
+N1-N3:
+  description: Traffico feriale serale andante
+  duration: 100000
+  phases:
+  - N1
+  - N3
+  title: N1-N3
+  type: transition
+N1-N4:
+  description: Traffico festivo mattiniero andante
+  duration: 100000
+  phases:
+  - N1
+  - N4
+  title: N1-N4
+  type: transition
+N1-N5:
+  description: Traffico festivo serale andante
+  duration: 100000
+  phases:
+  - N1
+  - N5
+  title: N1-N5
+  type: transition
+N2:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro <- periferia)
+  duration: 100000
+  reversed: false
+  symmetric: false
+  title: N2
+  trafficLevels:
+    main->main: 0.2
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: stable
+N2-N1:
+  description: Traffico feriale mattiniero calante
+  duration: 100000
+  phases:
+  - N2
+  - N1
+  title: N2-N1
+  type: transition
+N3:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro -> periferia)
+  duration: 100000
+  reversed: true
+  symmetric: false
+  title: N3
+  trafficLevels:
+    main->main: 0.2
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: stable
+N3-N1:
+  description: Traffico feriale serale calante
+  duration: 100000
+  phases:
+  - N3
+  - N1
+  title: N3-N1
+  type: transition
+N4:
+  artificial_queue: true
+  dense: true
+  description: Traffico festivo in ore di punta (centro <- periferia)
+  duration: 100000
+  reversed: false
+  slotTime: 360
+  symmetric: false
+  title: N4
+  trafficLevels:
+    main->main: 0.2
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: unstable
+N4-N1:
+  description: Traffico festivo mattiniero calante
+  duration: 100000
+  phases:
+  - N4
+  - N1
+  title: N4-N1
+  type: transition
+N5:
+  artificial_queue: true
+  dense: true
+  description: Traffico festivo in ore di punta (centro -> periferia)
+  duration: 100000
+  reversed: true
+  slotTime: 360
+  symmetric: false
+  title: N5
+  trafficLevels:
+    main->main: 0.2
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: unstable
+N5-N1:
+  description: Traffico festivo serale calante
+  duration: 100000
+  phases:
+  - N5
+  - N1
+  title: N5-N1
+  type: transition
+ST1:
+  artificialQueue: true
+  description: Traffico feriale in ore di morbida nei giorni di sciopero dei treni
+  duration: 100000
+  reversed: false
+  slotTime: 360
+  symmetric: true
+  title: ST1
+  trafficLevel: 0.2
+  type: casual
+ST1-ST2:
+  description: Traffico feriale mattiniero andante nei giorni di sciopero dei treni
+  duration: 100000
+  phases:
+  - ST1
+  - ST2
+  title: ST1-ST2
+  type: transition
+ST1-ST3:
+  description: Traffico feriale serale andante nei giorni di sciopero dei treni
+  duration: 100000
+  phases:
+  - ST1
+  - ST3
+  title: ST1-ST3
+  type: transition
+ST2:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro <- periferia) nei giorni di
+    sciopero dei treni
+  duration: 100000
+  reversed: false
+  symmetric: false
+  title: ST2
+  trafficLevels:
+    main->main: 0.5
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: stable
+ST2-ST1:
+  description: Traffico feriale mattiniero calante nei giorni di sciopero dei treni
+  duration: 100000
+  phases:
+  - ST2
+  - ST1
+  title: ST2-ST1
+  type: transition
+ST3:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro -> periferia) nei giorni di
+    sciopero dei treni
+  duration: 100000
+  reversed: true
+  symmetric: false
+  title: ST3
+  trafficLevels:
+    main->main: 0.5
+    main->side: 0.05
+    side->main: 0.05
+    side->side: 0.05
+  type: stable
+ST3-ST1:
+  description: Traffico feriale serale calante nei giorni di sciopero dei treni
+  duration: 100000
+  phases:
+  - ST3
+  - ST1
+  title: ST3-ST1
+  type: transition
+STPL1:
+  artificialQueue: true
+  description: Traffico feriale in ore di morbida nei giorni di sciopero del trasporto
+    pubblico locale
+  duration: 100000
+  reversed: false
+  slotTime: 360
+  symmetric: true
+  title: STPL1
+  trafficLevel: 0.2
+  type: casual
+STPL1-STPL2:
+  description: Traffico feriale mattiniero andante nei giorni di sciopero del trasporto
+    pubblico locale
+  duration: 100000
+  phases:
+  - STPL1
+  - STPL2
+  title: STPL1-STPL2
+  type: transition
+STPL1-STPL3:
+  description: Traffico feriale serale andante nei giorni di sciopero del trasporto
+    pubblico locale
+  duration: 100000
+  phases:
+  - STPL1
+  - STPL3
+  title: STPL1-STPL3
+  type: transition
+STPL2:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro <- periferia) nei giorni di
+    sciopero del trasporto pubblico locale
+  duration: 100000
+  reversed: false
+  symmetric: false
+  title: STPL2
+  trafficLevels:
+    main->main: 0.5
+    main->side: 0.2
+    side->main: 0.2
+    side->side: 0.2
+  type: stable
+STPL2-STPL1:
+  description: Traffico feriale mattiniero calante nei giorni di sciopero del trasporto
+    pubblico locale
+  duration: 100000
+  phases:
+  - STPL2
+  - STPL1
+  title: STPL2-STPL1
+  type: transition
+STPL3:
+  artificial_queue: true
+  dense: true
+  description: Traffico feriale in ore di punta (centro -> periferia) nei giorni di
+    sciopero del trasporto pubblico locale
+  duration: 100000
+  reversed: true
+  symmetric: false
+  title: STPL3
+  trafficLevels:
+    main->main: 0.5
+    main->side: 0.2
+    side->main: 0.2
+    side->side: 0.2
+  type: stable
+STPL3-STPL1:
+  description: Traffico feriale serale calante nei giorni di sciopero del trasporto
+    pubblico locale
+  duration: 100000
+  phases:
+  - STPL3
+  - STPL1
+  title: STPL3-STPL1
+  type: transition
