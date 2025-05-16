@@ -1,7 +1,6 @@
 # TODO
 
-- [x] Aggiungere mediana (e magari varianza) al calcolo delle metriche xdir
-- [ ] Magari esternalizzare il salvataggio delle metriche xdir per ridurre l'overhead
-- [x] Plottare i livelli di carico per direzione (da prendere tramite i routes file)
-- [ ] Calcolare il waiting time pesato sul livello di carico (attenzione alla frequenza dei dati nei due casi)
-- [ ] Affiancare due tipi di curriculum (cioe' un solo scenario con un po' di tutto)
+- [ ] Refactoring `executor` per estrarre le cose comuni in libreria e poi singole classi gli esperimenti con metodi training, evaluation ... etc
+- [ ] Rimodulare gli esperimenti con le domande di ricerca
+- [x] Vedere che succede ad aggiungere stress nel training, se migliora la valutazione
+- [x] Utilizzare le code artificiali di default nei dataset
