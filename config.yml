@@ -10,8 +10,8 @@ agents:
   fixed:
     cycle_time: 6
   ql:
-    alpha: 0.1
-    gamma: 0.99
+    alpha: 0.10
+    gamma: 0.90
     initial_epsilon: 0.05
     min_epsilon: 0.005
     decay: 1

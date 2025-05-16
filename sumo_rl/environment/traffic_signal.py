@@ -82,6 +82,7 @@ class TrafficSignal:
         self.time_since_last_phase_change = 0
         self.next_action_time = begin_time
         self.last_ts_waiting_time = 0.0
+        self.last_queue_length = 0.0
         self.sumo = sumo
 
         self._build_phases()
@@ -136,6 +137,7 @@ class TrafficSignal:
       self.time_since_last_phase_change = 0
       self.next_action_time = begin_time
       self.last_ts_waiting_time = 0.0
+      self.last_queue_length = 0.0
 
     @property
     def time_to_act(self):

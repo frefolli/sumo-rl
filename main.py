@@ -182,6 +182,8 @@ def use_selection_of_reward_fn():
       return sumo_rl.rewards.DiffWaitingTimeRewardFunction()
     if val == 'as':
       return sumo_rl.rewards.AverageSpeedRewardFunction()
+    if val == 'dql':
+      return sumo_rl.rewards.DiffQueueLengthRewardFunction()
     if val == 'ql':
       return sumo_rl.rewards.QueueLengthRewardFunction()
     if val == 'p':
@@ -192,21 +194,25 @@ def use_selection_of_reward_fn():
       return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.AverageSpeedRewardFunction())
     if val == 'svql':
       return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.QueueLengthRewardFunction())
+    if val == 'svdql':
+      return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.DiffQueueLengthRewardFunction())
     if val == 'svp':
       return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.PressureRewardFunction())
     raise ValueError(val)
 
-  options = ['dwt', 'as', 'ql', 'p', 'svdwt', 'svas', 'svql', 'svp']
+  options = ['dwt', 'as', 'dql', 'ql', 'p', 'svdwt', 'svas', 'svdql', 'svql', 'svp']
   help_text = """
     Selects the reward function to use
     - dwt: Diff Waiting Times
     - as: Average Speeds
     - ql: Average Queue Lengths
+    - dql: Diff Average Queue Lengths
     - p: Pressure
     - Shared Reward: neighbours are defined by a Vision Graph(NODES = Array(Traffic Light)
       - svdwt: Diff Waiting Times
       - svas: Average Speeds
       - svql: Average Queue Lengths
+      - svdql: Diff Average Queue Lengths
       - svp: Pressure
   """
   return options, help_text, reward_fn_by_option
