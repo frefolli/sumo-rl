@@ -5,7 +5,7 @@ from sumo_rl.environment.datastore import Datastore
 import sumo_rl.environment.traffic_signal
 import gymnasium.spaces
 import numpy
-QUANTIZATION_LEVELS=64
+QUANTIZATION_LEVELS=16
 
 class ObservationFunction(abc.ABC):
   """Abstract base class for observation functions."""

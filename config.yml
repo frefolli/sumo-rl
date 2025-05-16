@@ -6,6 +6,7 @@ sumo:
   further_cmd_args:
     - --junction-taz
     - --delay 5
+    - --ignore-junction-blocker 120
 agents:
   fixed:
     cycle_time: 6

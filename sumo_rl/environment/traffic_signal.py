@@ -87,6 +87,7 @@ class TrafficSignal:
 
         self._build_phases()
 
+        # If you care: YES, THERE ARE THE OUTPUT LANES (NOT THE INTERNAL LANES) AND CORRECTLY AQUIRED
         self.lanes = list(
             dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id))
         )  # Remove duplicates and keep order
@@ -192,88 +193,3 @@ class TrafficSignal:
             self.next_action_time = self.env.sim_step + self.delta_time
             self.is_yellow = True
             self.time_since_last_phase_change = 0
-
-    def get_accumulated_waiting_time_per_lane(self) -> List[float]:
-        """Returns the accumulated waiting time per lane.
-
-        Returns:
-            List[float]: List of accumulated waiting time of each intersection lane.
-        """
-        wait_time_per_lane = []
-        for lane in self.lanes:
-            veh_list = self.sumo.lane.getLastStepVehicleIDs(lane)
-            wait_time = 0.0
-            for veh in veh_list:
-                veh_lane = self.sumo.vehicle.getLaneID(veh)
-                acc = self.sumo.vehicle.getAccumulatedWaitingTime(veh)
-                if veh not in self.env.vehicles:
-                    self.env.vehicles[veh] = {veh_lane: acc}
-                else:
-                    self.env.vehicles[veh][veh_lane] = acc - sum(
-                        [self.env.vehicles[veh][lane] for lane in self.env.vehicles[veh].keys() if lane != veh_lane]
-                    )
-                wait_time += self.env.vehicles[veh][veh_lane]
-            wait_time_per_lane.append(wait_time)
-        return wait_time_per_lane
-
-    def get_average_speed(self) -> float:
-        """Returns the average speed normalized by the maximum allowed speed of the vehicles in the intersection.
-
-        Obs: If there are no vehicles in the intersection, it returns 1.0.
-        """
-        avg_speed = 0.0
-        vehs = self._get_veh_list()
-        if len(vehs) == 0:
-            return 1.0
-        for v in vehs:
-            avg_speed += self.sumo.vehicle.getSpeed(v) / self.sumo.vehicle.getAllowedSpeed(v)
-        return avg_speed / len(vehs)
-
-    def get_pressure(self):
-        """Returns the pressure (#veh leaving - #veh approaching) of the intersection."""
-        return sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes) - sum(
-            self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes
-        )
-
-    def get_out_lanes_density(self) -> List[float]:
-        """Returns the density of the vehicles in the outgoing lanes of the intersection."""
-        lanes_density = [
-            self.sumo.lane.getLastStepVehicleNumber(lane)
-            / (self.lanes_length[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
-            for lane in self.out_lanes
-        ]
-        return [min(1, density) for density in lanes_density]
-
-    def get_lanes_density(self) -> List[float]:
-        """Returns the density [0,1] of the vehicles in the incoming lanes of the intersection.
-
-        Obs: The density is computed as the number of vehicles divided by the number of vehicles that could fit in the lane.
-        """
-        lanes_density = [
-            self.sumo.lane.getLastStepVehicleNumber(lane)
-            / (self.lanes_length[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
-            for lane in self.lanes
-        ]
-        return [min(1, density) for density in lanes_density]
-
-    def get_lanes_queue(self) -> List[float]:
-        """Returns the queue [0,1] of the vehicles in the incoming lanes of the intersection.
-
-        Obs: The queue is computed as the number of vehicles halting divided by the number of vehicles that could fit in the lane.
-        """
-        lanes_queue = [
-            self.sumo.lane.getLastStepHaltingNumber(lane)
-            / (self.lanes_length[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
-            for lane in self.lanes
-        ]
-        return [min(1, queue) for queue in lanes_queue]
-
-    def get_total_queued(self) -> int:
-        """Returns the total number of vehicles halting in the intersection."""
-        return sum(self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes)
-
-    def _get_veh_list(self):
-        veh_list = []
-        for lane in self.lanes:
-            veh_list += self.sumo.lane.getLastStepVehicleIDs(lane)
-        return veh_list

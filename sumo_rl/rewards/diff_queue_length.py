@@ -14,7 +14,7 @@ class DiffQueueLengthRewardFunction(RewardFunction):
 
   def __call__(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> float:
     """Return the diff queue length reward"""
-    queue_length = numpy.mean([datastore.lanes[lane_ID]['lshn'] for lane_ID in ts.lanes])
+    queue_length = numpy.sum([datastore.lanes[lane_ID]['lshn'] for lane_ID in ts.lanes])
     reward = ts.last_queue_length - queue_length
     ts.last_queue_length = queue_length
     return reward
