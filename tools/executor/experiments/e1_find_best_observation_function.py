@@ -17,7 +17,7 @@ class E1FindBestObservationFunction(Experiment):
   def training(self):
     OBSERVATIONS = ['default', 's', 'd', 'q']
     seed = random.randint(0, 10000)
-    self.archive.switch(Configuration(agent='ql', reward='ql', observation='dwt', partition='mono', self_adaptive=False, dataset='frankestein'))
+    self.archive.switch(Configuration(agent='ql', reward='dwt', observation='default', partition='mono', self_adaptive=False, dataset='frankestein'))
     for _ in use_iterations(1):
       for observation in OBSERVATIONS:
         self.archive.switch(Configuration.Patch(self.archive.config, observation=observation))
@@ -28,7 +28,7 @@ class E1FindBestObservationFunction(Experiment):
 
   def evaluation(self):
     OBSERVATIONS = ['default', 's', 'd', 'q']
-    self.archive.switch(Configuration(agent='ql', reward='ql', observation='default', partition='mono', self_adaptive=False, dataset='frankestein'))
+    self.archive.switch(Configuration(agent='ql', reward='dwt', observation='default', partition='mono', self_adaptive=False, dataset='frankestein'))
     for i in use_iterations(5):
       seed = random.randint(0, 10000)
       for observation in OBSERVATIONS:
