@@ -20,7 +20,7 @@ class SpeedObservationFunction(ObservationFunction):
 
   def __call__(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
     """Return the speed observation."""
-    speed = [datastore.lanes[lane_ID]['lsms'] for lane_ID in ts.lanes]
+    speed = [datastore.lanes[lane_ID]['lsms'] / datastore.lanes[lane_ID]['ms'] for lane_ID in ts.lanes]
     observation = numpy.array(speed, dtype=numpy.float32)
     state = self.encode(observation, ts)
     return state
