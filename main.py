@@ -4,7 +4,7 @@ import argparse
 import pandas
 import numpy
 from sumo_rl.models.commons import Timer
-from sumo_rl.models.serde import GenericFile, SerdeYamlFile
+from sumo_rl.models.serde import GenericFile
 from sumo_rl.preprocessing.adiacency_graph import build_adiacency_graph
 import sumo_rl.util.config
 import sumo_rl.preprocessing.factories
@@ -165,8 +165,8 @@ def use_selection_of_observation_fn():
     val = cli_args.observation
     if val == 'default':
       return sumo_rl.observations.DefaultObservationFunction()
-    if val == 'p':
-      return sumo_rl.observations.PhaseObservationFunction()
+    if val == 's':
+      return sumo_rl.observations.SpeedObservationFunction()
     if val == 'd':
       return sumo_rl.observations.DensityObservationFunction()
     if val == 'q':
@@ -174,6 +174,9 @@ def use_selection_of_observation_fn():
     if val == 'sv':
       return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
                                                                   you_observation=sumo_rl.observations.DefaultObservationFunction())
+    if val == 'svs':
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
+                                                                  you_observation=sumo_rl.observations.SpeedObservationFunction())
     if val == 'svp':
       return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
                                                                   you_observation=sumo_rl.observations.PhaseObservationFunction())
