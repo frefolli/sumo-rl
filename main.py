@@ -165,6 +165,12 @@ def use_selection_of_observation_fn():
     val = cli_args.observation
     if val == 'default':
       return sumo_rl.observations.DefaultObservationFunction()
+    if val == 'p':
+      return sumo_rl.observations.PhaseObservationFunction()
+    if val == 'd':
+      return sumo_rl.observations.DensityObservationFunction()
+    if val == 'q':
+      return sumo_rl.observations.QueueObservationFunction()
     if val == 'sv':
       return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(),
                                                                   you_observation=sumo_rl.observations.DefaultObservationFunction())
@@ -179,14 +185,18 @@ def use_selection_of_observation_fn():
                                                                   you_observation=sumo_rl.observations.QueueObservationFunction())
     raise ValueError(val)
 
-  options = ['default', 'sv', 'svp', 'svd', 'svq']
+  options = ['default', 's', 'd', 'q', 'sv', 'svs', 'svp', 'svd', 'svq']
   help_text = """
     Selects the observation function to use
-    - default: I can see my current phase, if max_green_time has passed, queue lengths and densities of lanes
+    - default: I can see my current phase, if max_green_time has passed, queue lengths, the average speeds and densities of lanes
+    - s: I can se the average speed of my lanes
+    - d: I can se the densities of my lanes
+    - q: I can se the queue lengths of my lanes
     - Shared Views: neighbours are defined by a Vision Graph(NODES = Array(Traffic Light),
                                                              EDGES = DICT(Traffic Light: SET(Traffic Light))).
       For now is built seeking for immediately adiancent traffic signals.
       - sv: I can se the `default` state + the `default` state of neighbour traffic signals
+      - svs: I can se the `default` state + the average speeds of lanes of neighbour traffic signals
       - svp: I can se the `default` state + the phase of neighbour traffic signals
       - svd: I can se the `default` state + the densities of lanes of neighbour traffic signals
       - svq: I can se the `default` state + the queue lengths of lanes of neighbour traffic signals
