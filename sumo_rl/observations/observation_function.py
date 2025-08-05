@@ -45,8 +45,10 @@ class ObservationFunction(abc.ABC):
     pass
 
   def discretize_density(self, density):
-    assert density >= 0
-    assert density <= 1
+    if density < 0:
+      density = 0
+    elif density > 1:
+      density = 1
     return int(density * QUANTIZATION_LEVELS) / QUANTIZATION_LEVELS
 
   def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
