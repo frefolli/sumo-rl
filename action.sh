@@ -27,6 +27,7 @@ pwd; hostname; date    #prints first line of output file
 module purge
 # load dependencies
 module load sw/amd/gcc-8.5.0/env-3.13.3
+module load sw/amd/gcc-8.5.0/python-3.13.3
 module load sw/amd/gcc-8.5.0/sumo-1.22.0
 
 ### Executable script
