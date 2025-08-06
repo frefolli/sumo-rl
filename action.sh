@@ -33,7 +33,7 @@ module load sw/amd/gcc-8.5.0/sumo-1.22.0
 ### Executable script
 #
 . .env
-python -m tools.executor -e E2
+python -m tools.executor -e E3
 
 ### File system cleanup
 
