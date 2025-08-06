@@ -9,7 +9,8 @@ class Executor:
     self.experiments: dict[str, Experiment] = {exp.id:exp for exp in [
       E0FindBestRewardFunction(self.archive),
       E1FindBestObservationFunction(self.archive),
-      E2FindBestDataset(self.archive)
+      E2FindBestDataset(self.archive),
+      E3FindBestAgent(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

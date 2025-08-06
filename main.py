@@ -87,7 +87,7 @@ def use_selection_of_agent_type():
     if val == 'fixed':
       return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle)
     if val == 'fixed15':
-      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=6)
+      return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=3)
     if val == 'fixed30':
       return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=6)
     if val == 'fixed45':
