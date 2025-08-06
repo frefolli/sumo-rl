@@ -1,2 +1,3 @@
 from .e0_find_best_reward_function import E0FindBestRewardFunction
 from .e1_find_best_observation_function import E1FindBestObservationFunction
+from .e2_find_the_best_dataset import E2FindBestDataset

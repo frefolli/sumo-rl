@@ -8,7 +8,8 @@ class Executor:
     self.archive = Archive()
     self.experiments: dict[str, Experiment] = {exp.id:exp for exp in [
       E0FindBestRewardFunction(self.archive),
-      E1FindBestObservationFunction(self.archive)
+      E1FindBestObservationFunction(self.archive),
+      E2FindBestDataset(self.archive)
     ]}
 
   def apply(self, argv: list[str]):
