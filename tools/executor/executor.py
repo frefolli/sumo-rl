@@ -10,9 +10,9 @@ class Executor:
       E0FindBestRewardFunction(self.archive),
       E1FindBestObservationFunction(self.archive),
       E2FindBestDataset(self.archive),
-      E3AFindBestAgent(self.archive),
-      E3BFindBestAgent(self.archive),
-      E3CFindBestAgent(self.archive)
+      E3AFindBestTabularAgent(self.archive),
+      E3BFindBestDeepAgent(self.archive),
+      E3CFindBestFixedAgent(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

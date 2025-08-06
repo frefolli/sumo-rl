@@ -1,10 +1,10 @@
 from tools.executor.experiments.combinatorial_experiment import CombinatorialExperiment
 from tools.executor.archive import Archive
 
-class E3AFindBestAgent(CombinatorialExperiment):
+class E3BFindBestDeepAgent(CombinatorialExperiment):
   def __init__(self, archive: Archive) -> None:
-    super().__init__("E3A", "FindBestAgent", archive)
-    self.observations = ['s']
+    super().__init__("E3B", "FindBestDeepAgent", archive)
+    self.observations = ['d']
     self.rewards = ['dwt']
     self.datasets = ['curriculum_daily']
-    self.agents = ['sarsa', 'ql', 'dql']
+    self.agents = ['ppo', 'dqn']
