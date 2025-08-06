@@ -1,4 +1,6 @@
 from .e0_find_best_reward_function import E0FindBestRewardFunction
 from .e1_find_best_observation_function import E1FindBestObservationFunction
 from .e2_find_the_best_dataset import E2FindBestDataset
-from .e3_find_the_best_agent import E3FindBestAgent
+from .e3a_find_the_best_agent import E3AFindBestAgent
+from .e3b_find_the_best_agent import E3BFindBestAgent
+from .e3c_find_the_best_agent import E3CFindBestAgent

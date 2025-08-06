@@ -124,7 +124,7 @@ def use_selection_of_agent_type():
       return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config, recycle=cli_args.recycle)
     raise ValueError(val)
 
-  options = ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60', 'ql', 'dqn', 'ppo']
+  options = ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60', 'ql', 'dql', 'sarsa', 'dqn', 'ppo']
   help_text = """
     Selects the type of Agent to use,
     - fixed: Fixed Cycle agent,

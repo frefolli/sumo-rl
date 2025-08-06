@@ -24,6 +24,8 @@ class CombinatorialExperiment(Experiment):
     seed = random.randint(0, 10000)
     for _ in use_iterations(1):
       for AGENT in self.agents:
+        if 'fixed' in AGENT:
+          continue
         for OBSERVATION in self.observations:
           for REWARD in self.rewards:
             for PARTITION in self.partitions:

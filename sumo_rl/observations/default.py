@@ -19,7 +19,7 @@ class DefaultObservationFunction(ObservationFunction):
     density = [datastore.lanes[lane_ID]['lso'] for lane_ID in ts.lanes]
     speed = [datastore.lanes[lane_ID]['lsms'] / datastore.lanes[lane_ID]['ms'] for lane_ID in ts.lanes]
     queue = [datastore.lanes[lane_ID]['lso'] * datastore.lanes[lane_ID]['lshn'] / datastore.lanes[lane_ID]['lsvn'] if (datastore.lanes[lane_ID]['lsvn'] != 0.0) else 0.0 for lane_ID in ts.lanes]
-    observation = numpy.array(phase_id + min_green + density + queue, dtype=numpy.float32)
+    observation = numpy.array(phase_id + min_green + density + speed + queue, dtype=numpy.float32)
     state = self.encode(observation, ts)
     return state
 
