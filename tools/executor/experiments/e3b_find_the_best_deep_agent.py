@@ -6,5 +6,5 @@ class E3BFindBestDeepAgent(CombinatorialExperiment):
     super().__init__("E3B", "FindBestDeepAgent", archive)
     self.observations = ['d']
     self.rewards = ['dwt']
-    self.datasets = ['curriculum_daily']
+    self.datasets = ['curriculum_daily_plus_disruption']
     self.agents = ['ppo', 'dqn']

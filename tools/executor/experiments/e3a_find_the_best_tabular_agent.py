@@ -6,5 +6,5 @@ class E3AFindBestTabularAgent(CombinatorialExperiment):
     super().__init__("E3A", "FindBestTabularAgent", archive)
     self.observations = ['d']
     self.rewards = ['dwt']
-    self.datasets = ['curriculum_daily']
+    self.datasets = ['curriculum_daily_plus_disruption']
     self.agents = ['sarsa', 'ql', 'dql']

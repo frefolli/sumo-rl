@@ -6,5 +6,5 @@ class E3CFindBestFixedAgent(CombinatorialExperiment):
     super().__init__("E3C", "FindBestFixedAgent", archive)
     self.observations = ['d']
     self.rewards = ['dwt']
-    self.datasets = ['curriculum_daily']
+    self.datasets = ['curriculum_daily_plus_disruption']
     self.agents = ['fixed15', 'fixed30', 'fixed45', 'fixed60']
