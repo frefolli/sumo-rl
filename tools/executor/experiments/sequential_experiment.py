@@ -6,11 +6,12 @@ import random
 class SequentialExperiment(Experiment):
   def __init__(self, id: str, name: str, archive: Archive) -> None:
     super().__init__(id, name, archive)
-    self.configurations = []
+    self.configurations: list[Configuration] = []
 
   def prepare(self):
     exec_cmd('rm -rf ./archive')
     exec_cmd('rm -rf experiments/%s.tar' % (self.id))
+    exec_cmd('rm -rf experiments/%s.tar.zst' % (self.id))
     exec_cmd('rm -rf experiments/%s/rounds.tar' % (self.id))
     exec_cmd('rm -rf experiments/%s/rounds' % (self.id))
     ensure_dir('experiments/%s/rounds' % self.id)
@@ -19,6 +20,8 @@ class SequentialExperiment(Experiment):
     seed = random.randint(0, 10000)
     for _ in use_iterations(1):
       for CONFIGURATION in self.configurations:
+        if 'fixed' in CONFIGURATION.agent:
+          continue
         self.archive.switch(CONFIGURATION)
         args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
         args += self.archive.config.to_cli()
