@@ -14,7 +14,6 @@ class CombinatorialExperiment(Experiment):
     self.datasets = ['frankestein']
 
   def prepare(self):
-    exec_cmd('rm -rf ./archive')
     exec_cmd('rm -rf experiments/%s.tar.zst' % (self.id))
     exec_cmd('rm -rf experiments/%s.tar' % (self.id))
     exec_cmd('rm -rf experiments/%s/rounds.tar' % (self.id))
