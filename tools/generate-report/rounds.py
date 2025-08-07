@@ -44,7 +44,12 @@ class Rounds:
     for _, row in df.iterrows():
       objects[var_map[str(row['ID'])]] = {
         metric: row[metric]
-        for metric in ['arrival_rate_mean', 'departure_rate_mean', 'speed_mean', 'accumulated_waiting_time_mean', 'waiting_time_mean']
+        for metric in [
+          'arrival_rate_mean', 'departure_rate_mean',
+          'speed_var', 'speed_mean',
+          'accumulated_waiting_time_mean', 'accumulated_waiting_time_var',
+          'waiting_time_mean', 'waiting_time_var',
+          ]
       }
     return objects
 

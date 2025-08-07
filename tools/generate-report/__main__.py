@@ -13,8 +13,11 @@ if __name__ == '__main__':
     'arrival_rate_mean': True,
     'departure_rate_mean': True,
     'speed_mean': True,
+    'speed_var': False,
     'accumulated_waiting_time_mean': False,
     'waiting_time_mean': False,
+    'accumulated_waiting_time_var': False,
+    'waiting_time_var': False,
   }
   argument_parser = argparse.ArgumentParser('tools.executor', description='Glorious executor of experiments')
   argument_parser.add_argument('-e', '--experiment', type=str, help='Experiment ID')
