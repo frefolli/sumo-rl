@@ -36,7 +36,7 @@ class PPOAgent(Agent):
     self.current_actions: dict = {}
 
     self.dummy_env = DummyEnv(state_space, action_space)
-    self.model: PPO = PPO('MlpPolicy', self.dummy_env, verbose=1, batch_size=512, device='cpu', policy_kwargs=dict(net_arch=dict(pi=[32, 32], vf=[32, 32])))
+    self.model: PPO = PPO('MlpPolicy', self.dummy_env, verbose=1, batch_size=2048, device='cpu', policy_kwargs=dict(net_arch=dict(pi=[32, 32], vf=[32, 32])))
     self.model._logger = utils.configure_logger(self.model.verbose, self.model.tensorboard_log, '', False)
 
 

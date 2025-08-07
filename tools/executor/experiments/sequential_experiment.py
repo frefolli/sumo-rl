@@ -4,8 +4,8 @@ from sumo_rl.models.commons import ensure_dir
 import random
 
 class SequentialExperiment(Experiment):
-  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False) -> None:
-    super().__init__(id, name, archive, skip_training)
+  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False) -> None:
+    super().__init__(id, name, archive, skip_training, skip_evaluation)
     self.configurations: list[Configuration] = []
 
   def prepare(self):

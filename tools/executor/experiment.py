@@ -1,19 +1,21 @@
 from tools.executor.archive import Archive
 
 class Experiment:
-  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False) -> None:
+  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False) -> None:
     self.archive = archive
     self.id = id
     self.name = name
     self.skip_training = skip_training
+    self.skip_evaluation = skip_evaluation
 
   def all(self):
     self.prepare()
     if not self.skip_training:
       self.training()
-    self.evaluation()
-    self.pack()
-    self.clean()
+    if not self.skip_evaluation:
+      self.evaluation()
+      self.pack()
+      self.clean()
 
   def prepare(self):
     """Prepare for experiment"""

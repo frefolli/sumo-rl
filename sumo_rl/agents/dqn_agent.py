@@ -35,7 +35,7 @@ class DQNAgent(Agent):
     self.current_actions: dict = {}
 
     self.dummy_env = DummyEnv(state_space, action_space)
-    self.model: DQN = DQN('MlpPolicy', self.dummy_env, verbose=1, device='cpu', buffer_size=512, policy_kwargs=dict(net_arch=[32, 32]))
+    self.model: DQN = DQN('MlpPolicy', self.dummy_env, verbose=1, device='cpu', buffer_size=2048, policy_kwargs=dict(net_arch=[32, 32]))
     self.model._logger = utils.configure_logger(self.model.verbose, self.model.tensorboard_log, '', False)
 
 
