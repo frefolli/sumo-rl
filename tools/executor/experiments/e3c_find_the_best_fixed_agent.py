@@ -3,7 +3,7 @@ from tools.executor.archive import Archive
 
 class E3CFindBestFixedAgent(CombinatorialExperiment):
   def __init__(self, archive: Archive) -> None:
-    super().__init__("E3C", "FindBestFixedAgent", archive)
+    super().__init__("E3C", "FindBestFixedAgent", archive, skip_training=True)
     self.observations = ['d']
     self.rewards = ['dwt']
     self.datasets = ['curriculum_daily_plus_disruption']

@@ -4,8 +4,8 @@ from sumo_rl.models.commons import ensure_dir
 import random
 
 class SequentialExperiment(Experiment):
-  def __init__(self, id: str, name: str, archive: Archive) -> None:
-    super().__init__(id, name, archive)
+  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False) -> None:
+    super().__init__(id, name, archive, skip_training)
     self.configurations: list[Configuration] = []
 
   def prepare(self):
@@ -20,8 +20,6 @@ class SequentialExperiment(Experiment):
     seed = random.randint(0, 10000)
     for _ in use_iterations(1):
       for CONFIGURATION in self.configurations:
-        if 'fixed' in CONFIGURATION.agent:
-          continue
         self.archive.switch(CONFIGURATION)
         args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
         args += self.archive.config.to_cli()

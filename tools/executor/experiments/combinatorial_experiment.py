@@ -4,13 +4,13 @@ from sumo_rl.models.commons import ensure_dir
 import random
 
 class CombinatorialExperiment(Experiment):
-  def __init__(self, id: str, name: str, archive: Archive) -> None:
-    super().__init__(id, name, archive)
+  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False) -> None:
+    super().__init__(id, name, archive, skip_training)
     self.agents = ['ql']
     self.observations = ['default']
     self.rewards = ['dwt']
     self.partitions = ['mono']
-    self.self_adaptives = [False],
+    self.self_adaptives = [False]
     self.datasets = ['frankestein']
 
   def prepare(self):
@@ -25,8 +25,6 @@ class CombinatorialExperiment(Experiment):
     seed = random.randint(0, 10000)
     for _ in use_iterations(1):
       for AGENT in self.agents:
-        if 'fixed' in AGENT:
-          continue
         for OBSERVATION in self.observations:
           for REWARD in self.rewards:
             for PARTITION in self.partitions:
