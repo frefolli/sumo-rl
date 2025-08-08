@@ -9,7 +9,8 @@ class SequentialExperiment(Experiment):
     self.configurations: list[Configuration] = []
 
   def prepare(self):
-    exec_cmd('rm -rf ./archive')
+    if not self.skip_training:
+      exec_cmd('rm -rf ./archive')
     exec_cmd('rm -rf experiments/%s.tar' % (self.id))
     exec_cmd('rm -rf experiments/%s.tar.zst' % (self.id))
     exec_cmd('rm -rf experiments/%s/rounds.tar' % (self.id))

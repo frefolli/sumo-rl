@@ -43,6 +43,9 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       '-O', self.observation,
       '-R', self.reward
     ]
+    assert self.self_adaptive in [True, False]
+    if self.self_adaptive:
+      args.append('-sa')
     return args
 
   def hash(self) -> str:

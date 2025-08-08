@@ -14,11 +14,13 @@ class CombinatorialExperiment(Experiment):
     self.datasets = ['frankestein']
 
   def prepare(self):
-    exec_cmd('rm -rf experiments/%s.tar.zst' % (self.id))
-    exec_cmd('rm -rf experiments/%s.tar' % (self.id))
-    exec_cmd('rm -rf experiments/%s/rounds.tar' % (self.id))
-    exec_cmd('rm -rf experiments/%s/rounds' % (self.id))
-    ensure_dir('experiments/%s/rounds' % self.id)
+    if not self.skip_training:
+      exec_cmd('rm -rf ./archive')
+    exec_cmd('rm -rf ./experiments/%s.tar.zst' % (self.id))
+    exec_cmd('rm -rf ./experiments/%s.tar' % (self.id))
+    exec_cmd('rm -rf ./experiments/%s/rounds.tar' % (self.id))
+    exec_cmd('rm -rf ./experiments/%s/rounds' % (self.id))
+    ensure_dir('./experiments/%s/rounds' % self.id)
 
   def training(self):
     seed = random.randint(0, 10000)
@@ -53,16 +55,16 @@ class CombinatorialExperiment(Experiment):
       exec_cmd('mv scores.csv experiments/%s/rounds/%s.csv' % (self.id, i))
 
   def pack(self):
-    exec_cmd('tar cvf experiments/%s/rounds.tar experiments/%s/rounds' % (self.id, self.id))
-    exec_cmd('tar cvf experiments/%s.tar experiments/%s' % (self.id, self.id))
-    exec_cmd('zstd experiments/%s.tar' % (self.id))
+    exec_cmd('tar cvf ./experiments/%s/rounds.tar experiments/%s/rounds' % (self.id, self.id))
+    exec_cmd('tar cvf ./experiments/%s.tar experiments/%s' % (self.id, self.id))
+    exec_cmd('zstd ./experiments/%s.tar' % (self.id))
 
   def clean(self):
     exec_cmd('rm -rf ./archive')
-    exec_cmd('rm -rf experiments/%s.tar' % (self.id))
-    exec_cmd('rm -rf experiments/%s/rounds.tar' % (self.id))
+    exec_cmd('rm -rf ./experiments/%s.tar' % (self.id))
+    exec_cmd('rm -rf ./experiments/%s/rounds.tar' % (self.id))
 
   def commit(self):
-    exec_cmd('git add experiments/%s.tar.zst' % (self.id))
+    exec_cmd('git add ./experiments/%s.tar.zst' % (self.id))
     exec_cmd('git commit -m "Autocommit for JOB of Experiment %s!"' % (self.id))
     exec_cmd('git push')
