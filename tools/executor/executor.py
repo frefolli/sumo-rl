@@ -13,7 +13,9 @@ class Executor:
       E3AFindBestTabularAgent(self.archive),
       E3BFindBestDeepAgent(self.archive),
       E3CFindBestFixedAgent(self.archive),
-      E4TrySelfAdaptive(self.archive)
+      E4TrySelfAdaptive(self.archive),
+      E5TryMarlOnObservation(self.archive),
+      E6TryMarlOnReward(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

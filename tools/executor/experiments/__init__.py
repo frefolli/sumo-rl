@@ -5,3 +5,5 @@ from .e3a_find_the_best_tabular_agent import E3AFindBestTabularAgent
 from .e3b_find_the_best_deep_agent import E3BFindBestDeepAgent
 from .e3c_find_the_best_fixed_agent import E3CFindBestFixedAgent
 from .e4_try_self_adaptive import E4TrySelfAdaptive
+from .e5_try_marl_on_observation import E5TryMarlOnObservation
+from .e6_try_marl_on_reward import E6TryMarlOnReward
