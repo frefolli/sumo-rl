@@ -12,7 +12,8 @@ class Executor:
       E2FindBestDataset(self.archive),
       E3AFindBestTabularAgent(self.archive),
       E3BFindBestDeepAgent(self.archive),
-      E3CFindBestFixedAgent(self.archive)
+      E3CFindBestFixedAgent(self.archive),
+      E4TrySelfAdaptive(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

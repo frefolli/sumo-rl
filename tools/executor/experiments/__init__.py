@@ -4,3 +4,4 @@ from .e2_find_the_best_dataset import E2FindBestDataset
 from .e3a_find_the_best_tabular_agent import E3AFindBestTabularAgent
 from .e3b_find_the_best_deep_agent import E3BFindBestDeepAgent
 from .e3c_find_the_best_fixed_agent import E3CFindBestFixedAgent
+from .e4_try_self_adaptive import E4TrySelfAdaptive

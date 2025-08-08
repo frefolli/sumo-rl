@@ -20,13 +20,20 @@ class Datastore:
     self.episodes = self._identify_episodes()
     self.metrics: dict[int, pandas.DataFrame] = self._load_metrics()
 
+  def _find_all_csvs(self, basedir: str) -> list:
+    csvs = []
+    for file in os.listdir(basedir):
+      if file.endswith('.csv'):
+        csvs.append(int(file.split('.')[0]))
+    return csvs
+
   def _identify_episodes(self) -> list[int]:
     if self.mode == Datastore.Mode.EVALUATION:
       basedir = self.config.evaluation_metrics_dir()
-      return [int(file.split('.')[0]) for file in os.listdir(basedir)]
+      return self._find_all_csvs(basedir)
     elif self.mode == Datastore.Mode.TRAINING:
       basedir = self.config.training_metrics_dir()
-      return [int(file.split('.')[0]) for file in os.listdir(basedir)]
+      return self._find_all_csvs(basedir)
     else:
       raise ValueError(self.mode)
 
