@@ -20,9 +20,17 @@ if "SUMO_HOME" in os.environ:
 else:
   sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
+def safe_mean(Xs: list[float]) -> float:
+  Xs = list(filter(lambda k: not numpy.isnan(k), Xs))
+  return float(numpy.mean(Xs))
+
+def safe_std(Xs: list[float]) -> float:
+  Xs = list(filter(lambda k: not numpy.isnan(k), Xs))
+  return float(numpy.std(Xs))
+
 class SelfAdapter:
   def __init__(self) -> None:
-    self.monitor = {}
+    self.monitor: dict[str, dir[str, float|bool]] = {}
     self.monitor_step_width: int = 10000
     self.next_control_step: float|None = None
     self.end_of_adapting_step: float|None = None
@@ -38,28 +46,30 @@ class SelfAdapter:
   def ready(self) -> bool:
     return self.monitor != {} and self.next_control_step is not None and self.end_of_adapting_step is not None
   
-  def need_to_adapt(self, env: sumo_rl.environment.env.SumoEnvironment) -> str|None:
+  def if_difect_from_E_is_bigger_than_10_times_sigma(self, env: sumo_rl.environment.env.SumoEnvironment) -> str|None:
     for metric, metric_data in self.monitor.items():
-      mean_value = numpy.mean(env.metrics[metric][-self.monitor_step_width:])
-      diff = abs(mean_value - metric_data['E'])
-      tol = metric_data['sigma'] * 10
-      if diff >= tol:
-        return (metric, diff, tol)
+      mean_value = safe_mean(env.metrics[metric][-self.monitor_step_width:])
+      diff = mean_value - metric_data['E']
+      if metric_data['dir'] == diff < 0:
+        tol = metric_data['sigma'] * 10
+        if diff >= tol:
+          return (metric, diff, tol)
     return None
   
-  def need_to_adapt2(self, env: sumo_rl.environment.env.SumoEnvironment) -> str|None:
+  def if_difect_from_E_is_bigger_then_5_percent(self, env: sumo_rl.environment.env.SumoEnvironment) -> str|None:
     for metric, metric_data in self.monitor.items():
-      mean_value = numpy.mean(env.metrics[metric][-self.monitor_step_width:])
-      diff = abs((mean_value - metric_data['E']) / mean_value)
-      tol = 0.05
-      if diff >= tol:
-        return (metric, diff, tol)
+      mean_value = safe_mean(env.metrics[metric][-self.monitor_step_width:])
+      diff = (mean_value - metric_data['E']) / mean_value
+      if metric_data['dir'] == diff < 0:
+        tol = 0.05
+        if diff >= tol:
+          return (metric, diff, tol)
     return None
   
   def update(self, env: sumo_rl.environment.env.SumoEnvironment, agents: list[sumo_rl.agents.Agent]) -> bool:
     if self.end_of_adapting_step == None:
       if env.sim_step >= self.next_control_step:
-        reason_to_adapt = self.need_to_adapt2(env)
+        reason_to_adapt = self.if_difect_from_E_is_bigger_then_5_percent(env)
         if reason_to_adapt is not None:
           self.next_control_step = None
           self.end_of_adapting_step = env.sim_step + self.monitor_step_width * 1
@@ -262,8 +272,9 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
   env.set_duration(config.training.seconds)
   tracks = {}
   monitor = {
-    'mean_waiting_time': [],
-    'mean_speed': []
+    'mean_accumulated_waiting_time': ([], False),
+    'mean_waiting_time': ([], False),
+    'mean_speed': ([], True)
   }
   for episode, routes_file in enumerate(config.scenario.training_routes):
     env.sumo_seed += 1
@@ -303,8 +314,9 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
     tracks[path] = identify_pattern(routes_file)
 
     if save_monitoring_features:
-      monitor['mean_waiting_time'].append(numpy.mean(env.metrics['mean_waiting_time']))
-      monitor['mean_speed'].append(numpy.mean(env.metrics['mean_speed']))
+      monitor['mean_accumulated_waiting_time'][0].append(safe_mean(env.metrics['mean_accumulated_waiting_time']))
+      monitor['mean_waiting_time'][0].append(safe_mean(env.metrics['mean_waiting_time']))
+      monitor['mean_speed'][0].append(safe_mean(env.metrics['mean_speed']))
 
     if save_intermediate_agents:
       # Serialize Agents
@@ -321,7 +333,7 @@ def perform_training(config: sumo_rl.util.config.Config, agents: list[sumo_rl.ag
   GenericFile(tracks).to_yaml_file(config.training_metrics_dir() + '/tracks.yml')
   if save_monitoring_features:
     for metric in monitor:
-      monitor[metric] = {'E': numpy.mean(monitor[metric]), 'sigma':  numpy.std(monitor[metric])}
+      monitor[metric] = {'E': safe_mean(monitor[metric][0]), 'sigma':  safe_std(monitor[metric][0]), 'dir': monitor[metric][1]}
     GenericFile(monitor).to_yaml_file(config.training_metrics_dir() + '/monitor.yml')
 
 def perform_evaluation(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment, use_monitoring_features: bool = False, log_time: bool = False):

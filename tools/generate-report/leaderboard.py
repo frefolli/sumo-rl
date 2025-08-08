@@ -19,6 +19,10 @@ class Leaderboard:
       return arr
 
   @staticmethod
+  def fibonaccik(nums: int, skip_k: int) -> list[int]:
+    return Leaderboard.fibonacci(nums + skip_k)[skip_k:]
+
+  @staticmethod
   def assign_points(objects: dict[str, dict], metric: str, higher_is_better: bool = True) -> dict:
     sorted_object_keys: list[str] = []
     if higher_is_better:
