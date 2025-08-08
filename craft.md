@@ -307,9 +307,19 @@ A quel punto gli agenti vengono riaddestrati per tot secondi (i.e. 10000) e quan
 
 ## Domande di Ricerca
 
+### 0) Identificazione funzione di osservazione e reward migliori
+
+DWT miglior reward.
+D miglior funzione di osservazione.
+
 ### 1) Curriculum learning vs Monolitico
 
+Curriculum Daily + Disruption performa come il Frankestein
+
 ### 2) C'e' veramente bisogno di usare reti neurali per il RL?
+
+Il PPO raggiunge a malapena le prestazioni di un ciclo fisso, ma almeno impara. Il DQN neanche.
+Il DQL si conferma il miglior algoritmo.
 
 ### 3) Sistema self-adaptive per potenziare i semafori
 
