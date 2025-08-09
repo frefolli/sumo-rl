@@ -58,7 +58,7 @@ class SumoEnvironment(gym.Env):
     add_system_info (bool): If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary.
     add_per_agent_info (bool): If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary.
     sumo_seed (int/string): Random seed for sumo. If 'random' it uses a randomly chosen seed.
-    fixed_ts (bool): If true, it will follow the phase configuration in the route_file and ignore the actions given in the :meth:`step` method.
+    shutdown_ts (bool): If true, traffic lights are shutdown but still continue to provide metrics.
     sumo_warnings (bool): If true, it will print SUMO warnings.
     additional_sumo_cmd (str): Additional SUMO command line arguments.
     render_mode (str): Mode of rendering. Can be 'human' or 'rgb_array'. Default: None
@@ -93,7 +93,7 @@ class SumoEnvironment(gym.Env):
     add_system_info: bool = True,
     add_per_agent_info: bool = True,
     sumo_seed: Union[str, int] = "random",
-    fixed_ts: bool = False,
+    shutdown_ts: bool = False,
     sumo_warnings: bool = True,
     additional_sumo_cmd: Optional[str] = None,
     render_mode: Optional[str] = None,
@@ -129,7 +129,7 @@ class SumoEnvironment(gym.Env):
     self.yellow_time = yellow_time
     self.single_agent = single_agent
     self.sumo_seed = sumo_seed
-    self.fixed_ts = fixed_ts
+    self.shutdown_ts = shutdown_ts
     self.sumo_warnings = sumo_warnings
     self.additional_sumo_cmd = additional_sumo_cmd
     self.add_system_info = add_system_info
@@ -178,7 +178,7 @@ class SumoEnvironment(gym.Env):
     self.flows = sumo_rl.models.flows.read_flows_from_routes_file(route_file)
 
   @staticmethod
-  def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1, advanced_metrics: bool = False) -> SumoEnvironment:
+  def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1, advanced_metrics: bool = False, shutdown_ts: bool = False) -> SumoEnvironment:
     return SumoEnvironment(
       net_file=config.scenario.network,
       use_gui=use_gui,
@@ -188,7 +188,7 @@ class SumoEnvironment(gym.Env):
       sumo_seed=config.sumo.sumo_seed,
       observation_fn=observation_fn,
       reward_fn=reward_fn,
-      fixed_ts=False,
+      shutdown_ts=shutdown_ts,
       additional_sumo_cmd=" ".join(config.sumo.further_cmd_args),
       jobs=jobs,
       advanced_metrics=advanced_metrics
@@ -383,11 +383,15 @@ class SumoEnvironment(gym.Env):
         action (Union[dict, int]): action(s) to be applied to the environment.
         If single_agent is True, action is an int, otherwise it expects a dict with keys corresponding to traffic signal ids.
     """
-    self._apply_actions(action)
-    for _ in range(self.delta_time):
-      self._sumo_step()
-      for ts in self.ts_ids:
-        self.traffic_signals[ts].update()
+    if self.shutdown_ts:
+      for _ in range(self.delta_time):
+        self._sumo_step()
+    else:
+      self._apply_actions(action)
+      for _ in range(self.delta_time):
+        self._sumo_step()
+        for ts in self.ts_ids:
+          self.traffic_signals[ts].update()
 
   def _run_steps(self):
     time_to_act = False

@@ -463,6 +463,7 @@ def main():
   cli.add_argument('-pa', '--paranoic', action="store_true", default=False, help="Saves ALL intermediate results. you can never say!")
   cli.add_argument('-de', '--depth', action="store_true", default=False, help="Computes data for distinct routes in order to evaluate fairness of directions")
   cli.add_argument('-sa', '--self-adaptive', action="store_true", default=False, help="Self adaptive manouver")
+  cli.add_argument('-stl', '--shutdown-traffic-lights', action="store_true", default=False, help="Shutdowns traffic lights")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
@@ -478,7 +479,7 @@ def main():
 
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
-  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs), cli_args.depth)
+  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs), cli_args.depth, cli_args.shutdown_traffic_lights)
   if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction) or isinstance(env.reward_fn, sumo_rl.rewards.SharedVisionRewardFunction):
     graph = build_adiacency_graph(env, None)
     if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction):

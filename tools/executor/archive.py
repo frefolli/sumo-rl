@@ -18,13 +18,14 @@ def use_iterations(min: int, max: int = None) -> Generator[int, None, None]:
   return None
 
 class Configuration(sumo_rl.models.serde.SerdeYamlFile):
-  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool, dataset: str) -> None:
+  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool, dataset: str, shutdown: bool) -> None:
     self.agent: str = agent
     self.partition: str = partition
     self.observation: str = observation
     self.reward: str = reward
     self.self_adaptive: bool = self_adaptive
     self.dataset: str = dataset
+    self.shutdown: bool = shutdown
 
   @staticmethod
   def Default() -> Configuration:
@@ -33,7 +34,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          observation='default',
                          reward='dwt',
                          self_adaptive=False,
-                         dataset='1')
+                         dataset='1',
+                         shutdown=False)
 
   def to_cli(self) -> list[str]:
     args = []
@@ -46,6 +48,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
     assert self.self_adaptive in [True, False]
     if self.self_adaptive:
       args.append('-sa')
+    if self.shutdown:
+      args.append('-stl')
     return args
 
   def hash(self) -> str:
@@ -55,7 +59,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       self.observation,
       self.reward,
       ('sa' if self.self_adaptive else 'nsa'),
-      self.dataset
+      self.dataset,
+      ('off' if self.shutdown else 'on')
     ])
 
   def to_dict(self) -> dict:
@@ -65,7 +70,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       'observation': self.observation,
       'reward': self.reward,
       'self_adaptive': self.self_adaptive,
-      'dataset': self.dataset
+      'dataset': self.dataset,
+      'shutdown': self.shutdown
     }
 
   @staticmethod
@@ -75,18 +81,22 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          observation=data['observation'],
                          reward=data['reward'],
                          self_adaptive=data['self_adaptive'],
-                         dataset=data['dataset'])
+                         dataset=data['dataset'],
+                         shutdown=data['shutdown'])
 
   @staticmethod
-  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None, dataset: str|None = None) -> Configuration:
+  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None, dataset: str|None = None, shutdown: bool|None = None) -> Configuration:
     if self_adaptive is None:
       self_adaptive = config.self_adaptive
+    if shutdown is None:
+      shutdown = config.shutdown
     return Configuration(agent=(agent or config.agent),
                          partition=(partition or config.partition),
                          observation=(observation or config.observation),
                          reward=(reward or config.reward),
                          self_adaptive=self_adaptive,
-                         dataset=(dataset or config.dataset))
+                         dataset=(dataset or config.dataset),
+                         shutdown=shutdown)
 
 class Archive:
   def __init__(self) -> None:

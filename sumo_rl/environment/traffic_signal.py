@@ -98,8 +98,9 @@ class TrafficSignal:
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
-        if self.env.fixed_ts:
-            self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
+        if self.env.shutdown_ts:
+            self.sumo.trafficlight.setProgram(self.id, "off")
+            self.num_green_phases = 1
             return
 
         self.green_phases = []
@@ -133,6 +134,7 @@ class TrafficSignal:
 
     def reset(self, begin_time: int):
       """Resets the Traffic Signal as simulation was never started"""
+      self._build_phases()
       self.green_phase = 0
       self.is_yellow = False
       self.time_since_last_phase_change = 0
@@ -150,6 +152,9 @@ class TrafficSignal:
 
         If the traffic signal should act, it will set the next green phase and update the next action time.
         """
+        if self.env.shutdown_ts:
+          return
+
         self.time_since_last_phase_change += 1
         if self.is_yellow and self.time_since_last_phase_change == self.yellow_time:
             # self.sumo.trafficlight.setPhase(self.id, self.green_phase)
@@ -162,6 +167,9 @@ class TrafficSignal:
         Args:
             new_phase (int): Number between [0 ... num_green_phases]
         """
+        if self.env.shutdown_ts:
+          return
+
         new_phase = int(new_phase)
         if new_phase < 0 or new_phase >= self.num_green_phases:
           print("num_green_phases", self.num_green_phases)
