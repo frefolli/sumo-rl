@@ -65,7 +65,7 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       ('sa' if self.self_adaptive else 'nsa'),
       self.dataset,
       ('off' if self.shutdown else 'on'),
-      ('nq' if self.quantize else 'q')
+      ('q' if self.quantize else 'nq')
     ])
 
   def to_dict(self) -> dict:
