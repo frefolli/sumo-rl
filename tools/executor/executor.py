@@ -16,7 +16,8 @@ class Executor:
       E4TrySelfAdaptive(self.archive),
       E5TryMarlOnObservation(self.archive),
       E6TryMarlOnReward(self.archive),
-      E7TryUnattended(self.archive)
+      E7TryUnattended(self.archive),
+      E8TryUnquantized(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

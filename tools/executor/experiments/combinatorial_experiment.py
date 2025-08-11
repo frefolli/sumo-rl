@@ -13,6 +13,7 @@ class CombinatorialExperiment(Experiment):
     self.self_adaptives = [False]
     self.datasets = ['frankestein']
     self.shutdowns = [False]
+    self.quantizes = [True]
 
   def prepare(self):
     if not self.skip_training:
@@ -33,11 +34,12 @@ class CombinatorialExperiment(Experiment):
               for SELF_ADAPTIVE in self.self_adaptives:
                 for DATASET in self.datasets:
                   for SHUTDOWN in self.shutdowns:
-                    self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN))
-                    args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
-                    args += self.archive.config.to_cli()
-                    exec_cmd(' '.join(args))
-                    #exec_cmd('python -m tools.plot2')
+                    for QUANTIZE in self.quantizes:
+                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantize=QUANTIZE))
+                      args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
+                      args += self.archive.config.to_cli()
+                      exec_cmd(' '.join(args))
+                      #exec_cmd('python -m tools.plot2')
 
   def evaluation(self):
     for i in use_iterations(5):
@@ -49,11 +51,12 @@ class CombinatorialExperiment(Experiment):
               for SELF_ADAPTIVE in self.self_adaptives:
                 for DATASET in self.datasets:
                   for SHUTDOWN in self.shutdowns:
-                    self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN))
-                    args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
-                    args += self.archive.config.to_cli()
-                    exec_cmd(' '.join(args))
-                    exec_cmd('python -m tools.extract-global-metrics')
+                    for QUANTIZE in self.quantizes:
+                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantize=QUANTIZE))
+                      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+                      args += self.archive.config.to_cli()
+                      exec_cmd(' '.join(args))
+                      exec_cmd('python -m tools.extract-global-metrics')
       exec_cmd('python -m tools.compare-global-metrics')
       exec_cmd('mv scores.csv experiments/%s/rounds/%s.csv' % (self.id, i))
 

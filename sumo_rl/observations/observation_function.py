@@ -10,9 +10,10 @@ QUANTIZATION_LEVELS=16
 class ObservationFunction(abc.ABC):
   """Abstract base class for observation functions."""
 
-  def __init__(self, name: str):
+  def __init__(self, name: str, quantize: bool = True):
     """Initialize observation function."""
     self.name = name
+    self.quantize = quantize
 
   def cache(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal):
     if self.name not in datastore.observation_cache:
@@ -53,4 +54,6 @@ class ObservationFunction(abc.ABC):
 
   def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
     """Encode the state of the traffic signal into a hashable object."""
-    return tuple(map(self.discretize_density, state))
+    if self.quantize:
+      return tuple(map(self.discretize_density, state))
+    return tuple(state)

@@ -18,7 +18,7 @@ def use_iterations(min: int, max: int = None) -> Generator[int, None, None]:
   return None
 
 class Configuration(sumo_rl.models.serde.SerdeYamlFile):
-  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool, dataset: str, shutdown: bool) -> None:
+  def __init__(self, agent: str, partition: str, observation: str, reward: str, self_adaptive: bool, dataset: str, shutdown: bool, quantize: bool) -> None:
     self.agent: str = agent
     self.partition: str = partition
     self.observation: str = observation
@@ -26,6 +26,7 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
     self.self_adaptive: bool = self_adaptive
     self.dataset: str = dataset
     self.shutdown: bool = shutdown
+    self.quantize: bool = quantize
 
   @staticmethod
   def Default() -> Configuration:
@@ -35,7 +36,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          reward='dwt',
                          self_adaptive=False,
                          dataset='1',
-                         shutdown=False)
+                         shutdown=False,
+                         quantize=True)
 
   def to_cli(self) -> list[str]:
     args = []
@@ -50,6 +52,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       args.append('-sa')
     if self.shutdown:
       args.append('-stl')
+    if not self.quantize:
+      args.append('-nq')
     return args
 
   def hash(self) -> str:
@@ -71,7 +75,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       'reward': self.reward,
       'self_adaptive': self.self_adaptive,
       'dataset': self.dataset,
-      'shutdown': self.shutdown
+      'shutdown': self.shutdown,
+      'quantize': self.quantize
     }
 
   @staticmethod
@@ -82,21 +87,25 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          reward=data['reward'],
                          self_adaptive=data['self_adaptive'],
                          dataset=data['dataset'],
-                         shutdown=data['shutdown'])
+                         shutdown=data['shutdown'],
+                         quantize=data['quantize'])
 
   @staticmethod
-  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None, dataset: str|None = None, shutdown: bool|None = None) -> Configuration:
+  def Patch(config: Configuration, agent: str|None = None, partition: str|None = None, observation: str|None = None, reward: str|None = None, self_adaptive: bool|None = None, dataset: str|None = None, shutdown: bool|None = None, quantize: bool|None = None) -> Configuration:
     if self_adaptive is None:
       self_adaptive = config.self_adaptive
     if shutdown is None:
       shutdown = config.shutdown
+    if quantize is None:
+      quantize = config.quantize
     return Configuration(agent=(agent or config.agent),
                          partition=(partition or config.partition),
                          observation=(observation or config.observation),
                          reward=(reward or config.reward),
                          self_adaptive=self_adaptive,
                          dataset=(dataset or config.dataset),
-                         shutdown=shutdown)
+                         shutdown=shutdown,
+                         quantize=quantize)
 
 class Archive:
   def __init__(self) -> None:

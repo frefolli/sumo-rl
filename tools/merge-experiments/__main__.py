@@ -16,22 +16,19 @@ def load_rounds(dirpath: str) -> tuple[str, list[list[str]]]:
   return head, rounds
 
 if __name__ == '__main__':
-  E3A = load_rounds('./E3A/rounds')
-  E3B = load_rounds('./E3B/rounds')
-  E3C = load_rounds('./E3C/rounds')
+  A = load_rounds('./experiments/E8/rounds')
+  B = load_rounds('./experiments/E9/rounds')
 
   # Equal header
-  assert E3A[0] == E3B[0]
-  assert E3C[0] == E3B[0]
+  assert A[0] == B[0]
   # Equal number of rounds
-  assert len(E3A[1]) == len(E3B[1])
-  assert len(E3C[1]) == len(E3B[1])
+  assert len(A[1]) == len(B[1])
 
-  dirpath = './E3/rounds'
-  for i in range(len(E3A[1])):
+  dirpath = './experiments/E7/rounds'
+  for i in range(len(A[1])):
     filepath = os.path.join(dirpath, '%s.csv' % i)
-    head = E3A[0]
-    body = E3A[1][i] + E3B[1][i] + E3C[1][i]
+    head = A[0]
+    body = A[1][i] + B[1][i]
     content = '\n'.join([head] + body)
     with open(filepath, 'w') as file:
       file.write(content)

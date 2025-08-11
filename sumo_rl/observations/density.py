@@ -8,9 +8,9 @@ import numpy
 class DensityObservationFunction(ObservationFunction):
   """Density observation function for traffic signals."""
 
-  def __init__(self):
+  def __init__(self, quantize: bool = True):
     """Initialize density observation function."""
-    super().__init__("density")
+    super().__init__("density", quantize)
 
   # def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
   #   """Encode the state of the traffic signal into a hashable object."""
