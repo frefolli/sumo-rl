@@ -13,7 +13,7 @@ class CombinatorialExperiment(Experiment):
     self.self_adaptives = [False]
     self.datasets = ['frankestein']
     self.shutdowns = [False]
-    self.quantizes = [True]
+    self.quantizations = [64]
 
   def prepare(self):
     if not self.skip_training:
@@ -34,8 +34,8 @@ class CombinatorialExperiment(Experiment):
               for SELF_ADAPTIVE in self.self_adaptives:
                 for DATASET in self.datasets:
                   for SHUTDOWN in self.shutdowns:
-                    for QUANTIZE in self.quantizes:
-                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantize=QUANTIZE))
+                    for QUANTIZATIONS in self.quantizations:
+                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantization=QUANTIZATIONS))
                       args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
                       args += self.archive.config.to_cli()
                       exec_cmd(' '.join(args))
@@ -51,8 +51,8 @@ class CombinatorialExperiment(Experiment):
               for SELF_ADAPTIVE in self.self_adaptives:
                 for DATASET in self.datasets:
                   for SHUTDOWN in self.shutdowns:
-                    for QUANTIZE in self.quantizes:
-                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantize=QUANTIZE))
+                    for QUANTIZATIONS in self.quantizations:
+                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantization=QUANTIZATIONS))
                       args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
                       args += self.archive.config.to_cli()
                       exec_cmd(' '.join(args))

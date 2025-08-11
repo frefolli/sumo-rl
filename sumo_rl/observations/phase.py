@@ -8,9 +8,9 @@ import numpy
 class PhaseObservationFunction(ObservationFunction):
   """Phase observation function for traffic signals."""
 
-  def __init__(self, quantize: bool = True):
+  def __init__(self, quantization: int = 64):
     """Initialize phase observation function."""
-    super().__init__("phase", quantize)
+    super().__init__("phase", quantization)
 
   # def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
   #   """Encode the state of the traffic signal into a hashable object."""

@@ -1,11 +1,11 @@
 from tools.executor.experiments.combinatorial_experiment import CombinatorialExperiment
 from tools.executor.archive import Archive
 
-class E8TryUnquantized(CombinatorialExperiment):
+class E9TryDifferentQuantizationLevels(CombinatorialExperiment):
   def __init__(self, archive: Archive) -> None:
-    super().__init__("E8", "TryUnquantized", archive)
+    super().__init__("E9", "TryDifferentQuantizationLevels", archive)
     self.observations = ['d']
     self.rewards = ['dwt']
     self.datasets = ['curriculum_daily_plus_disruption']
-    self.agents = ['ppo']
-    self.quantizations = [64, 0]
+    self.agents = ['dql']
+    self.quantizations = [8, 16, 32, 64]

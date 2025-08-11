@@ -8,9 +8,9 @@ import numpy
 class DefaultObservationFunction(ObservationFunction):
   """Default observation function for traffic signals."""
 
-  def __init__(self, quantize: bool = True):
+  def __init__(self, quantization: int = 64):
     """Initialize default observation function."""
-    super().__init__("default", quantize)
+    super().__init__("default", quantization)
 
   def __call__(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
     """Return the default observation."""

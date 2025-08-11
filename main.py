@@ -172,31 +172,36 @@ def use_selection_of_partition():
 
 def use_selection_of_observation_fn():
   def observation_fn_by_option(cli_args) -> sumo_rl.observations.ObservationFunction:
-    quantize = (not cli_args.no_quantize)
+    quantization = 64
+    if cli_args.no_quantize:
+      quantization = 0
+    else:
+      quantization = cli_args.quantization_levels
+    assert quantization >= 0
     val = cli_args.observation
     if val == 'default':
-      return sumo_rl.observations.DefaultObservationFunction(quantize=quantize)
+      return sumo_rl.observations.DefaultObservationFunction(quantization=quantization)
     if val == 's':
-      return sumo_rl.observations.SpeedObservationFunction(quantize=quantize)
+      return sumo_rl.observations.SpeedObservationFunction(quantization=quantization)
     if val == 'd':
-      return sumo_rl.observations.DensityObservationFunction(quantize=quantize)
+      return sumo_rl.observations.DensityObservationFunction(quantization=quantization)
     if val == 'q':
-      return sumo_rl.observations.QueueObservationFunction(quantize=quantize)
+      return sumo_rl.observations.QueueObservationFunction(quantization=quantization)
     if val == 'sv':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantize=quantize),
-                                                                  you_observation=sumo_rl.observations.DefaultObservationFunction(quantize=quantize))
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+                                                                  you_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization))
     if val == 'svs':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantize=quantize),
-                                                                  you_observation=sumo_rl.observations.SpeedObservationFunction(quantize=quantize))
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+                                                                  you_observation=sumo_rl.observations.SpeedObservationFunction(quantization=quantization))
     if val == 'svp':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantize=quantize),
-                                                                  you_observation=sumo_rl.observations.PhaseObservationFunction(quantize=quantize))
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+                                                                  you_observation=sumo_rl.observations.PhaseObservationFunction(quantization=quantization))
     if val == 'svd':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantize=quantize),
-                                                                  you_observation=sumo_rl.observations.DensityObservationFunction(quantize=quantize))
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+                                                                  you_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization))
     if val == 'svq':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantize=quantize),
-                                                                  you_observation=sumo_rl.observations.QueueObservationFunction(quantize=quantize))
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+                                                                  you_observation=sumo_rl.observations.QueueObservationFunction(quantization=quantization))
     raise ValueError(val)
 
   options = ['default', 's', 'd', 'q', 'sv', 'svs', 'svp', 'svd', 'svq']
@@ -443,7 +448,8 @@ def show_args(cli_args):
     'do_evaluation': cli_args.do_evaluation,
     'do_demo': cli_args.do_demo,
     'shutdown_traffic_lights': cli_args.shutdown_traffic_lights,
-    'no_quantize': cli_args.no_quantize
+    'no_quantize': cli_args.no_quantize,
+    'quantization_levels': cli_args.quantization_levels
   })
 
 def main():
@@ -468,6 +474,7 @@ def main():
   cli.add_argument('-sa', '--self-adaptive', action="store_true", default=False, help="Self adaptive manouver")
   cli.add_argument('-stl', '--shutdown-traffic-lights', action="store_true", default=False, help="Shutdowns traffic lights")
   cli.add_argument('-nq', '--no-quantize', action="store_true", default=False, help="Don't quantize input (please, use it only for neural models!!!)")
+  cli.add_argument('-ql', '--quantization-levels', type=int, default=64, nargs='?', help="Uses the specified number of quantization levels (if not -nq, defaults to 64)")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")

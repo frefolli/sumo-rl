@@ -8,9 +8,9 @@ import numpy
 class QueueObservationFunction(ObservationFunction):
   """Queue observation function for traffic signals."""
 
-  def __init__(self, quantize: bool = True):
+  def __init__(self, quantization: int = 64):
     """Initialize queue observation function."""
-    super().__init__("queue", quantize)
+    super().__init__("queue", quantization)
 
   # def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
   #   """Encode the state of the traffic signal into a hashable object."""

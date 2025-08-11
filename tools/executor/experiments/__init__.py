@@ -9,3 +9,4 @@ from .e5_try_marl_on_observation import E5TryMarlOnObservation
 from .e6_try_marl_on_reward import E6TryMarlOnReward
 from .e7_try_unattended import E7TryUnattended
 from .e8_try_unquantized import E8TryUnquantized
+from .e9_try_different_quantization_levels import E9TryDifferentQuantizationLevels

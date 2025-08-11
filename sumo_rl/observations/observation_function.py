@@ -5,15 +5,14 @@ from sumo_rl.environment.datastore import Datastore
 import sumo_rl.environment.traffic_signal
 import gymnasium.spaces
 import numpy
-QUANTIZATION_LEVELS=16
 
 class ObservationFunction(abc.ABC):
   """Abstract base class for observation functions."""
 
-  def __init__(self, name: str, quantize: bool = True):
+  def __init__(self, name: str, quantization: int = 64):
     """Initialize observation function."""
     self.name = name
-    self.quantize = quantize
+    self.quantization = quantization
 
   def cache(self, datastore: Datastore, ts: sumo_rl.environment.traffic_signal.TrafficSignal):
     if self.name not in datastore.observation_cache:
@@ -50,10 +49,10 @@ class ObservationFunction(abc.ABC):
       density = 0
     elif density > 1:
       density = 1
-    return int(density * QUANTIZATION_LEVELS) / QUANTIZATION_LEVELS
+    return int(density * self.quantization) / self.quantization
 
   def encode(self, state: numpy.ndarray, ts: sumo_rl.environment.traffic_signal.TrafficSignal) -> tuple:
     """Encode the state of the traffic signal into a hashable object."""
-    if self.quantize:
+    if self.quantization != 0:
       return tuple(map(self.discretize_density, state))
     return tuple(state)

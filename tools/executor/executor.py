@@ -17,7 +17,8 @@ class Executor:
       E5TryMarlOnObservation(self.archive),
       E6TryMarlOnReward(self.archive),
       E7TryUnattended(self.archive),
-      E8TryUnquantized(self.archive)
+      E8TryUnquantized(self.archive),
+      E9TryDifferentQuantizationLevels(self.archive)
     ]}
 
   def apply(self, argv: list[str]):
