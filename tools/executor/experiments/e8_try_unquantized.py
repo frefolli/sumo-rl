@@ -8,4 +8,4 @@ class E8TryUnquantized(CombinatorialExperiment):
     self.rewards = ['dwt']
     self.datasets = ['curriculum_daily_plus_disruption']
     self.agents = ['ppo']
-    self.quantizations = [64, 0]
+    self.quantizations = [0, 8, 16, 32, 64]
