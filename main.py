@@ -188,19 +188,19 @@ def use_selection_of_observation_fn():
     if val == 'q':
       return sumo_rl.observations.QueueObservationFunction(quantization=quantization)
     if val == 'sv':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization),
                                                                   you_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization))
     if val == 'svs':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization),
                                                                   you_observation=sumo_rl.observations.SpeedObservationFunction(quantization=quantization))
     if val == 'svp':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization),
                                                                   you_observation=sumo_rl.observations.PhaseObservationFunction(quantization=quantization))
     if val == 'svd':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization),
                                                                   you_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization))
     if val == 'svq':
-      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DefaultObservationFunction(quantization=quantization),
+      return sumo_rl.observations.SharedVisionObservationFunction(me_observation=sumo_rl.observations.DensityObservationFunction(quantization=quantization),
                                                                   you_observation=sumo_rl.observations.QueueObservationFunction(quantization=quantization))
     raise ValueError(val)
 
@@ -214,11 +214,11 @@ def use_selection_of_observation_fn():
     - Shared Views: neighbours are defined by a Vision Graph(NODES = Array(Traffic Light),
                                                              EDGES = DICT(Traffic Light: SET(Traffic Light))).
       For now is built seeking for immediately adiancent traffic signals.
-      - sv: I can se the `default` state + the `default` state of neighbour traffic signals
-      - svs: I can se the `default` state + the average speeds of lanes of neighbour traffic signals
-      - svp: I can se the `default` state + the phase of neighbour traffic signals
-      - svd: I can se the `default` state + the densities of lanes of neighbour traffic signals
-      - svq: I can se the `default` state + the queue lengths of lanes of neighbour traffic signals
+      - sv: I can se the `d` state + the `default` state of neighbour traffic signals
+      - svs: I can se the `d` state + the average speeds of lanes of neighbour traffic signals
+      - svp: I can se the `d` state + the phase of neighbour traffic signals
+      - svd: I can se the `d` state + the densities of lanes of neighbour traffic signals
+      - svq: I can se the `d` state + the queue lengths of lanes of neighbour traffic signals
   """
   return options, help_text, observation_fn_by_option
 

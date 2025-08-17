@@ -87,14 +87,18 @@ class TrafficSignal:
 
         self._build_phases()
 
-        # If you care: YES, THERE ARE THE OUTPUT LANES (NOT THE INTERNAL LANES) AND CORRECTLY AQUIRED
+        # If you care: YES, THESE ARE THE INPUT LANES
         self.lanes = list(
             dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id))
         )  # Remove duplicates and keep order
+
+        # If you care: YES, THESE ARE THE OUTPUT LANES
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
+        
         self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
         self.action_space = gymnasium.spaces.Discrete(self.num_green_phases)
+        print(self.id, self.lanes, self.out_lanes)
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
