@@ -2,6 +2,7 @@
 Sogno tecnologico bolscevico
 Atea mistica meccanica
 Macchina automatica. No anima
+DEPRECATED
 """
 
 import sumo_rl.models.sumo

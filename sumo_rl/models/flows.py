@@ -6,7 +6,7 @@ import sumo_rl.models.serde
 
 MIN_GAP = 2.5
 VEHICLE_LENGTH = 5.0
-TAU = 1.0
+TAU = 3.0
 
 class DeadEnd:
   def __init__(self, id: str) -> None:
@@ -22,7 +22,7 @@ class Lane:
 
   @property
   def flow_capacity(self) -> int:
-    gross_time_headway = (VEHICLE_LENGTH + MIN_GAP) / (self.speed / 3) + TAU
+    gross_time_headway = TAU * (VEHICLE_LENGTH + MIN_GAP) / self.speed
     lane_capacity = 3600 / gross_time_headway
     return int(lane_capacity)
 

@@ -26,23 +26,24 @@
 ### Virtual := False
 
 ```xml
-<junction id="J7" type="traffic_light" x="70.27" y="51.37" incLanes="E10_0 -E8_0" intLanes=":J7_0_0 :J7_1_0" >
+<junction id="J7" type="traffic_light"
+          x="70.27" y="51.37"
+          incLanes="E10_0 -E8_0 ..."
+          intLanes=":J7_0_0 :J7_1_0 ..." >
   <request index="0" response="10" foes="10" cont="0"/>
-  <request index="1" response="00" foes="01" cont="0"/>
+  ...
 </junction>
-```
-
-### Virtual := True
-
-```xml
-<junction id="J8" type="dead_end" x="39.07" y="-13.78" incLanes="-E11_0" intLanes=""/>
 
 <tlLogic id="J0" type="static" programID="0" offset="0">
     <phase duration="42" state="rGGG"/>
-    <phase duration="3"  state="ryGG"/>
-    <phase duration="42" state="GrGG"/>
-    <phase duration="3"  state="yrGG"/>
+    ...
 </tlLogic>
+```
+
+### Virtual := True 
+
+```xml
+<junction id="J8" type="dead_end" x="39.07" y="-13.78" incLanes="-E11_0" intLanes=""/>
 ```
 
 
@@ -63,44 +64,7 @@
     "roadLinks": [],
     "trafficLight": {
       "roadLinkIndices": [],
-      "lightphases": [
-      {
-        "time": 5,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      },
-      {
-        "time": 30,
-        "availableRoadLinks": []
-      }
-      ]
+      "lightphases": []
     },
     "virtual": true
 },
