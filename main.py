@@ -14,6 +14,8 @@ import sumo_rl.rewards
 import sumo_rl.agents
 import sumo_rl.environment.env
 
+#LOGGER = open("./salog.log", mode="a")
+
 if "SUMO_HOME" in os.environ:
   tools = os.path.join(os.environ["SUMO_HOME"], "tools")
   sys.path.append(tools)
@@ -31,7 +33,7 @@ def safe_std(Xs: list[float]) -> float:
 class SelfAdapter:
   def __init__(self) -> None:
     self.monitor: dict[str, dir[str, float|bool]] = {}
-    self.monitor_step_width: int = 1000
+    self.monitor_step_width: int = 10000
     self.next_control_step: float|None = None
     self.end_of_adapting_step: float|None = None
 
@@ -60,10 +62,13 @@ class SelfAdapter:
     for metric, metric_data in self.monitor.items():
       mean_value = safe_mean(env.metrics[metric][-self.monitor_step_width:])
       diff = (mean_value - metric_data['E']) / mean_value
-      if metric_data['dir'] == diff < 0:
-        tol = 0.05
-        if diff >= tol:
-          return (metric, diff, tol)
+      #LOGGER.write('TRIGGER :: VAL :: %s\n' % ([metric, mean_value, metric_data['E'], diff]))
+      #LOGGER.flush()
+      if metric_data['dir'] == True:
+        diff = -diff
+      tol = 0.05
+      if diff >= tol:
+        return (metric, diff, tol)
     return None
   
   def update(self, env: sumo_rl.environment.env.SumoEnvironment, agents: list[sumo_rl.agents.Agent]) -> bool:
@@ -74,8 +79,12 @@ class SelfAdapter:
           self.next_control_step = None
           self.end_of_adapting_step = env.sim_step + self.monitor_step_width * 1
           print('Trigger adaptive ON', reason_to_adapt, env.sim_step)
+          #LOGGER.write('TRIGGER :: ON  :: %s\n' % ([reason_to_adapt, env.sim_step]))
+          #LOGGER.flush()
         else:
           self.next_control_step += self.monitor_step_width
+          #LOGGER.write('TRIGGER :: SKP :: %s\n' % (env.sim_step))
+          #LOGGER.flush()
     else:
       if env.sim_step <= self.end_of_adapting_step:
         for agent in agents:
@@ -83,6 +92,8 @@ class SelfAdapter:
             agent.learn(env.rewards)
       else:
         print('Trigger adaptive OFF', env.sim_step)
+        #LOGGER.write('TRIGGER :: OFF :: %s\n' % (env.sim_step,))
+        #LOGGER.flush()
         self.end_of_adapting_step = None
         self.next_control_step = env.sim_step + self.monitor_step_width * 3
 
