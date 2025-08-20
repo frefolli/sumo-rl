@@ -31,7 +31,7 @@ def safe_std(Xs: list[float]) -> float:
 class SelfAdapter:
   def __init__(self) -> None:
     self.monitor: dict[str, dir[str, float|bool]] = {}
-    self.monitor_step_width: int = 10000
+    self.monitor_step_width: int = 1000
     self.next_control_step: float|None = None
     self.end_of_adapting_step: float|None = None
 
