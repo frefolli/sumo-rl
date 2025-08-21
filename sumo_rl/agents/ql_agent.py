@@ -19,7 +19,7 @@ class QLAgent(Agent):
                      action_space,
                      alpha=0.5,
                      gamma=0.95,
-                     exploration_strategy=EpsilonGreedy()):
+                     exploration_strategy: EpsilonGreedy|None = None):
     """Initialize Q-learning agent."""
     super().__init__(id)
     self.observation_fn: ObservationFunction = observation_fn
@@ -36,6 +36,9 @@ class QLAgent(Agent):
 
     self.alpha = alpha
     self.gamma = gamma
+
+    if exploration_strategy is None:
+      exploration_strategy = EpsilonGreedy()
     self.exploration = exploration_strategy
 
   def reset(self):

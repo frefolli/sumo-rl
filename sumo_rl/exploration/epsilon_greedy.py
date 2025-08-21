@@ -13,6 +13,7 @@ class EpsilonGreedy:
         self.epsilon = initial_epsilon
         self.min_epsilon = min_epsilon
         self.decay = decay
+        print('LOG', self.to_dict())
 
     def choose(self, q_table, state, action_space):
         """Choose action based on epsilon greedy strategy."""

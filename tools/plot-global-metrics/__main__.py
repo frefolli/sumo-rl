@@ -117,6 +117,19 @@ class Smoother:
       return Smoother.Asymmetric(retriever(df), K)
     return applier
 
+class Accumulator:
+  @staticmethod
+  def Apply(retriever: Retriever) -> Retriever:
+    def applier(df: pandas.DataFrame):
+      lista = retriever(df)
+      c = lista[0]
+      result = [c]
+      for n in lista[1:]:
+        c += n
+        result.append(c)
+      return result
+    return applier
+
 class Plotter:
   @staticmethod
   def Single(datastore: Datastore, label: str, retrieve_data: Retriever):
@@ -205,6 +218,11 @@ class Preprocessor:
       with_sym_smoothing.label = with_sym_smoothing.label + '-SS'
       with_sym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, True)
       output.append(with_sym_smoothing)
+      if plot.label == 'total_reward':
+        accumulated = plot.copy()
+        accumulated.label = accumulated.label + '-AC'
+        accumulated.retrieve_data = Smoother.Apply(Accumulator.Apply(accumulated.retrieve_data), True)
+        output.append(accumulated)
     return output
 
 if __name__ == "__main__":
