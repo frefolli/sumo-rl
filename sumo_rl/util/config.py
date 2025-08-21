@@ -105,30 +105,15 @@ class DQLAgentConfig(SerdeDict):
   def from_dict(data: dict) -> DQLAgentConfig:
     return DQLAgentConfig(data)
 
-class FixedAgentConfig(SerdeDict):
-  def __init__(self, data: dict):
-    self.cycle_time: int = data['cycle_time']
-
-  def to_dict(self) -> dict:
-    return {
-      'cycle_time': self.cycle_time,
-    }
-
-  @staticmethod
-  def from_dict(data: dict) -> FixedAgentConfig:
-    return FixedAgentConfig(data)
-
 class AgentsConfig(SerdeDict):
   def __init__(self, data: dict):
     self.ql: QLAgentConfig = QLAgentConfig.from_dict(data['ql'])
     self.dql: DQLAgentConfig = DQLAgentConfig.from_dict(data['dql'])
     self.sarsa: SARSAAgentConfig = SARSAAgentConfig.from_dict(data['sarsa'])
-    self.fixed: FixedAgentConfig = FixedAgentConfig.from_dict(data['fixed'])
 
   def to_dict(self) -> dict:
     return {
       'ql': self.ql.to_dict(),
-      'fixed': self.fixed.to_dict(),
     }
 
   @staticmethod
