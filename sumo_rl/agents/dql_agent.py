@@ -90,13 +90,14 @@ class DQLAgent(Agent):
     """Serialize Agent "memory" into an output file
     """
     with open(output_filepath, mode="wb") as file:
-      pickle.dump((self.qa_table, self.qb_table), file)
+      pickle.dump((self.alpha, self.gamma, self.qa_table, self.qb_table, self.exploration.to_dict()), file)
 
   def deserialize(self, input_filepath: str) -> None:
     """Deserialize Agent "memory" from an input file
     """
     with open(input_filepath, mode="rb") as file:
-      (self.qa_table, self.qb_table) = pickle.load(file)
+      self.alpha, self.gamma, self.qa_table, self.qb_table, exp_rep = pickle.load(file)
+      self.exploration = EpsilonGreedy.from_dict(exp_rep)
 
   def __repr__(self) -> str:
     return "%s(%s)" % (self.__class__.__name__, list(self.controlled_entities.keys()))
