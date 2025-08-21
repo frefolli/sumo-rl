@@ -13,7 +13,7 @@ class CombinatorialExperiment(Experiment):
     self.self_adaptives = [False]
     self.datasets = ['frankestein']
     self.shutdowns = [False]
-    self.quantizations = [64]
+    self.quantizations = [16]
 
   def prepare(self):
     if not self.skip_training:

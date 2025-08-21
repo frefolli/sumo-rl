@@ -11,21 +11,21 @@ agents:
   ql:
     alpha: 0.10
     gamma: 0.90
-    initial_epsilon: 0.05
+    initial_epsilon: 1.0
     min_epsilon: 0.005
-    decay: 1.0
+    decay: 0.9999
   dql:
     alpha: 0.10
     gamma: 0.90
-    initial_epsilon: 0.05
+    initial_epsilon: 1.0
     min_epsilon: 0.005
-    decay: 1.0
+    decay: 0.9999
   sarsa:
     alpha: 0.10
     gamma: 0.90
-    initial_epsilon: 0.05
+    initial_epsilon: 1.0
     min_epsilon: 0.005
-    decay: 1.0
+    decay: 0.9999
 training:
   seconds: 100000
 evaluation:
