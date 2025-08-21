@@ -69,6 +69,11 @@ class Smoother:
   def Symmetric(data: list, K: int) -> list:
     """Smooths data[0:N] by factor K returning output[0:N], where K <= N"""
     N = len(data)
+    assert N > 0
+    while K > 0 and N < K:
+      K //= 2
+    if K == 0:
+      K = N - 1
     assert K <= N
     half_K = K // 2
     output = []
@@ -87,6 +92,11 @@ class Smoother:
   def Asymmetric(data: list, K: int) -> list:
     """Smooths data[0:N] by factor K returning output[0:M], with K <= N and M <= N"""
     N = len(data)
+    assert N > 0
+    while K > 0 and N < K:
+      K //= 2
+    if K == 0:
+      K = N - 1
     assert K <= N
     output = []
     for i in range(N):
@@ -100,9 +110,12 @@ class Smoother:
 
   @staticmethod
   def Apply(retriever: Retriever, symmetric: bool) -> Retriever:
-    if symmetric:
-      return lambda df: Smoother.Symmetric(retriever(df), 500)
-    return lambda df: Smoother.Asymmetric(retriever(df), 500)
+    def applier(df: pandas.DataFrame):
+      K = 500
+      if symmetric:
+        return Smoother.Symmetric(retriever(df), K)
+      return Smoother.Asymmetric(retriever(df), K)
+    return applier
 
 class Plotter:
   @staticmethod

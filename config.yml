@@ -27,11 +27,11 @@ agents:
     min_epsilon: 0.01
     decay: 0.99
 training:
-  seconds: 100000
+  seconds: 50000
 evaluation:
-  seconds: 100000
+  seconds: 50000
 demo:
-  seconds: 100000
+  seconds: 50000
 scenario: ./scenarios/celoria
 artifacts:
   agents: ./outputs/agents

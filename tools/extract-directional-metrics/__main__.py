@@ -97,7 +97,7 @@ def divide_by_dirs(Ys: numpy.ndarray) -> dict:
   dirs: dict[str, list] = {}
   for idx, record in enumerate(Ys):
     for key_, value in record.items():
-      key = key_.split('-')[0]
+      key = key_
       if key not in dirs:
         dirs[key] = [0.0 for _ in range(idx)]
       dirs[key].append(value)
