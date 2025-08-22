@@ -485,7 +485,7 @@ def main():
   cli.add_argument('-sa', '--self-adaptive', action="store_true", default=False, help="Self adaptive manouver")
   cli.add_argument('-stl', '--shutdown-traffic-lights', action="store_true", default=False, help="Shutdowns traffic lights")
   cli.add_argument('-nq', '--no-quantize', action="store_true", default=False, help="Don't quantize input (please, use it only for neural models!!!)")
-  cli.add_argument('-ql', '--quantization-levels', type=int, default=64, nargs='?', help="Uses the specified number of quantization levels (if not -nq, defaults to 64)")
+  cli.add_argument('-ql', '--quantization-levels', type=int, default=16, nargs='?', help="Uses the specified number of quantization levels (if not -nq, defaults to 16)")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")

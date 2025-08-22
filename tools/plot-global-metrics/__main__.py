@@ -111,7 +111,7 @@ class Smoother:
   @staticmethod
   def Apply(retriever: Retriever, symmetric: bool) -> Retriever:
     def applier(df: pandas.DataFrame):
-      K = 500
+      K = 2000
       if symmetric:
         return Smoother.Symmetric(retriever(df), K)
       return Smoother.Asymmetric(retriever(df), K)
