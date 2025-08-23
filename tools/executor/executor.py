@@ -18,7 +18,10 @@ class Executor:
       E6TryMarlOnReward(self.archive),
       E7TryUnattended(self.archive),
       E8TryUnquantized(self.archive),
-      E9TryDifferentQuantizationLevels(self.archive)
+      E9TryDifferentQuantizationLevels(self.archive),
+      E10TryDifferentPartitioningSchemes(self.archive),
+      E11TryTabularDeterminism(self.archive),
+      E12TryNeuralDeterminism(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

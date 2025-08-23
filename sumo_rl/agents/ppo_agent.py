@@ -21,7 +21,8 @@ class PPOAgent(Agent):
                      reward_fn: RewardFunction,
                      controlled_entities: dict[str, TrafficSignal],
                      state_space,
-                     action_space):
+                     action_space,
+                     deterministic: bool):
     """Initialize Q-learning agent."""
     super().__init__(id)
     self.observation_fn: ObservationFunction = observation_fn
@@ -29,6 +30,7 @@ class PPOAgent(Agent):
     self.controlled_entities = controlled_entities
     self.state_space = state_space
     self.action_space = action_space
+    self.deterministic = deterministic
 
     self.previous_states: dict = {}
     self.current_states: dict = {}
@@ -60,7 +62,7 @@ class PPOAgent(Agent):
     log_probs: dict = {}
     for ID in self.controlled_entities.keys():
       state = self.current_states[ID]
-      action, _ = self.model.predict(state)
+      action, _ = self.model.predict(state, deterministic=self.deterministic)
       actions[ID] = action
     self.previous_actions = actions
     self.previous_values = values

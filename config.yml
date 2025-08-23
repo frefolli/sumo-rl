@@ -7,25 +7,6 @@ sumo:
     - --junction-taz
     - --delay 5
     - --ignore-junction-blocker 120
-agents:
-  ql:
-    alpha: 0.10
-    gamma: 0.90
-    initial_epsilon: 1.0
-    min_epsilon: 0.05
-    decay: 0.99
-  dql:
-    alpha: 0.10
-    gamma: 0.90
-    initial_epsilon: 1.0
-    min_epsilon: 0.05
-    decay: 0.99
-  sarsa:
-    alpha: 0.10
-    gamma: 0.90
-    initial_epsilon: 1.0
-    min_epsilon: 0.05
-    decay: 0.99
 training:
   seconds: 100000
 evaluation:

@@ -3,7 +3,7 @@ from tools.executor.archive import Archive, Configuration, use_iterations, exec_
 from sumo_rl.models.commons import ensure_dir
 import random
 
-class SequentialExperiment(Experiment):
+class SerialExperiment(Experiment):
   def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False) -> None:
     super().__init__(id, name, archive, skip_training, skip_evaluation)
     self.configurations: list[Configuration] = []
@@ -21,11 +21,12 @@ class SequentialExperiment(Experiment):
     seed = random.randint(0, 10000)
     for _ in use_iterations(1):
       for CONFIGURATION in self.configurations:
-        self.archive.switch(CONFIGURATION)
-        args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
-        args += self.archive.config.to_cli()
-        exec_cmd(' '.join(args))
-        #exec_cmd('python -m tools.plot2')
+        if CONFIGURATION.trainable():
+          self.archive.switch(CONFIGURATION)
+          args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
+          args += self.archive.config.to_cli()
+          exec_cmd(' '.join(args))
+          #exec_cmd('python -m tools.plot2')
 
   def evaluation(self):
     for i in use_iterations(5):

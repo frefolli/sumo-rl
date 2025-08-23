@@ -98,7 +98,7 @@ class TrafficSignal:
         
         self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
         self.action_space = gymnasium.spaces.Discrete(self.num_green_phases)
-        print(self.id, self.lanes, self.out_lanes)
+        # print(self.id, self.lanes, self.out_lanes)
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases

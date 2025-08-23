@@ -4,7 +4,12 @@ from sumo_rl.models.commons import ensure_dir
 import random
 
 class CombinatorialExperiment(Experiment):
-  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False) -> None:
+  def __init__(self,
+               id: str,
+               name: str,
+               archive: Archive,
+               skip_training: bool = False,
+               skip_evaluation: bool = False) -> None:
     super().__init__(id, name, archive, skip_training, skip_evaluation)
     self.agents = ['ql']
     self.observations = ['default']
@@ -14,6 +19,12 @@ class CombinatorialExperiment(Experiment):
     self.datasets = ['frankestein']
     self.shutdowns = [False]
     self.quantizations = [16]
+    self.tm_alpha = [0.1]
+    self.tm_gamma = [0.9]
+    self.eg_epsilon = [1.0]
+    self.eg_decay = [0.99]
+    self.eg_minimum = [0.05]
+    self.nn_deterministic = [False]
 
   def prepare(self):
     if not self.skip_training:
@@ -35,11 +46,30 @@ class CombinatorialExperiment(Experiment):
                 for DATASET in self.datasets:
                   for SHUTDOWN in self.shutdowns:
                     for QUANTIZATIONS in self.quantizations:
-                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantization=QUANTIZATIONS))
-                      args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
-                      args += self.archive.config.to_cli()
-                      exec_cmd(' '.join(args))
-                      #exec_cmd('python -m tools.plot2')
+                      for TM_ALPHA in self.tm_alpha:
+                        for TM_GAMMA in self.tm_gamma:
+                          for EG_EPISLON in self.eg_epsilon:
+                            for EG_DECAY in self.eg_decay:
+                              for EG_MINIMUM in self.eg_minimum:
+                                for NN_DETERMINISTIC in self.nn_deterministic:
+                                  self.archive.switch(Configuration(agent=AGENT,
+                                                                    observation=OBSERVATION,
+                                                                    reward=REWARD,
+                                                                    partition=PARTITION,
+                                                                    self_adaptive=SELF_ADAPTIVE,
+                                                                    dataset=DATASET,
+                                                                    shutdown=SHUTDOWN,
+                                                                    quantization=QUANTIZATIONS,
+                                                                    tm_alpha=TM_ALPHA,
+                                                                    tm_gamma=TM_GAMMA,
+                                                                    eg_epsilon=EG_EPISLON,
+                                                                    eg_decay=EG_DECAY,
+                                                                    eg_minimum=EG_MINIMUM,
+                                                                    nn_deterministic=NN_DETERMINISTIC))
+                                  args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
+                                  args += self.archive.config.to_cli()
+                                  exec_cmd(' '.join(args))
+                                  #exec_cmd('python -m tools.plot2')
 
   def evaluation(self):
     for i in use_iterations(5):
@@ -52,11 +82,30 @@ class CombinatorialExperiment(Experiment):
                 for DATASET in self.datasets:
                   for SHUTDOWN in self.shutdowns:
                     for QUANTIZATIONS in self.quantizations:
-                      self.archive.switch(Configuration(agent=AGENT, observation=OBSERVATION, reward=REWARD, partition=PARTITION, self_adaptive=SELF_ADAPTIVE, dataset=DATASET, shutdown=SHUTDOWN, quantization=QUANTIZATIONS))
-                      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
-                      args += self.archive.config.to_cli()
-                      exec_cmd(' '.join(args))
-                      exec_cmd('python -m tools.extract-global-metrics')
+                      for TM_ALPHA in self.tm_alpha:
+                        for TM_GAMMA in self.tm_gamma:
+                          for EG_EPISLON in self.eg_epsilon:
+                            for EG_DECAY in self.eg_decay:
+                              for EG_MINIMUM in self.eg_minimum:
+                                for NN_DETERMINISTIC in self.nn_deterministic:
+                                  self.archive.switch(Configuration(agent=AGENT,
+                                                                    observation=OBSERVATION,
+                                                                    reward=REWARD,
+                                                                    partition=PARTITION,
+                                                                    self_adaptive=SELF_ADAPTIVE,
+                                                                    dataset=DATASET,
+                                                                    shutdown=SHUTDOWN,
+                                                                    quantization=QUANTIZATIONS,
+                                                                    tm_alpha=TM_ALPHA,
+                                                                    tm_gamma=TM_GAMMA,
+                                                                    eg_epsilon=EG_EPISLON,
+                                                                    eg_decay=EG_DECAY,
+                                                                    eg_minimum=EG_MINIMUM,
+                                                                    nn_deterministic=NN_DETERMINISTIC))
+                                  args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+                                  args += self.archive.config.to_cli()
+                                  exec_cmd(' '.join(args))
+                                  exec_cmd('python -m tools.extract-global-metrics')
       exec_cmd('python -m tools.compare-global-metrics')
       exec_cmd('mv scores.csv experiments/%s/rounds/%s.csv' % (self.id, i))
 

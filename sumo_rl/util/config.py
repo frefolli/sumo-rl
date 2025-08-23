@@ -19,7 +19,6 @@ def get_all_qualified_paths_with_extension(base_dir: str, files: list[str], ext:
         for listed_file in SerdeYamlFile.from_yaml_file(path):
           result.append(os.path.join(relative_dir, listed_file))
   return result
-  
 
 class SumoConfig(SerdeDict):
   def __init__(self, data: dict):
@@ -41,84 +40,6 @@ class SumoConfig(SerdeDict):
   @staticmethod
   def from_dict(data: dict) -> SumoConfig:
     return SumoConfig(data)
-
-class QLAgentConfig(SerdeDict):
-  def __init__(self, data: dict):
-    self.alpha: float = data['alpha']
-    self.gamma: float = data['gamma']
-    self.initial_epsilon: float = data['initial_epsilon']
-    self.min_epsilon: float = data['min_epsilon']
-    self.decay: int = data['decay']
-
-  def to_dict(self) -> dict:
-    return {
-      'alpha': self.alpha,
-      'gamma': self.gamma,
-      'initial_epsilon': self.initial_epsilon,
-      'min_epsilon': self.min_epsilon,
-      'decay': self.decay,
-    }
-
-  @staticmethod
-  def from_dict(data: dict) -> QLAgentConfig:
-    return QLAgentConfig(data)
-
-class SARSAAgentConfig(SerdeDict):
-  def __init__(self, data: dict):
-    self.alpha: float = data['alpha']
-    self.gamma: float = data['gamma']
-    self.initial_epsilon: float = data['initial_epsilon']
-    self.min_epsilon: float = data['min_epsilon']
-    self.decay: int = data['decay']
-
-  def to_dict(self) -> dict:
-    return {
-      'alpha': self.alpha,
-      'gamma': self.gamma,
-      'initial_epsilon': self.initial_epsilon,
-      'min_epsilon': self.min_epsilon,
-      'decay': self.decay,
-    }
-
-  @staticmethod
-  def from_dict(data: dict) -> SARSAAgentConfig:
-    return SARSAAgentConfig(data)
-
-class DQLAgentConfig(SerdeDict):
-  def __init__(self, data: dict):
-    self.alpha: float = data['alpha']
-    self.gamma: float = data['gamma']
-    self.initial_epsilon: float = data['initial_epsilon']
-    self.min_epsilon: float = data['min_epsilon']
-    self.decay: int = data['decay']
-
-  def to_dict(self) -> dict:
-    return {
-      'alpha': self.alpha,
-      'gamma': self.gamma,
-      'initial_epsilon': self.initial_epsilon,
-      'min_epsilon': self.min_epsilon,
-      'decay': self.decay,
-    }
-
-  @staticmethod
-  def from_dict(data: dict) -> DQLAgentConfig:
-    return DQLAgentConfig(data)
-
-class AgentsConfig(SerdeDict):
-  def __init__(self, data: dict):
-    self.ql: QLAgentConfig = QLAgentConfig.from_dict(data['ql'])
-    self.dql: DQLAgentConfig = DQLAgentConfig.from_dict(data['dql'])
-    self.sarsa: SARSAAgentConfig = SARSAAgentConfig.from_dict(data['sarsa'])
-
-  def to_dict(self) -> dict:
-    return {
-      'ql': self.ql.to_dict(),
-    }
-
-  @staticmethod
-  def from_dict(data: dict) -> AgentsConfig:
-    return AgentsConfig(data)
 
 class TrainingConfig(SerdeDict):
   def __init__(self, data: dict):
@@ -244,7 +165,6 @@ class ArtifactsConfig(SerdeDict):
 class Config(SerdeYamlFile, SerdeJsonFile):
   def __init__(self, data: dict):
     self.sumo: SumoConfig = SumoConfig.from_dict(data['sumo'])
-    self.agents: AgentsConfig = AgentsConfig.from_dict(data['agents'])
     self.training: TrainingConfig = TrainingConfig.from_dict(data['training'])
     self.evaluation: EvaluationConfig = EvaluationConfig.from_dict(data['evaluation'])
     self.demo: DemoConfig = DemoConfig.from_dict(data['demo'])
@@ -257,7 +177,6 @@ class Config(SerdeYamlFile, SerdeJsonFile):
   def to_dict(self) -> dict:
     return {
       'sumo': self.sumo.to_dict(),
-      'agents': self.agents.to_dict(),
       'training': self.training.to_dict(),
       'evaluation': self.evaluation.to_dict(),
       'demo': self.demo.to_dict(),

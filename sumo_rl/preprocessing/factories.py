@@ -55,7 +55,7 @@ class FixedAgentFactory(AgentFactory):
     return agent
 
 class QLAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, alpha, gamma, initial_epsilon, min_epsilon, decay, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, alpha: float, gamma: float, initial_epsilon: float, min_epsilon: float, decay: float, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
     self.alpha: float = alpha
     self.gamma: float = gamma
@@ -100,8 +100,9 @@ class QLAgentFactory(AgentFactory):
     return agent
 
 class DQNAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, deterministic: bool, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
+    self.deterministic = deterministic
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[Agent]:
     agents = []
@@ -124,7 +125,8 @@ class DQNAgentFactory(AgentFactory):
                      reward_fn=reward_fn,
                      controlled_entities=controlled_entities,
                      state_space=state_space,
-                     action_space=action_space)
+                     action_space=action_space,
+                     deterministic=self.deterministic)
     if self.recycle:
       agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
@@ -135,8 +137,9 @@ class DQNAgentFactory(AgentFactory):
     return agent
 
 class PPOAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, deterministic: bool, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
+    self.deterministic = deterministic
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[Agent]:
     agents = []
@@ -159,7 +162,8 @@ class PPOAgentFactory(AgentFactory):
                      reward_fn=reward_fn,
                      controlled_entities=controlled_entities,
                      state_space=state_space,
-                     action_space=action_space)
+                     action_space=action_space,
+                     deterministic=self.deterministic)
     if self.recycle:
       agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
@@ -170,7 +174,7 @@ class PPOAgentFactory(AgentFactory):
     return agent
 
 class SARSAAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, alpha, gamma, initial_epsilon, min_epsilon, decay, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, alpha: float, gamma: float, initial_epsilon: float, min_epsilon: float, decay: float, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
     self.alpha: float = alpha
     self.gamma: float = gamma
@@ -216,7 +220,7 @@ class SARSAAgentFactory(AgentFactory):
 
 
 class DQLAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, alpha, gamma, initial_epsilon, min_epsilon, decay, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, alpha: float, gamma: float, initial_epsilon: float, min_epsilon: float, decay: float, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
     self.alpha: float = alpha
     self.gamma: float = gamma

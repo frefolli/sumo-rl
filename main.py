@@ -117,32 +117,36 @@ def use_selection_of_agent_type():
       return sumo_rl.preprocessing.factories.FixedAgentFactory(env, config, recycle=cli_args.recycle, cycle_time=12)
     if val == 'ql':
       return sumo_rl.preprocessing.factories.QLAgentFactory(env, config,
-                                                            config.agents.ql.alpha,
-                                                            config.agents.ql.gamma,
-                                                            config.agents.ql.initial_epsilon,
-                                                            config.agents.ql.min_epsilon,
-                                                            config.agents.ql.decay,
+                                                            cli_args.tm_alpha,
+                                                            cli_args.tm_gamma,
+                                                            cli_args.eg_epsilon,
+                                                            cli_args.eg_minimum,
+                                                            cli_args.eg_decay,
                                                             recycle=cli_args.recycle)
     if val == 'dql':
       return sumo_rl.preprocessing.factories.DQLAgentFactory(env, config,
-                                                            config.agents.ql.alpha,
-                                                            config.agents.ql.gamma,
-                                                            config.agents.ql.initial_epsilon,
-                                                            config.agents.ql.min_epsilon,
-                                                            config.agents.ql.decay,
+                                                            cli_args.tm_alpha,
+                                                            cli_args.tm_gamma,
+                                                            cli_args.eg_epsilon,
+                                                            cli_args.eg_minimum,
+                                                            cli_args.eg_decay,
                                                             recycle=cli_args.recycle)
     if val == 'sarsa':
       return sumo_rl.preprocessing.factories.SARSAAgentFactory(env, config,
-                                                            config.agents.ql.alpha,
-                                                            config.agents.ql.gamma,
-                                                            config.agents.ql.initial_epsilon,
-                                                            config.agents.ql.min_epsilon,
-                                                            config.agents.ql.decay,
+                                                            cli_args.tm_alpha,
+                                                            cli_args.tm_gamma,
+                                                            cli_args.eg_epsilon,
+                                                            cli_args.eg_minimum,
+                                                            cli_args.eg_decay,
                                                             recycle=cli_args.recycle)
     if val == 'dqn':
-      return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config, recycle=cli_args.recycle)
+      return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config,
+                                                             cli_args.nn_deterministic,
+                                                             recycle=cli_args.recycle)
     if val == 'ppo':
-      return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config, recycle=cli_args.recycle)
+      return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config,
+                                                             cli_args.nn_deterministic,
+                                                             recycle=cli_args.recycle)
     raise ValueError(val)
 
   options = ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60', 'ql', 'dql', 'sarsa', 'dqn', 'ppo']
@@ -441,27 +445,8 @@ def perform_demo(config: sumo_rl.util.config.Config, agents: list[sumo_rl.agents
         self_adapter.update(env, agents)
   print("Demo :: Routes(%s)/Seed(%s) :: Ended" % (routes_file, env.sumo_seed))
 
-def show_args(cli_args):
-  print("Calling with ", {
-    'config': cli_args.config,
-    'agent': cli_args.agent,
-    'partition': cli_args.partition,
-    'observation': cli_args.observation,
-    'reward': cli_args.reward,
-    'recycle': cli_args.recycle,
-    'pretend': cli_args.pretend,
-    'use_gui': cli_args.use_gui,
-    'jobs': cli_args.jobs,
-    'paranoic': cli_args.paranoic,
-    'depth': cli_args.depth,
-    'self_adaptive': cli_args.self_adaptive,
-    'do_training': cli_args.do_training,
-    'do_evaluation': cli_args.do_evaluation,
-    'do_demo': cli_args.do_demo,
-    'shutdown_traffic_lights': cli_args.shutdown_traffic_lights,
-    'no_quantize': cli_args.no_quantize,
-    'quantization_levels': cli_args.quantization_levels
-  })
+def show_args(cli_args: argparse.Namespace): 
+  print("Calling with ", {k:v for k,v in cli_args._get_kwargs()})
 
 def main():
   agent_type_options, agent_type_help, agent_factory_by_option = use_selection_of_agent_type()
@@ -486,6 +471,12 @@ def main():
   cli.add_argument('-stl', '--shutdown-traffic-lights', action="store_true", default=False, help="Shutdowns traffic lights")
   cli.add_argument('-nq', '--no-quantize', action="store_true", default=False, help="Don't quantize input (please, use it only for neural models!!!)")
   cli.add_argument('-ql', '--quantization-levels', type=int, default=16, nargs='?', help="Uses the specified number of quantization levels (if not -nq, defaults to 16)")
+  cli.add_argument("-Ta", '--tm-alpha', type=float, default=0.1, help="Tabular method alpha value")
+  cli.add_argument("-Tg", '--tm-gamma', type=float, default=0.9, help="Tabular method gamma value")
+  cli.add_argument("-Ee", '--eg-epsilon', type=float, default=1.0, help="Epsilon-Greedy epsilon value")
+  cli.add_argument("-Ed", '--eg-decay', type=float, default=0.05, help="Epsilon-Greedy decay value")
+  cli.add_argument("-Em", '--eg-minimum', type=float, default=0.99, help="Epsilon-Greedy minimum epsilon value")
+  cli.add_argument('-Nd', '--nn-deterministic', action="store_true", default=False, help="Neural models are deterministic (instead of using a probability distribution for actions)")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
