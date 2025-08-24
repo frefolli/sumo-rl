@@ -483,6 +483,10 @@ def main():
   cli.add_argument('-S', '--seed', type=int, help="Uses SEED as seed")
   cli_args = cli.parse_args(sys.argv[1:])
   show_args(cli_args)
+
+  if cli_args.do_training == True:
+    cli_args.nn_deterministic = False
+
   config: sumo_rl.util.config.Config = sumo_rl.util.config.Config.from_yaml_file(cli_args.config)
   if cli_args.seed is not None:
     config.sumo.sumo_seed = cli_args.seed
