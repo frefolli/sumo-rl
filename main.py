@@ -142,10 +142,12 @@ def use_selection_of_agent_type():
     if val == 'dqn':
       return sumo_rl.preprocessing.factories.DQNAgentFactory(env, config,
                                                              cli_args.nn_deterministic,
+                                                             cli_args.nn_buffer_size,
                                                              recycle=cli_args.recycle)
     if val == 'ppo':
       return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config,
                                                              cli_args.nn_deterministic,
+                                                             cli_args.nn_buffer_size,
                                                              recycle=cli_args.recycle)
     raise ValueError(val)
 
@@ -477,6 +479,7 @@ def main():
   cli.add_argument("-Ed", '--eg-decay', type=float, default=0.05, help="Epsilon-Greedy decay value")
   cli.add_argument("-Em", '--eg-minimum', type=float, default=0.99, help="Epsilon-Greedy minimum epsilon value")
   cli.add_argument('-Nd', '--nn-deterministic', action="store_true", default=False, help="Neural models are deterministic (instead of using a probability distribution for actions)")
+  cli.add_argument("-Nb", '--nn-buffer-size', type=int, default=2048, help="Neural models buffer size")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")

@@ -25,6 +25,7 @@ class CombinatorialExperiment(Experiment):
     self.eg_decay = [0.99]
     self.eg_minimum = [0.05]
     self.nn_deterministic = [False]
+    self.nn_buffer_size = [2048]
 
   def prepare(self):
     if not self.skip_training:
@@ -52,24 +53,26 @@ class CombinatorialExperiment(Experiment):
                             for EG_DECAY in self.eg_decay:
                               for EG_MINIMUM in self.eg_minimum:
                                 for NN_DETERMINISTIC in self.nn_deterministic:
-                                  self.archive.switch(Configuration(agent=AGENT,
-                                                                    observation=OBSERVATION,
-                                                                    reward=REWARD,
-                                                                    partition=PARTITION,
-                                                                    self_adaptive=SELF_ADAPTIVE,
-                                                                    dataset=DATASET,
-                                                                    shutdown=SHUTDOWN,
-                                                                    quantization=QUANTIZATIONS,
-                                                                    tm_alpha=TM_ALPHA,
-                                                                    tm_gamma=TM_GAMMA,
-                                                                    eg_epsilon=EG_EPISLON,
-                                                                    eg_decay=EG_DECAY,
-                                                                    eg_minimum=EG_MINIMUM,
-                                                                    nn_deterministic=NN_DETERMINISTIC))
-                                  args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
-                                  args += self.archive.config.to_cli()
-                                  exec_cmd(' '.join(args))
-                                  #exec_cmd('python -m tools.plot2')
+                                  for NN_BUFFER_SIZE in self.nn_buffer_size:
+                                    self.archive.switch(Configuration(agent=AGENT,
+                                                                      observation=OBSERVATION,
+                                                                      reward=REWARD,
+                                                                      partition=PARTITION,
+                                                                      self_adaptive=SELF_ADAPTIVE,
+                                                                      dataset=DATASET,
+                                                                      shutdown=SHUTDOWN,
+                                                                      quantization=QUANTIZATIONS,
+                                                                      tm_alpha=TM_ALPHA,
+                                                                      tm_gamma=TM_GAMMA,
+                                                                      eg_epsilon=EG_EPISLON,
+                                                                      eg_decay=EG_DECAY,
+                                                                      eg_minimum=EG_MINIMUM,
+                                                                      nn_deterministic=NN_DETERMINISTIC,
+                                                                      nn_buffer_size=NN_BUFFER_SIZE))
+                                    args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
+                                    args += self.archive.config.to_cli()
+                                    exec_cmd(' '.join(args))
+                                    #exec_cmd('python -m tools.plot2')
 
   def evaluation(self):
     for i in use_iterations(5):
@@ -88,24 +91,26 @@ class CombinatorialExperiment(Experiment):
                             for EG_DECAY in self.eg_decay:
                               for EG_MINIMUM in self.eg_minimum:
                                 for NN_DETERMINISTIC in self.nn_deterministic:
-                                  self.archive.switch(Configuration(agent=AGENT,
-                                                                    observation=OBSERVATION,
-                                                                    reward=REWARD,
-                                                                    partition=PARTITION,
-                                                                    self_adaptive=SELF_ADAPTIVE,
-                                                                    dataset=DATASET,
-                                                                    shutdown=SHUTDOWN,
-                                                                    quantization=QUANTIZATIONS,
-                                                                    tm_alpha=TM_ALPHA,
-                                                                    tm_gamma=TM_GAMMA,
-                                                                    eg_epsilon=EG_EPISLON,
-                                                                    eg_decay=EG_DECAY,
-                                                                    eg_minimum=EG_MINIMUM,
-                                                                    nn_deterministic=NN_DETERMINISTIC))
-                                  args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
-                                  args += self.archive.config.to_cli()
-                                  exec_cmd(' '.join(args))
-                                  exec_cmd('python -m tools.extract-global-metrics')
+                                  for NN_BUFFER_SIZE in self.nn_buffer_size:
+                                    self.archive.switch(Configuration(agent=AGENT,
+                                                                      observation=OBSERVATION,
+                                                                      reward=REWARD,
+                                                                      partition=PARTITION,
+                                                                      self_adaptive=SELF_ADAPTIVE,
+                                                                      dataset=DATASET,
+                                                                      shutdown=SHUTDOWN,
+                                                                      quantization=QUANTIZATIONS,
+                                                                      tm_alpha=TM_ALPHA,
+                                                                      tm_gamma=TM_GAMMA,
+                                                                      eg_epsilon=EG_EPISLON,
+                                                                      eg_decay=EG_DECAY,
+                                                                      eg_minimum=EG_MINIMUM,
+                                                                      nn_deterministic=NN_DETERMINISTIC,
+                                                                      nn_buffer_size=NN_BUFFER_SIZE))
+                                    args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+                                    args += self.archive.config.to_cli()
+                                    exec_cmd(' '.join(args))
+                                    exec_cmd('python -m tools.extract-global-metrics')
       exec_cmd('python -m tools.compare-global-metrics')
       exec_cmd('mv scores.csv experiments/%s/rounds/%s.csv' % (self.id, i))
 
