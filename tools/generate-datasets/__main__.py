@@ -28,14 +28,14 @@ if __name__ == '__main__':
     ),
     Dataset(
       'curriculum_daily', [
-        '1,£,N1,N2,N1,N3,N1', '1,£,N1,N4,N1,N5,N1'
+        '2,£,N1,N2,N1,N3,N1', '2,£,N1,N4,N1,N5,N1'
       ], [
         '1,£,N1,N2,N1,N3,N1', '1,£,N1,N4,N1,N5,N1', '1,£,N1,STPL2,N1,STPL3,N1', '1,£,N1,CT2,N1,CT3,N1'
       ]
     ),
     Dataset(
       'curriculum_daily_plus_disruption', [
-        '1,£,N1,N2,N1,N3,N1', '1,£,N1,N4,N1,N5,N1', '1,£,N1,ST2,N1,ST3,N1', '1,£,N1,CT4,N1,CT5,N1'
+        '1,£,N1,N2,N1,N3,N1', '1,£,N1,N4,N1,N5,N1', '1,£,N1,ST2,N1,N3,N1', '1,£,N1,N4,N1,CT5,N1'
       ], [
         '1,£,N1,N2,N1,N3,N1', '1,£,N1,N4,N1,N5,N1', '1,£,N1,STPL2,N1,STPL3,N1', '1,£,N1,CT2,N1,CT3,N1'
       ]
