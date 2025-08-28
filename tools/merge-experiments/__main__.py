@@ -16,15 +16,15 @@ def load_rounds(dirpath: str) -> tuple[str, list[list[str]]]:
   return head, rounds
 
 if __name__ == '__main__':
-  A = load_rounds('./experiments/E8/rounds')
-  B = load_rounds('./experiments/E9/rounds')
+  A = load_rounds('./consolidate-experiments/E3/rounds')
+  B = load_rounds('./consolidate-experiments/E7/rounds')
 
   # Equal header
   assert A[0] == B[0]
   # Equal number of rounds
   assert len(A[1]) == len(B[1])
 
-  dirpath = './experiments/E7/rounds'
+  dirpath = './experiments/EXP-4-TOT/rounds'
   for i in range(len(A[1])):
     filepath = os.path.join(dirpath, '%s.csv' % i)
     head = A[0]

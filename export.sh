@@ -1,0 +1,10 @@
+cp /tmp/exp-1-obs-a.png ~/Documents/Github/master-thesis/figures/exp/exp-1-obs-a.png
+cp /tmp/exp-1-obs-b.png ~/Documents/Github/master-thesis/figures/exp/exp-1-obs-b.png
+cp /tmp/exp-1-rew-a.png ~/Documents/Github/master-thesis/figures/exp/exp-1-rew-a.png
+cp /tmp/exp-1-rew-b.png ~/Documents/Github/master-thesis/figures/exp/exp-1-rew-b.png
+cp /tmp/exp-2-dat.png ~/Documents/Github/master-thesis/figures/exp/exp-2-dat.png
+cp /tmp/exp-3-neu.png ~/Documents/Github/master-thesis/figures/exp/exp-3-neu.png
+cp /tmp/exp-3-tab.png ~/Documents/Github/master-thesis/figures/exp/exp-3-tab.png
+cp /tmp/exp-3-tot.png ~/Documents/Github/master-thesis/figures/exp/exp-3-tot.png
+cp /tmp/exp-4-fca.png ~/Documents/Github/master-thesis/figures/exp/exp-4-fca.png
+cp /tmp/exp-4-tot.png ~/Documents/Github/master-thesis/figures/exp/exp-4-tot.png

@@ -6,7 +6,7 @@ from .rounds import Rounds
 from .leaderboard import Leaderboard
 from .plotter import Plotter
 from .barrer import Barrer
-
+from .radarer import  Radarer
 
 if __name__ == '__main__':
   metrics = {
@@ -29,3 +29,15 @@ if __name__ == '__main__':
   Plotter.create(os.path.join(basedir, 'plots'), rounds, metrics, mean=False)
   Barrer.create(os.path.join(basedir, 'bars'), rounds, metrics)
   Leaderboard.create(os.path.join(basedir, 'leaderboards'), rounds, metrics)
+
+  metrics = {
+    'arrival_rate_mean': True,
+    'departure_rate_mean': True,
+    'speed_mean': True,
+    #'speed_var': False,
+    'accumulated_waiting_time_mean': False,
+    'waiting_time_mean': False,
+    #'accumulated_waiting_time_var': False,
+    #'waiting_time_var': False,
+  }
+  Radarer.create(os.path.join(basedir, 'radars'), rounds, metrics)

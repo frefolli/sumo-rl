@@ -1,0 +1,10 @@
+python -m tools.generate-report -e EXP-1-OBS-A
+python -m tools.generate-report -e EXP-1-OBS-B
+python -m tools.generate-report -e EXP-1-REW-A
+python -m tools.generate-report -e EXP-1-REW-B
+python -m tools.generate-report -e EXP-2-DAT
+python -m tools.generate-report -e EXP-3-NEU
+python -m tools.generate-report -e EXP-3-TAB
+python -m tools.generate-report -e EXP-3-TOT
+python -m tools.generate-report -e EXP-4-FCA
+python -m tools.generate-report -e EXP-4-TOT

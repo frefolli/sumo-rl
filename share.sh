@@ -1,0 +1,10 @@
+cp experiments/EXP-1-OBS-A/radars/total.png /tmp/exp-1-obs-a.png
+cp experiments/EXP-1-OBS-B/radars/total.png /tmp/exp-1-obs-b.png
+cp experiments/EXP-1-REW-A/radars/total.png /tmp/exp-1-rew-a.png
+cp experiments/EXP-1-REW-B/radars/total.png /tmp/exp-1-rew-b.png
+cp experiments/EXP-2-DAT/radars/total.png /tmp/exp-2-dat.png
+cp experiments/EXP-3-NEU/radars/total.png /tmp/exp-3-neu.png
+cp experiments/EXP-3-TAB/radars/total.png /tmp/exp-3-tab.png
+cp experiments/EXP-3-TOT/radars/total.png /tmp/exp-3-tot.png
+cp experiments/EXP-4-FCA/radars/total.png /tmp/exp-4-fca.png
+cp experiments/EXP-4-TOT/radars/total.png /tmp/exp-4-tot.png
