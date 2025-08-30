@@ -148,6 +148,7 @@ def use_selection_of_agent_type():
       return sumo_rl.preprocessing.factories.PPOAgentFactory(env, config,
                                                              cli_args.nn_deterministic,
                                                              cli_args.nn_buffer_size,
+                                                             cli_args.nn_entropy_coefficient,
                                                              recycle=cli_args.recycle)
     raise ValueError(val)
 
@@ -480,6 +481,7 @@ def main():
   cli.add_argument("-Em", '--eg-minimum', type=float, default=0.99, help="Epsilon-Greedy minimum epsilon value")
   cli.add_argument('-Nd', '--nn-deterministic', action="store_true", default=False, help="Neural models are deterministic (instead of using a probability distribution for actions)")
   cli.add_argument("-Nb", '--nn-buffer-size', type=int, default=2048, help="Neural models buffer size")
+  cli.add_argument("-Ne", '--nn-entropy-coefficient', type=float, default=0.0, help="Neural models entropy regularization coefficient")
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")

@@ -21,7 +21,8 @@ class Executor:
       E9TryDifferentQuantizationLevels(self.archive),
       E10TryDifferentPartitioningSchemes(self.archive),
       E11TryTabularDeterminism(self.archive),
-      E12TryNeuralBufSize(self.archive)
+      E12TryNeuralBufSize(self.archive),
+      E13TryNeuralEntropy(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

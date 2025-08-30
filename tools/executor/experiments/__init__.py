@@ -13,3 +13,4 @@ from .e9_try_different_quantization_levels import E9TryDifferentQuantizationLeve
 from .e10_try_partitioning import E10TryDifferentPartitioningSchemes
 from .e11_try_tabular_determinism import E11TryTabularDeterminism
 from .e12_neural_bufsize import E12TryNeuralBufSize
+from .e13_neural_entropy import E13TryNeuralEntropy

@@ -41,10 +41,11 @@ class Radarer:
         ax.fill(angles, values, alpha=0.1)
 
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels([_.replace('_', '\n') for _ in metrics], fontsize=12)
+    ax.set_xticklabels([_.replace('_', '\n') for _ in metrics], fontsize=18)
     ax.set_yticklabels([])
 
-    matplotlib.pyplot.legend()
+    matplotlib.pyplot.legend(fontsize=18)
+    matplotlib.pyplot.tight_layout()
     filepath = os.path.join(output_dir, "total.png")
     matplotlib.pyplot.savefig(filepath)
     print('Written', filepath)
