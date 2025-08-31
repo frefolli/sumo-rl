@@ -20,5 +20,5 @@ class SharedVisionRewardFunction(RewardFunction):
     """Return the shared reward"""
     reward = self.reward_function.cache(datastore, ts)
     for you_id in (self.vision_graph.edges.get(ts.id) or []):
-      reward += self.reward_function.cache(datastore, self.vision_graph.nodes[you_id])
+      reward += 0.1 * self.reward_function.cache(datastore, self.vision_graph.nodes[you_id])
     return reward
