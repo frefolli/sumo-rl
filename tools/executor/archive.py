@@ -34,7 +34,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                eg_minimum: float,
                nn_deterministic: bool,
                nn_buffer_size: int,
-               nn_entropy_coefficient: float) -> None:
+               nn_entropy_coefficient: float,
+               nn_neural_size: int) -> None:
     self.agent: str = agent
     self.partition: str = partition
     self.observation: str = observation
@@ -51,6 +52,7 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
     self.nn_deterministic: bool = nn_deterministic
     self.nn_buffer_size: int = nn_buffer_size
     self.nn_entropy_coefficient: float = nn_entropy_coefficient
+    self.nn_neural_size: int = nn_neural_size
 
   @staticmethod
   def Default() -> Configuration:
@@ -69,7 +71,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          eg_minimum=0.05,
                          nn_deterministic=False,
                          nn_buffer_size=2048,
-                         nn_entropy_coefficient=0.0)
+                         nn_entropy_coefficient=0.0,
+                         nn_neural_size=32)
 
   def to_cli(self) -> list[str]:
     args = []
@@ -84,7 +87,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       '-Ed', str(self.eg_decay),
       '-Em', str(self.eg_minimum),
       '-Nb', str(self.nn_buffer_size),
-      '-Ne', str(self.nn_entropy_coefficient)
+      '-Ne', str(self.nn_entropy_coefficient),
+      '-Ns', str(self.nn_neural_size)
     ]
     assert self.self_adaptive in [True, False]
     if self.self_adaptive:
@@ -120,7 +124,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       ('ed%s' % self.eg_decay),
       ('em%s' % self.eg_minimum),
       ('nb%s' % self.nn_buffer_size),
-      ('ne%s' % self.nn_entropy_coefficient)
+      ('ne%s' % self.nn_entropy_coefficient),
+      ('ns%s' % self.nn_neural_size)
     ])
 
   def to_dict(self) -> dict:
@@ -140,7 +145,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
       'eg_minimum': self.eg_minimum,
       'nn_deterministic': self.nn_deterministic,
       'nn_buffer_size': self.nn_buffer_size,
-      'nn_entropy_coefficient': self.nn_entropy_coefficient
+      'nn_entropy_coefficient': self.nn_entropy_coefficient,
+      'nn_neural_size': self.nn_neural_size
     }
 
   @staticmethod
@@ -160,7 +166,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          eg_minimum=data['eg_minimum'],
                          nn_deterministic=data['nn_deterministic'],
                          nn_buffer_size=data['nn_buffer_size'],
-                         nn_entropy_coefficient=data['nn_entropy_coefficient'])
+                         nn_entropy_coefficient=data['nn_entropy_coefficient'],
+                         nn_neural_size=data['nn_neural_size'])
 
   @staticmethod
   def Patch(config: Configuration,
@@ -179,7 +186,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
             eg_minimum: float|None = None,
             nn_deterministic: bool|None = None,
             nn_buffer_size: int|None = None,
-            nn_entropy_coefficient: float|None = None) -> Configuration:
+            nn_entropy_coefficient: float|None = None,
+            nn_neural_size: int|None = None) -> Configuration:
     if self_adaptive is None:
       self_adaptive = config.self_adaptive
     if shutdown is None:
@@ -201,7 +209,8 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          eg_minimum=(eg_minimum or config.eg_minimum),
                          nn_deterministic=nn_deterministic,
                          nn_buffer_size=(nn_buffer_size or config.nn_buffer_size),
-                         nn_entropy_coefficient=(nn_entropy_coefficient or config.nn_entropy_coefficient))
+                         nn_entropy_coefficient=(nn_entropy_coefficient or config.nn_entropy_coefficient),
+                         nn_neural_size=(nn_neural_size or config.nn_neural_size))
 
 class Archive:
   def __init__(self) -> None:

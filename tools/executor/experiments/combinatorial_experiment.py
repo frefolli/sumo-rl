@@ -27,6 +27,7 @@ class CombinatorialExperiment(Experiment):
     self.nn_deterministic = [False]
     self.nn_buffer_size = [2048]
     self.nn_entropy_coefficient = [0.0]
+    self.nn_neural_size = [32]
 
   def prepare(self):
     if not self.skip_training:
@@ -56,26 +57,28 @@ class CombinatorialExperiment(Experiment):
                                 for NN_DETERMINISTIC in self.nn_deterministic:
                                   for NN_BUFFER_SIZE in self.nn_buffer_size:
                                     for NN_ENTROPY_COEFFICIENT in self.nn_entropy_coefficient:
-                                      self.archive.switch(Configuration(agent=AGENT,
-                                                                        observation=OBSERVATION,
-                                                                        reward=REWARD,
-                                                                        partition=PARTITION,
-                                                                        self_adaptive=SELF_ADAPTIVE,
-                                                                        dataset=DATASET,
-                                                                        shutdown=SHUTDOWN,
-                                                                        quantization=QUANTIZATIONS,
-                                                                        tm_alpha=TM_ALPHA,
-                                                                        tm_gamma=TM_GAMMA,
-                                                                        eg_epsilon=EG_EPISLON,
-                                                                        eg_decay=EG_DECAY,
-                                                                        eg_minimum=EG_MINIMUM,
-                                                                        nn_deterministic=NN_DETERMINISTIC,
-                                                                        nn_buffer_size=NN_BUFFER_SIZE,
-                                                                        nn_entropy_coefficient=NN_ENTROPY_COEFFICIENT))
-                                      args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
-                                      args += self.archive.config.to_cli()
-                                      exec_cmd(' '.join(args))
-                                      #exec_cmd('python -m tools.plot2')
+                                      for NN_NEURAL_SIZE in self.nn_neural_size:
+                                        self.archive.switch(Configuration(agent=AGENT,
+                                                                          observation=OBSERVATION,
+                                                                          reward=REWARD,
+                                                                          partition=PARTITION,
+                                                                          self_adaptive=SELF_ADAPTIVE,
+                                                                          dataset=DATASET,
+                                                                          shutdown=SHUTDOWN,
+                                                                          quantization=QUANTIZATIONS,
+                                                                          tm_alpha=TM_ALPHA,
+                                                                          tm_gamma=TM_GAMMA,
+                                                                          eg_epsilon=EG_EPISLON,
+                                                                          eg_decay=EG_DECAY,
+                                                                          eg_minimum=EG_MINIMUM,
+                                                                          nn_deterministic=NN_DETERMINISTIC,
+                                                                          nn_buffer_size=NN_BUFFER_SIZE,
+                                                                          nn_entropy_coefficient=NN_ENTROPY_COEFFICIENT,
+                                                                          nn_neural_size=NN_NEURAL_SIZE))
+                                        args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
+                                        args += self.archive.config.to_cli()
+                                        exec_cmd(' '.join(args))
+                                        #exec_cmd('python -m tools.plot2')
 
   def evaluation(self):
     for i in use_iterations(5):
@@ -96,26 +99,28 @@ class CombinatorialExperiment(Experiment):
                                 for NN_DETERMINISTIC in self.nn_deterministic:
                                   for NN_BUFFER_SIZE in self.nn_buffer_size:
                                     for NN_ENTROPY_COEFFICIENT in self.nn_entropy_coefficient:
-                                      self.archive.switch(Configuration(agent=AGENT,
-                                                                        observation=OBSERVATION,
-                                                                        reward=REWARD,
-                                                                        partition=PARTITION,
-                                                                        self_adaptive=SELF_ADAPTIVE,
-                                                                        dataset=DATASET,
-                                                                        shutdown=SHUTDOWN,
-                                                                        quantization=QUANTIZATIONS,
-                                                                        tm_alpha=TM_ALPHA,
-                                                                        tm_gamma=TM_GAMMA,
-                                                                        eg_epsilon=EG_EPISLON,
-                                                                        eg_decay=EG_DECAY,
-                                                                        eg_minimum=EG_MINIMUM,
-                                                                        nn_deterministic=NN_DETERMINISTIC,
-                                                                        nn_buffer_size=NN_BUFFER_SIZE,
-                                                                        nn_entropy_coefficient=NN_ENTROPY_COEFFICIENT))
-                                      args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
-                                      args += self.archive.config.to_cli()
-                                      exec_cmd(' '.join(args))
-                                      exec_cmd('python -m tools.extract-global-metrics')
+                                      for NN_NEURAL_SIZE in self.nn_neural_size:
+                                        self.archive.switch(Configuration(agent=AGENT,
+                                                                          observation=OBSERVATION,
+                                                                          reward=REWARD,
+                                                                          partition=PARTITION,
+                                                                          self_adaptive=SELF_ADAPTIVE,
+                                                                          dataset=DATASET,
+                                                                          shutdown=SHUTDOWN,
+                                                                          quantization=QUANTIZATIONS,
+                                                                          tm_alpha=TM_ALPHA,
+                                                                          tm_gamma=TM_GAMMA,
+                                                                          eg_epsilon=EG_EPISLON,
+                                                                          eg_decay=EG_DECAY,
+                                                                          eg_minimum=EG_MINIMUM,
+                                                                          nn_deterministic=NN_DETERMINISTIC,
+                                                                          nn_buffer_size=NN_BUFFER_SIZE,
+                                                                          nn_entropy_coefficient=NN_ENTROPY_COEFFICIENT,
+                                                                          nn_neural_size=NN_NEURAL_SIZE))
+                                        args = ['python', '-m', 'main', '-r', '-DE', '-S', str(seed)]
+                                        args += self.archive.config.to_cli()
+                                        exec_cmd(' '.join(args))
+                                        exec_cmd('python -m tools.extract-global-metrics')
       exec_cmd('python -m tools.compare-global-metrics')
       exec_cmd('mv scores.csv experiments/%s/rounds/%s.csv' % (self.id, i))
 

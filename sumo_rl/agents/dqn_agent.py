@@ -22,7 +22,8 @@ class DQNAgent(Agent):
                      state_space,
                      action_space,
                      deterministic: bool,
-                     buffer_size: int):
+                     buffer_size: int,
+                     neural_size: int):
     """Initialize Q-learning agent."""
     super().__init__(id)
     self.observation_fn: ObservationFunction = observation_fn
@@ -32,6 +33,7 @@ class DQNAgent(Agent):
     self.action_space = action_space
     self.deterministic = deterministic
     self.buffer_size = buffer_size
+    self.neural_size = neural_size
 
     self.previous_states: dict = {}
     self.current_states: dict = {}
@@ -39,7 +41,7 @@ class DQNAgent(Agent):
     self.current_actions: dict = {}
 
     self.dummy_env = DummyEnv(state_space, action_space)
-    self.model: DQN = DQN('MlpPolicy', self.dummy_env, verbose=1, device='cpu', buffer_size=self.buffer_size, policy_kwargs=dict(net_arch=[32, 32]))
+    self.model: DQN = DQN('MlpPolicy', self.dummy_env, verbose=1, device='cpu', buffer_size=self.buffer_size, policy_kwargs=dict(net_arch=[self.neural_size, self.neural_size]))
     self.model._logger = utils.configure_logger(self.model.verbose, self.model.tensorboard_log, '', False)
 
 

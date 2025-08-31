@@ -100,10 +100,11 @@ class QLAgentFactory(AgentFactory):
     return agent
 
 class DQNAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, deterministic: bool, buffer_size: int, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, deterministic: bool, buffer_size: int, neural_size: int, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
     self.deterministic = deterministic
     self.buffer_size = buffer_size
+    self.neural_size = neural_size
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[Agent]:
     agents = []
@@ -128,7 +129,8 @@ class DQNAgentFactory(AgentFactory):
                      state_space=state_space,
                      action_space=action_space,
                      deterministic=self.deterministic,
-                     buffer_size=self.buffer_size)
+                     buffer_size=self.buffer_size,
+                     neural_size=self.neural_size)
     if self.recycle:
       agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
@@ -139,11 +141,12 @@ class DQNAgentFactory(AgentFactory):
     return agent
 
 class PPOAgentFactory(AgentFactory):
-  def __init__(self, env: SumoEnvironment, config: Config, deterministic: bool, buffer_size: int, ent_coef: float, recycle: bool = False) -> None:
+  def __init__(self, env: SumoEnvironment, config: Config, deterministic: bool, buffer_size: int, ent_coef: float, neural_size: int, recycle: bool = False) -> None:
     super().__init__(env, config, recycle)
     self.deterministic = deterministic
     self.buffer_size = buffer_size
     self.ent_coef = ent_coef
+    self.neural_size = neural_size
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[Agent]:
     agents = []
@@ -169,7 +172,8 @@ class PPOAgentFactory(AgentFactory):
                      action_space=action_space,
                      deterministic=self.deterministic,
                      buffer_size=self.buffer_size,
-                     ent_coef=self.ent_coef)
+                     ent_coef=self.ent_coef,
+                     neural_size=self.neural_size)
     if self.recycle:
       agent_memory_file = self.config.agents_file(None, agent_id)
       if os.path.exists(agent_memory_file):
