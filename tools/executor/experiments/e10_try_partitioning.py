@@ -9,4 +9,4 @@ class E10TryDifferentPartitioningSchemes(CombinatorialExperiment):
     self.datasets = ['curriculum_daily_plus_disruption']
     self.agents = ['dql']
     self.quantizations = [16]
-    self.partitions = ['mono', 'size', 'space']
+    self.partitions = ['mono', 'space']

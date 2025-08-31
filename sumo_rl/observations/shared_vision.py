@@ -34,4 +34,5 @@ class SharedVisionObservationFunction(ObservationFunction):
     return total_size
 
   def hash(self, ts: sumo_rl.environment.traffic_signal.TrafficSignal):
-    return "OS%s-%s-%sSO" % (self.name, ts.num_green_phases, len(ts.lanes))
+    
+    return "OS%s-%s-%s-%sSO" % (self.name, len(self.vision_graph.edges.get(ts.id) or []), self.me_observation.hash(ts), self.you_observation.hash(ts))

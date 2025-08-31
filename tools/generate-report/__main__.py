@@ -7,6 +7,7 @@ from .leaderboard import Leaderboard
 from .plotter import Plotter
 from .barrer import Barrer
 from .radarer import  Radarer
+from .tabler import Tabler
 
 if __name__ == '__main__':
   metrics = {
@@ -29,6 +30,7 @@ if __name__ == '__main__':
   Plotter.create(os.path.join(basedir, 'plots'), rounds, metrics, mean=False)
   Barrer.create(os.path.join(basedir, 'bars'), rounds, metrics)
   Leaderboard.create(os.path.join(basedir, 'leaderboards'), rounds, metrics)
+  Tabler.create(os.path.join(basedir, 'tables'), rounds, metrics)
 
   metrics = {
     'arrival_rate_mean': True,

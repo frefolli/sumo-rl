@@ -2,15 +2,23 @@ import sumo_rl.environment.env
 import sumo_rl.environment.traffic_signal
 import sumo_rl.observations
 import sumo_rl.environment.traffic_signal
+import sumo_rl.models.serde
 
-class Partition:
-  def __init__(self) -> None:
-    self.data: dict[str, set[str]] = {}
+class Partition(sumo_rl.models.serde.SerdeJsonFile):
+  def __init__(self, data: dict[str, set[str]] = {}) -> None:
+    self.data: dict[str, set[str]] = data
 
   def add(self, partition_ID: str, element: str) -> None:
     if partition_ID not in self.data:
       self.data[partition_ID] = set({})
     self.data[partition_ID].add(element)
+
+  def to_dict(self) -> dict:
+    return {k:list(v) for k,v in self.data.items()}
+
+  @classmethod
+  def from_dict(cls, data: dict[str, list[str]]):
+    return Partition({k:set(v) for k,v in data.items()})
 
 class MonadicPartition(Partition):
   """Each traffic signal goes into a separated partition"""

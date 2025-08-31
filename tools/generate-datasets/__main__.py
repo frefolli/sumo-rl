@@ -8,13 +8,13 @@ class Dataset:
     self.training: list[str] = training
     self.evaluation: list[str] = evaluation
 
-  def generate(self, seed: int) -> None:
+  def generate(self, seed: int, scenario: str) -> None:
     exec_cmd('rm -rf datasets/%s' % self.id)
     exec_cmd('mkdir -p datasets/%s' % self.id)
     exec_cmd('rm -rf training')
     exec_cmd('rm -rf evaluation')
-    exec_cmd('python -m tools.generate-flows --seed %s -r traffic-registry.yml -o training %s' % (seed, ' '.join(self.training)))
-    exec_cmd('python -m tools.generate-flows --seed %s -r traffic-registry.yml -o evaluation %s' % (seed, ' '.join(self.evaluation)))
+    exec_cmd('python -m tools.generate-flows --scenario %s --seed %s -r traffic-registry.yml -o training %s' % (scenario, seed, ' '.join(self.training)))
+    exec_cmd('python -m tools.generate-flows --scenario %s --seed %s -r traffic-registry.yml -o evaluation %s' % (scenario, seed, ' '.join(self.evaluation)))
     exec_cmd('mv training evaluation datasets/%s' % self.id)
 
 if __name__ == '__main__':
@@ -44,7 +44,8 @@ if __name__ == '__main__':
 
   argument_parser = argparse.ArgumentParser(description='generate datasets')
   argument_parser.add_argument('-S', '--seed', default=None, type=int, help='Input seed')
+  argument_parser.add_argument('-s', '--scenario', default='celoria', type=str, help='Input scenario')
   cli_args = argument_parser.parse_args(sys.argv[1:])
 
   for dataset in datasets:
-    dataset.generate(cli_args.seed or 0)
+    dataset.generate(cli_args.seed or 0, cli_args.scenario)

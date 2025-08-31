@@ -81,7 +81,7 @@ class CombinatorialExperiment(Experiment):
                                         #exec_cmd('python -m tools.plot2')
 
   def evaluation(self):
-    for i in use_iterations(5):
+    for i in use_iterations(1):
       seed = random.randint(0, 10000)
       for AGENT in self.agents:
         for OBSERVATION in self.observations:

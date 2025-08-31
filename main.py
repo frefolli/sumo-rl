@@ -514,6 +514,7 @@ def main():
     graph.to_d2_file('vision-graph.d2')
   agent_factory: sumo_rl.preprocessing.factories.AgentFactory = agent_factory_by_option(cli_args, config, env)
   agents_partition: sumo_rl.preprocessing.partitions.Partition = partition_by_option(cli_args, env)
+  agents_partition.to_json_file('partition.json')
   agents: list[sumo_rl.agents.Agent] = agent_factory.agent_by_assignments(agents_partition.data)
 
   if not cli_args.pretend:
