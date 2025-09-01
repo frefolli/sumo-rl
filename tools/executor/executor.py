@@ -2,6 +2,7 @@ from tools.executor.archive import Archive
 from tools.executor.experiment import Experiment
 from tools.executor.experiments import *
 import argparse
+import random
 
 class Executor:
   def __init__(self) -> None:
@@ -30,13 +31,14 @@ class Executor:
     argument_parser = argparse.ArgumentParser('tools.executor', description='Glorious executor of experiments')
     argument_parser.add_argument('-e', '--experiment', type=str, help='Experiment ID')
     argument_parser.add_argument('-l', '--list-experiments', action='store_true', help='List all available experiments')
+    argument_parser.add_argument('-S', '--seed', type=int, default=0, help='Experiment SEED (default 0)')
     args = argument_parser.parse_args(argv)
 
     print('Available experiments:')
     if args.list_experiments:
       for exp_id, exp in self.experiments.items():
         print('-', exp_id, ':', exp.name)
-
+    random.seed(args.seed)
     if args.experiment:
       if args.experiment not in self.experiments:
         raise ValueError('Experiment \'%s\' is not known' % args.experiment)
