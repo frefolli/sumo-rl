@@ -130,7 +130,7 @@ class CombinatorialExperiment(Experiment):
     exec_cmd('zstd ./experiments/%s.tar' % (self.id))
 
   def clean(self):
-    exec_cmd('rm -rf ./archive')
+    # exec_cmd('rm -rf ./archive')
     exec_cmd('rm -rf ./experiments/%s.tar' % (self.id))
     exec_cmd('rm -rf ./experiments/%s/rounds.tar' % (self.id))
 
