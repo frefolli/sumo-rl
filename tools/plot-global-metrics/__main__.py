@@ -210,19 +210,19 @@ class Preprocessor:
     output = []
     for plot in plots:
       output.append(plot)
-      with_asym_smoothing = plot.copy()
-      with_asym_smoothing.label = with_asym_smoothing.label + '-AS'
-      with_asym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, False)
-      output.append(with_asym_smoothing)
-      with_sym_smoothing = plot.copy()
-      with_sym_smoothing.label = with_sym_smoothing.label + '-SS'
-      with_sym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, True)
-      output.append(with_sym_smoothing)
-      if plot.label == 'total_reward':
-        accumulated = plot.copy()
-        accumulated.label = accumulated.label + '-AC'
-        accumulated.retrieve_data = Smoother.Apply(Accumulator.Apply(accumulated.retrieve_data), True)
-        output.append(accumulated)
+      # with_asym_smoothing = plot.copy()
+      # with_asym_smoothing.label = with_asym_smoothing.label + '-AS'
+      # with_asym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, False)
+      # output.append(with_asym_smoothing)
+      # with_sym_smoothing = plot.copy()
+      # with_sym_smoothing.label = with_sym_smoothing.label + '-SS'
+      # with_sym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, True)
+      # output.append(with_sym_smoothing)
+      # if plot.label == 'total_reward':
+      #   accumulated = plot.copy()
+      #   accumulated.label = accumulated.label + '-AC'
+      #   accumulated.retrieve_data = Smoother.Apply(Accumulator.Apply(accumulated.retrieve_data), True)
+      #   output.append(accumulated)
     return output
 
 if __name__ == "__main__":

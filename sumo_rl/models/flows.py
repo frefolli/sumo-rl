@@ -6,7 +6,7 @@ import sumo_rl.models.serde
 
 MIN_GAP = 2.5
 VEHICLE_LENGTH = 5.0
-TAU = 3.0
+TAU = 5.0
 TETA = 1.0
 
 class DeadEnd:

@@ -6,3 +6,4 @@ from sumo_rl.rewards.queue_length import QueueLengthRewardFunction
 from sumo_rl.rewards.mixed import MixedRewardFunction
 from sumo_rl.rewards.shared_vision import SharedVisionRewardFunction
 from sumo_rl.rewards.diff_queue_length import DiffQueueLengthRewardFunction
+from sumo_rl.rewards.accumulated_waiting_time import AccumulatedWaitingTimeRewardFunction

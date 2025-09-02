@@ -245,6 +245,8 @@ def use_selection_of_observation_fn():
 def use_selection_of_reward_fn():
   def reward_fn_by_option(cli_args) -> sumo_rl.rewards.RewardFunction:
     val = cli_args.reward
+    if val == 'awt':
+      return sumo_rl.rewards.AccumulatedWaitingTimeRewardFunction()
     if val == 'dwt':
       return sumo_rl.rewards.DiffWaitingTimeRewardFunction()
     if val == 'as':
@@ -267,9 +269,10 @@ def use_selection_of_reward_fn():
       return sumo_rl.rewards.SharedVisionRewardFunction(reward_function=sumo_rl.rewards.PressureRewardFunction())
     raise ValueError(val)
 
-  options = ['dwt', 'as', 'dql', 'ql', 'p', 'svdwt', 'svas', 'svdql', 'svql', 'svp']
+  options = ['awt', 'dwt', 'as', 'dql', 'ql', 'p', 'svdwt', 'svas', 'svdql', 'svql', 'svp']
   help_text = """
     Selects the reward function to use
+    - awt: Accumulated Waiting Times
     - dwt: Diff Waiting Times
     - as: Average Speeds
     - ql: Average Queue Lengths

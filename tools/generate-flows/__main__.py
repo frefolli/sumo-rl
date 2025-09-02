@@ -16,6 +16,25 @@ import sumo_rl.models.sumo
 DEFAULT_TOTAL_DURATION = 100000
 DEFAULT_SLOT_DURATION = 360
 
+def build_distribution(low: float, high: float, k: int) -> list[float]:
+  assert k > 1
+
+  x = low
+  dx = (high - low) / (k - 1)
+
+  result = [x]
+  while x < high:
+    x += dx
+    result.append(x)
+
+  if len(result) == k + 1:
+    result = result[:-2] + [high]
+  if len(result) != k:
+    print(low, high, k)
+    print(len(result))
+    assert False
+  return result
+
 def shuffle(A: list) -> list:
   return sorted(A, key = lambda _ : random.random())
 
@@ -736,21 +755,52 @@ def get_or_leave_integer(splitted: list[str], default_value: int) -> tuple[list[
   except:
     return splitted, default_value
 
+def get_or_leave_float(splitted: list[str], default_value: float) -> tuple[list[str], float]:
+  try:
+    number = float(splitted[0])
+    splitted = splitted[1:]
+    return splitted, number
+  except:
+    return splitted, default_value
+
 def parse_properties_from_request(registry: TrafficRegistry, string: str) -> tuple[int, int, list[TrafficGenerator], bool]:
   splitted = string.strip().split(',')
   splitted, number = get_or_leave_integer(splitted, 1)
   splitted, duration = get_or_leave_integer(splitted, DEFAULT_TOTAL_DURATION)
   artificial_queue = False
   phases = []
-  for desc in splitted:
+  idx = 0
+  while idx < len(splitted):
+    desc = splitted[idx]
     if desc == '£':
       artificial_queue = True
+      idx += 1
     elif desc == '*':
       phases += registry.gets(registry.simple_variants())
+      idx += 1
     elif desc == '~':
       phases = shuffle(phases)
+      idx += 1
+    elif desc == '%':
+      rest, low = get_or_leave_float(splitted[idx + 1:], TrafficLevel.LOW.value)
+      rest, high = get_or_leave_float(rest, TrafficLevel.RIDICULOUS.value)
+      splitted = rest
+      idx = 0
+      stage_duration = DEFAULT_SLOT_DURATION * 10
+      number_of_stages = duration // stage_duration
+      stage_levels = build_distribution(low, high, number_of_stages)
+      phases = [
+        CasualTrafficGenerator(traffic_level=optin,
+                               total_duration=stage_duration,
+                               slot_duration=DEFAULT_SLOT_DURATION,
+                               title='A%s' % round(optin, 2),
+                               description='K=%s casual traffic' % optin,
+                               artificial_queue=artificial_queue)
+        for optin in stage_levels
+      ]
     else:
       phases += [registry.get(desc)]
+      idx += 1
   return number, duration, phases, artificial_queue
 
 def main():
