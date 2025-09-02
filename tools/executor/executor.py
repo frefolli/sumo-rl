@@ -24,7 +24,9 @@ class Executor:
       E11TryTabularDeterminism(self.archive),
       E12TryNeuralBufSize(self.archive),
       E13TryNeuralEntropy(self.archive),
-      E14TryNeuralSize(self.archive)
+      E14TryNeuralSize(self.archive),
+      E15TryCurriculumIncremental(self.archive),
+      E16TryDifferentAwt(self.archive)
     ]}
 
   def apply(self, argv: list[str]):
