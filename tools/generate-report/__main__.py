@@ -27,9 +27,9 @@ if __name__ == '__main__':
   basedir = './experiments/%s' % exp_id
 
   rounds = Rounds.load(exp_id)
-  Plotter.create(os.path.join(basedir, 'plots'), rounds, metrics, mean=False)
-  Barrer.create(os.path.join(basedir, 'bars'), rounds, metrics)
-  Leaderboard.create(os.path.join(basedir, 'leaderboards'), rounds, metrics)
+  # Plotter.create(os.path.join(basedir, 'plots'), rounds, metrics, mean=False)
+  # Barrer.create(os.path.join(basedir, 'bars'), rounds, metrics)
+  # Leaderboard.create(os.path.join(basedir, 'leaderboards'), rounds, metrics)
   Tabler.create(os.path.join(basedir, 'tables'), rounds, metrics)
 
   metrics = {
