@@ -1,11 +1,20 @@
-# SUMO-RL
+# SUMO-RF
 
-SUMO-RL provides a simple interface to instantiate Reinforcement Learning (RL) environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control.
+SUMO-RF provides a simple interface to instantiate Reinforcement Learning (RL) environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control.
+
+This framework is a **fork** of the original [**SUMO-RL**](https://github.com/LucasAlegre/sumo-rl) from Lucas Alegre.
+Credits for the foundation of this work are given to him.
+
+This framework has been used for writing my Master Degree [dissertation/thesis](https://github.com/frefolli/master-thesis).
 
 Goals of this repository:
-- Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
-- Support Multiagent RL
-- Easy customisation: state and reward definitions are easily modifiable
+- Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO.
+- Support Multiagent RL.
+- Easy customisation: state and reward definitions are easily modifiable.
+- Support Multi-Agent Reinforcement Learning.
+- Support multiple Experience Engineering techniques (specifically Curriculum Learning).
+- Attempt to support a self-adaptive algorithm for responding to degrading performance with an extra learning slot.
+- Conversions from AMAT and Cityflow formats.
 
 Warning: here for some reason `observation` and `state` are synonyms.
 
@@ -35,13 +44,13 @@ Notice that you will not be able to run with sumo-gui or with multiple simulatio
 
 Stable release version is available through pip
 ```bash
-pip install sumo-rl
+pip install sumo-rf
 ```
 
 Alternatively, you can install using the latest (unreleased) version
 ```bash
-git clone https://github.com/LucasAlegre/sumo-rl
-cd sumo-rl
+git clone https://github.com/frefolli/sumo-rf
+cd sumo-rf
 pip install -e .
 ```
 
