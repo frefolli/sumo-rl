@@ -40,7 +40,7 @@ export LIBSUMO_AS_TRACI=1
 ```
 Notice that you will not be able to run with sumo-gui or with multiple simulations in parallel if this is active ([more details](https://sumo.dlr.de/docs/Libsumo.html)).
 
-### Install SUMO-RL
+### Install SUMO-RF
 
 Stable release version is available through pip
 ```bash
