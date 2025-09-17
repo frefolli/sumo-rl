@@ -17,3 +17,4 @@ from .e13_neural_entropy import E13TryNeuralEntropy
 from .e14_neural_size import E14TryNeuralSize
 from .e15_curriculum_incremental import E15TryCurriculumIncremental
 from .e16_different_awt import E16TryDifferentAwt
+from .demo_training import DemoTraining

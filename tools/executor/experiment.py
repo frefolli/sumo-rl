@@ -1,12 +1,13 @@
 from tools.executor.archive import Archive
 
 class Experiment:
-  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False) -> None:
+  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False, skip_cleaning: bool = False) -> None:
     self.archive = archive
     self.id = id
     self.name = name
     self.skip_training = skip_training
     self.skip_evaluation = skip_evaluation
+    self.skip_cleaning = skip_cleaning
 
   def all(self):
     self.prepare()
@@ -15,6 +16,7 @@ class Experiment:
     if not self.skip_evaluation:
       self.evaluation()
       self.pack()
+    if not self.skip_cleaning:
       self.clean()
 
   def prepare(self):

@@ -5,14 +5,21 @@ sumo:
   #sumo_seed: 170701
   further_cmd_args:
     - --junction-taz
-    - --delay 5
+    #- --delay 15
     - --ignore-junction-blocker 120
+    #- --gui-settings-file gui-viewport.xml
 training:
   seconds: 100000
+  #seconds: 3600
+  #seconds: 10000
 evaluation:
   seconds: 100000
+  #seconds: 3600
+  #seconds: 10000
 demo:
   seconds: 100000
+  #seconds: 3600
+  #seconds: 10000
 scenario: ./scenarios/celoria
 artifacts:
   agents: ./outputs/agents

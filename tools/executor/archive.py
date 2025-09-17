@@ -61,7 +61,7 @@ class Configuration(sumo_rl.models.serde.SerdeYamlFile):
                          observation='default',
                          reward='dwt',
                          self_adaptive=False,
-                         dataset='1',
+                         dataset='frankestein',
                          shutdown=False,
                          quantization=16,
                          tm_alpha=0.1,

@@ -7,3 +7,5 @@ from sumo_rl.agents.dqn_agent import DQNAgent
 from sumo_rl.agents.ppo_agent import PPOAgent
 from sumo_rl.agents.sarsa_agent import SARSAAgent
 from sumo_rl.agents.dql_agent import DQLAgent
+from sumo_rl.agents.dummy_agent import DummyAgent
+from sumo_rl.agents.fidesz_agent import FideszAgent

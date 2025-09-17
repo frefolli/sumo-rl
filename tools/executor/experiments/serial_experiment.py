@@ -4,8 +4,8 @@ from sumo_rl.models.commons import ensure_dir
 import random
 
 class SerialExperiment(Experiment):
-  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False) -> None:
-    super().__init__(id, name, archive, skip_training, skip_evaluation)
+  def __init__(self, id: str, name: str, archive: Archive, skip_training: bool = False, skip_evaluation: bool = False, skip_cleaning: bool = False) -> None:
+    super().__init__(id, name, archive, skip_training, skip_evaluation, skip_cleaning)
     self.configurations: list[Configuration] = []
 
   def prepare(self):
@@ -26,7 +26,7 @@ class SerialExperiment(Experiment):
           args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
           args += self.archive.config.to_cli()
           exec_cmd(' '.join(args))
-          #exec_cmd('python -m tools.plot2')
+          exec_cmd('python -m tools.plot-global-metrics')
 
   def evaluation(self):
     for i in use_iterations(5):

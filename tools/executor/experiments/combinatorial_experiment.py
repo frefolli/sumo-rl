@@ -9,8 +9,9 @@ class CombinatorialExperiment(Experiment):
                name: str,
                archive: Archive,
                skip_training: bool = False,
-               skip_evaluation: bool = False) -> None:
-    super().__init__(id, name, archive, skip_training, skip_evaluation)
+               skip_evaluation: bool = False,
+               skip_cleaning: bool = False) -> None:
+    super().__init__(id, name, archive, skip_training, skip_evaluation, skip_cleaning)
     self.agents = ['ql']
     self.observations = ['default']
     self.rewards = ['dwt']
@@ -78,7 +79,7 @@ class CombinatorialExperiment(Experiment):
                                         args = ['python', '-m', 'main', '-r', '-DT', '-S', str(seed)]
                                         args += self.archive.config.to_cli()
                                         exec_cmd(' '.join(args))
-                                        #exec_cmd('python -m tools.plot2')
+                                        #exec_cmd('python -m tools.plot-global-metrics')
 
   def evaluation(self):
     for i in use_iterations(5):
@@ -130,7 +131,7 @@ class CombinatorialExperiment(Experiment):
     exec_cmd('zstd ./experiments/%s.tar' % (self.id))
 
   def clean(self):
-    # exec_cmd('rm -rf ./archive')
+    exec_cmd('rm -rf ./archive')
     exec_cmd('rm -rf ./experiments/%s.tar' % (self.id))
     exec_cmd('rm -rf ./experiments/%s/rounds.tar' % (self.id))
 

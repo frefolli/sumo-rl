@@ -178,7 +178,7 @@ class SumoEnvironment(gym.Env):
     self.flows = sumo_rl.models.flows.read_flows_from_routes_file(route_file)
 
   @staticmethod
-  def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1, advanced_metrics: bool = False, shutdown_ts: bool = False) -> SumoEnvironment:
+  def from_config(config: sumo_rl.util.config.Config, observation_fn: sumo_rl.observations.ObservationFunction, reward_fn: sumo_rl.rewards.RewardFunction, use_gui: bool = False, jobs: int = 1, advanced_metrics: bool = False, shutdown_ts: bool = False, sumo_begin: int = 0) -> SumoEnvironment:
     return SumoEnvironment(
       net_file=config.scenario.network,
       use_gui=use_gui,
@@ -191,7 +191,8 @@ class SumoEnvironment(gym.Env):
       shutdown_ts=shutdown_ts,
       additional_sumo_cmd=" ".join(config.sumo.further_cmd_args),
       jobs=jobs,
-      advanced_metrics=advanced_metrics
+      advanced_metrics=advanced_metrics,
+      begin_time=sumo_begin
     )
 
   def _build_traffic_signals(self, conn) -> None:
@@ -257,6 +258,7 @@ class SumoEnvironment(gym.Env):
       traci.start(sumo_cmd)
       self.sumo = traci
     else:
+      print(sumo_cmd)
       traci.start(sumo_cmd, label=self.label)
       self.sumo = traci.getConnection(self.label)
 

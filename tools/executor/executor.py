@@ -26,7 +26,8 @@ class Executor:
       E13TryNeuralEntropy(self.archive),
       E14TryNeuralSize(self.archive),
       E15TryCurriculumIncremental(self.archive),
-      E16TryDifferentAwt(self.archive)
+      E16TryDifferentAwt(self.archive),
+      DemoTraining(self.archive)
     ]}
 
   def apply(self, argv: list[str]):

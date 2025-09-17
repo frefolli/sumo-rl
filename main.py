@@ -123,6 +123,12 @@ def use_selection_of_agent_type():
                                                             cli_args.eg_minimum,
                                                             cli_args.eg_decay,
                                                             recycle=cli_args.recycle)
+    if val == 'dummy':
+      return sumo_rl.preprocessing.factories.DummyAgentFactory(env, config,
+                                                               recycle=cli_args.recycle)
+    if val == 'fidesz':
+      return sumo_rl.preprocessing.factories.FideszAgentFactory(env, config,
+                                                               recycle=cli_args.recycle)
     if val == 'dql':
       return sumo_rl.preprocessing.factories.DQLAgentFactory(env, config,
                                                             cli_args.tm_alpha,
@@ -154,7 +160,7 @@ def use_selection_of_agent_type():
                                                              recycle=cli_args.recycle)
     raise ValueError(val)
 
-  options = ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60', 'ql', 'dql', 'sarsa', 'dqn', 'ppo']
+  options = ['fixed', 'fixed15', 'fixed30', 'fixed45', 'fixed60', 'dummy', 'fidesz', 'ql', 'dql', 'sarsa', 'dqn', 'ppo']
   help_text = """
     Selects the type of Agent to use,
     - fixed: Fixed Cycle agent,
@@ -162,6 +168,8 @@ def use_selection_of_agent_type():
     - fixed30: Fixed Cycle agent with 30s cycle,
     - fixed45: Fixed Cycle agent with 45s cycle,
     - fixed60: Fixed Cycle agent with 60s cycle,
+    - dummy: Dummy Agent,
+    - fidesz: Fidesz Agent,
     - ql: Q Learning agent,
     - sarsa: SARSA agent,
     - dql: Double Q Learning agent,
@@ -491,6 +499,7 @@ def main():
   cli.add_argument('-DT', '--do-training', action="store_true", default=False, help="Perform training")
   cli.add_argument('-DE', '--do-evaluation', action="store_true", default=False, help="Perform evaluation")
   cli.add_argument('-DD', '--do-demo', action="store_true", default=False, help="Perform demo")
+  cli.add_argument("-Sb", '--sumo-begin', type=int, default=0, help="SUMO --begin time")
   cli.add_argument('-S', '--seed', type=int, help="Uses SEED as seed")
   cli_args = cli.parse_args(sys.argv[1:])
   show_args(cli_args)
@@ -507,7 +516,7 @@ def main():
 
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
-  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs), cli_args.depth, cli_args.shutdown_traffic_lights)
+  env = sumo_rl.environment.env.SumoEnvironment.from_config(config, observation_fn, reward_fn, cli_args.use_gui, nproc(cli_args.jobs), cli_args.depth, cli_args.shutdown_traffic_lights, cli_args.sumo_begin)
   if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction) or isinstance(env.reward_fn, sumo_rl.rewards.SharedVisionRewardFunction):
     graph = build_adiacency_graph(env, None)
     if isinstance(env.observation_fn, sumo_rl.observations.SharedVisionObservationFunction):
