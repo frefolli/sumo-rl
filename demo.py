@@ -76,7 +76,7 @@ def video():
     assert 0 == exec_cmd('rm -rf %s' % video_path)
     proc = subprocess.Popen(['ffmpeg', '-video_size', '1920x1080', '-framerate', '60', '-f', 'alsa', '-ac', '2', '-f', 'x11grab', '-i', ':0.0', video_path])
     args = ' '.join(config.config.to_cli())
-    good = (0 == exec_cmd('python -m main %s -S 170701 -DD -g -Sb 30000' % args))
+    good = (0 == exec_cmd('python -m main %s -r -S 170701 -DD -g -Sb 30000' % args))
     proc.terminate()
     assert good
 
